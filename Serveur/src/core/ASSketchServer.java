@@ -24,7 +24,8 @@ public class ASSketchServer {
 			System.out.println(options);
 
 		System.out.println("Lancement du serveur AssScketch"); 
-		
+		Server asServer = new Server(options);
+		asServer.run();
 		
 		System.out.println("Arret du serveur AssScketch"); 
 	}
@@ -34,20 +35,23 @@ public class ASSketchServer {
 	 * Options De asSketch
      */
 	public static class Options {
+		// Nota: visibilité default pour les options initialisant le serveur
+		
 		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joeurs")
-		private Integer nbJouers = 4;
+		Integer nbJoueurs = 4;
+
 
 		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")
-		private Integer port = 2013;
+		Integer port = 2013;
 
 		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
-		private String dico = "test"; // Dico test
+		String dico = "test"; // Dico test
 
 		@Parameter(names = { "timeout", "--timeout" }, description = "Délai après découverte d'un mot")
 		private Integer timeout = 2013;
 
 		@Parameter(names = { "d", "debug", "--debug" }, description = "Mode debug", hidden = true)
-		private boolean debug = false;
+		boolean debug = false;
 
 		@Parameter(names = { "-h", "--help" }, help = true, hidden = true)
 		private boolean help;
@@ -67,7 +71,7 @@ public class ASSketchServer {
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
 			sb.append("Options:");
-			sb.append("\nmax " + nbJouers);
+			sb.append("\nmax " + nbJoueurs);
 			sb.append("\nport " + port);
 			sb.append("\ndico " + dico);
 			return sb.toString();
