@@ -32,7 +32,7 @@ public class Server implements Runnable{
 				
 		} catch (IOException e) {
 			// TODO To improve error handling
-			System.err.println("error: e.getMessage()");
+			System.err.println("error:"+ e.getMessage());
 			// e.printStackTrace();
 			System.exit(1);
 		}
@@ -43,10 +43,13 @@ public class Server implements Runnable{
 	{
 		//TODO vrai run à faire!
 		
+		System.out.println(dico);
+		System.out.println("Random word: "+dico.getWord());
+		
 		System.out.println("I don't run, yet...");
 	
 		try {
-			Thread.sleep(100000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

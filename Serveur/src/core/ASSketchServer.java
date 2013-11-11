@@ -45,7 +45,8 @@ public class ASSketchServer {
 		Integer port = 2013;
 
 		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
-		String dico = "test"; // Dico test
+		String dico = "dicotest"; // Dico test
+		// TODO: location to handle!! (mis à la racine pour l'instant)
 
 		@Parameter(names = { "timeout", "--timeout" }, description = "Délai après découverte d'un mot")
 		private Integer timeout = 2013;
