@@ -37,6 +37,21 @@ public class Joueur {
 				//+" [host:"+this.getHost()+"]"
 				;
 	}
+
+	public void close() {
+		try {
+			in.close();
+			out.close();
+			socket.close();
+			
+		//TODO   trace(j+" viens d'etre fermé");
+			//TODO Trace.  (faire un level d'importance?)
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	//TODO: readcommand?
 	

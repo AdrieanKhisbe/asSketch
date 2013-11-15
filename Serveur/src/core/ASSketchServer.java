@@ -56,6 +56,8 @@ public class ASSketchServer {
 
 		@Parameter(names = { "-h", "--help" }, help = true, hidden = true)
 		private boolean help;
+		
+		// TODO ? mode no action scripty policy send?
 
 		public void parse(String[] arguments) {
 			JCommander jcp = new JCommander(this, arguments);

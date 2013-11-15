@@ -1,0 +1,94 @@
+notesConstruction project
+
+* Jcommander
+
+http://jcommander.org/
+
+classe interne Options (ou whatever tu call)
+
+annotation
+@Parameter: names, description
+
+
+
+
+#+BEGIN_SRC java
+  import com.beust.jcommander.Parameter;
+   
+  public class JCommanderExample {
+      @Parameter
+      private List<String> parameters = new ArrayList<String>();
+   
+      @Parameter(names = { "-log", "-verbose" }, description = "Level of verbosity")
+      private Integer verbose = 1;
+   
+      @Parameter(names = "-groups", description = "Comma-separated list of group names to be run")
+      private String groups;
+   
+      @Parameter(names = "-debug", description = "Debug mode")
+      private boolean debug = false;
+  }
+  
+  /////// Dans le main: 
+  JCommanderExample jct = new JCommanderExample();
+  String[] argv = { "-log", "2", "-groups", "unit" };
+  new JCommander(jct, argv);
+   
+  Assert.assertEquals(jct.verbose.intValue(), 2);
+  
+#+END_SRC
+
+
+Pour afficher usage:
+#+BEGIN_SRC java
+  JCommander jcp = new JCommander(JcExample, arguments);
+  if(options.help){
+      jcp.usage();
+      System.exit(0);
+  }
+#+END_SRC
+
+
+* File parsing
+
+** avec buffered reader
+- BufferedReader br = new BufferedReader(new FileReader(file));
+  the readline
+#+BEGIN_SRC java
+   BufferedReader br = new BufferedReader(new FileReader("file.txt"));
+    try {
+        StringBuilder sb = new StringBuilder();
+        String line = br.readLine();
+
+        while (line != null) {
+            sb.append(line);
+            sb.append('\n');
+            line = br.readLine();
+        }
+        String everything = sb.toString();
+    } finally {
+        br.close();
+    }
+#+END_SRC
+** Scanner
+http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Scanner.html
+
+A simple text scanner which can parse primitive types and strings using regular expressions
+Methods: hasNext[Boolean,Byte,Float,Int, Line] et next[...]
+
+#+BEGIN_SRC java
+Scanner in = new Scanner(new FileReader("filename.txt"));
+// .... use
+in.close();
+#+END_SRC
+* Discoveries
+** TODO à lire
+Java tuts
+
+fair threads? : http://www-sop.inria.fr/mimosa/rp/FairThreads/FTJava/documentation/FairThreads.html
+*** Paths
+
+http://docs.oracle.com/javase/tutorial/essential/io/pathOps.html
+*** concurrency
+http://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html
+

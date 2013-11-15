@@ -36,6 +36,7 @@ public class Dictionnaire {
 		Entry e = dico.get(index);
 		e.incr();
 		return e.mot;
+		//TODO: maybe go for a suffle, and index?
 	}
 
 	public String toString() {
