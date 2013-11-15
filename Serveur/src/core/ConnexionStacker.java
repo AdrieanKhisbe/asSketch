@@ -26,7 +26,7 @@ public class ConnexionStacker extends Thread {
 				synchronized (server.waitingSockets) {
 					// CHECK Mal concu?
 					server.addWaitingSocket(client);
-					this.notify();
+					server.waitingSockets.notify();
 					
 					/* Plante
 					java.lang.IllegalMonitorStateException

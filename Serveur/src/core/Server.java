@@ -4,12 +4,14 @@ import game.Dictionnaire;
 import game.Joueur;
 import game.Partie;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import core.ASSketchServer.Options;
 
@@ -57,6 +59,7 @@ public class Server implements Runnable{
 		}
 		
 	}
+
 	
 	public synchronized void addWaitingSocket(Socket s){
 		waitingSockets.add(s);
@@ -96,23 +99,8 @@ public class Server implements Runnable{
 		System.out.println("Random word: " +  dico.getWord());
 		
 		
-		// Lance le connexion recepteur: receptionne nouvelles connexions
-		// Lance le Connexion Handler: gère les nouvelles connexion: to client/ spectateur
-		
-		ConnexionStacker cs = new ConnexionStacker(this, this.sockServ);
-		cs.start();
-		
-		ConnexionHandler ch = new ConnexionHandler(this);
-		ch.start();
-			
-				
-		
-		try {
-			cs.join();
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		LaunchConnexionStacking();
+		LaunchConnexionHandling();
 	
 		try {
 			Thread.sleep(10000);
@@ -122,6 +110,108 @@ public class Server implements Runnable{
 	}
 	
 	
+	/***** 
+	*/
+	// WONDER retourner le threa?
+	public void LaunchConnexionStacking(){
+		
+		new Thread(){
+			public void run()
+			{
+				Socket client = new Socket();
+					try {
+						while (true) {
+							client = sockServ.accept();
+							System.out.println("Nouvelle connexion incoming mise en attente.");
+							synchronized (waitingSockets) {
+								addWaitingSocket(client);
+								waitingSockets.notify();
+							}
+						}
+					} catch (Throwable t) {
+						t.printStackTrace(System.err);
+					}
+					
+				
+			}
+		}.start();
+	}
+	/******* Handle Connection
+	 * 
+	 */
+	
+	public void LaunchConnexionHandling(){
+		
+		new Thread(){
+			public void run()
+			{
+				Socket client;
+				BufferedReader inchan;
+				DataOutputStream outchan;
+				
+				// Q? ou variables instances
+				
+				while(true){
+					synchronized(waitingSockets)
+					{
+						if(waitingConnexion())
+						{
+							System.out.println("Traitement connexion en attente.");
+							client = takeWaitingSocket();
+							// BONUX handle error.
+							
+							try {
+								
+								inchan = new BufferedReader(new InputStreamReader (client.getInputStream()));
+								outchan = new DataOutputStream(client.getOutputStream());
+						
+								
+								// Traitement selon commande reçue
+								
+								String command = inchan.readLine();
+								
+								if(command.equals("CONNECT/")){
+									// parser
+									outchan.writeChars("CONNECTED/\n");
+									
+									//TODO : GET HERE
+																
+								}else{
+								
+									outchan.writeChars("GOODBYE/BOLOS/\n");
+									inchan.close();outchan.close();client.close();
+									
+									
+								}
+
+								
+								
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								
+								
+							}
+				
+						}else{
+							try {
+								waitingSockets.wait();
+								// at
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						
+					}
+					
+					
+					
+				}
+				
+			}
+		}.start();
+	}
 	
 	
 }
