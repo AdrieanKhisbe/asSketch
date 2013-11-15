@@ -92,3 +92,15 @@ http://docs.oracle.com/javase/tutorial/essential/io/pathOps.html
 *** concurrency
 http://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html
 
+** Dual thread
+
+#+BEGIN_SRC java
+
+new Thread(){
+
+}.start();
+
+#+END_SRC
+
+extends thread.
+si fait run, exécuté dans le code courant

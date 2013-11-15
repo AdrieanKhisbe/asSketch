@@ -1,29 +1,32 @@
 package core;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
-
 import game.Dictionnaire;
 import game.Joueur;
 import game.Partie;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import core.ASSketchServer.Options;
 
 public class Server implements Runnable{
 
 	private ServerSocket sockServ;
+	
 	private Integer port;
 	protected Integer nbMax;
 	protected Dictionnaire dico;
 	
-	protected List<Socket> waitingSocket;
+	protected LinkedList<Socket> waitingSockets;
 	// EXT Spectateur
-	protected List<Joueur> joueurs;
+	protected ArrayList<Joueur> joueurs;
 	
 	
-	protected List<Partie> parties; // TODO ? distinguer partie, et round?
+	protected ArrayList<Partie> parties; // TODO ? distinguer partie, et round?
 	
 	// TODO!!: déclaration des threads 
 	
@@ -37,9 +40,10 @@ public class Server implements Runnable{
 			port = opt.port;
 			sockServ = new ServerSocket(port);
 			
+			waitingSockets = new LinkedList<Socket>();
 			
 			dico = new Dictionnaire(opt.dico); 
-			joueurs = new LinkedList<Joueur>();
+			joueurs = new ArrayList<Joueur>();
 			
 			nbMax = opt.nbJoueurs;
 			
@@ -54,6 +58,18 @@ public class Server implements Runnable{
 		
 	}
 	
+	public synchronized void addWaitingSocket(Socket s){
+		waitingSockets.add(s);
+	}
+	
+	boolean waitingConnexion()
+	{
+		return (waitingSockets.size() != 0);
+	}
+	
+	public synchronized Socket takeWaitingSocket(){
+		return waitingSockets.pollFirst();
+	}
 	
 	public void addJoueur(Joueur j)
 		{
@@ -83,9 +99,20 @@ public class Server implements Runnable{
 		// Lance le connexion recepteur: receptionne nouvelles connexions
 		// Lance le Connexion Handler: gère les nouvelles connexion: to client/ spectateur
 		
-			
+		ConnexionStacker cs = new ConnexionStacker(this, this.sockServ);
+		cs.start();
 		
-		System.out.println("I don't run, yet...");
+		ConnexionHandler ch = new ConnexionHandler(this);
+		ch.start();
+			
+				
+		
+		try {
+			cs.join();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	
 		try {
 			Thread.sleep(10000);
