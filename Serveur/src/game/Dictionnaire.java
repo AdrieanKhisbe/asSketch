@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class Dictionnaire {
 
 	// TODO: Data structure to find.
-	List<Entry> dico;
+	final List<Entry> dico;
 	Random rg;
 
 	// Utiliser un hash pour les utilisation?

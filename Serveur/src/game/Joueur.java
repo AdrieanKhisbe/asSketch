@@ -9,10 +9,10 @@ import java.net.Socket;
 public class Joueur {
 
 	
-	private String username;
-	private BufferedReader in;
-	private DataOutputStream out;
-	private Socket socket;
+	private final String username;
+	private final BufferedReader in;
+	private final DataOutputStream out;
+	private final Socket socket;
 	
 	//TODO: autres variables à créer!
 	// -> role courant
