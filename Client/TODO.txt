@@ -1,0 +1,14 @@
+Boite d'errreur:
+-Guest
+-Inscription
+-Spectateur
+-Inscrit
+(serveur offline , room complete , déja connecté , pseudo déja utilisé)
+
+Améliorer le parse du protocol( envoie et reception , '/' dans les message ou pseudo)
+
+Améliorer les else if en fonction de celui qui va etre appeler le plus de fois
+
+Ajout protocol :
+ERROR/x
+(S->C) Le serveur envois un erreur au client
