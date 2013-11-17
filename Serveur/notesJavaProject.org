@@ -91,6 +91,13 @@ fair threads? : http://www-sop.inria.fr/mimosa/rp/FairThreads/FTJava/documentati
 http://docs.oracle.com/javase/tutorial/essential/io/pathOps.html
 *** concurrency
 http://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html
+*** Timer
+
+http://stackoverflow.com/questions/2275443/how-to-timeout-a-thread
+http://stackoverflow.com/questions/1453295/timer-timertask-versus-thread-sleep-in-java
+
+**** div
+http://stackoverflow.com/questions/541487/implements-runnable-vs-extends-thread?rq=1
 
 ** Dual thread
 

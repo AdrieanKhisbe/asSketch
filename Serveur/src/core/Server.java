@@ -111,8 +111,7 @@ public class Server implements Runnable {
 
 	
 	/**
-	 * 
-	 *
+	 * Stack new connexion
 	 */
 	class ConnexionStacker extends Thread {
 
@@ -132,7 +131,7 @@ public class Server implements Runnable {
 			}
 
 		}
-	}
+	}  // end of ConnexionStacker
 
 	/*******
 	 * Handle Connection
@@ -205,6 +204,10 @@ public class Server implements Runnable {
 			}
 
 		}
-	}
+	}  // end of ConnexionHandler
 
+	
+	
+	
+	
 }
