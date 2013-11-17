@@ -18,23 +18,16 @@
 		
 		
 		public function Fenetre(scene:MovieClip) {
-			this.test.text = "1";
 			this.scene=scene;
-			this.test.text = "2";
 			this.afficherThis();
-			this.test.text = "3";
 			this.instanceDialBox();
-			this.test.text = "4";
 			this.instanceLesCo();
-			this.test.text = "5";
 			//scene.connexion.getPseudo()
 			this.addNew("Pene");
-			this.test.text = "fin";
 		}
 		
 		//Cree LE client 
 		public function addNew(pseudo:String):void{
-			this.test.text = "2";
 			this.currentUser = new User(pseudo);
 			tabClients.push(currentUser);
 			this.lesCo.addP(pseudo); // ajoute le pseudo dans la fenetre des connecté
@@ -65,11 +58,8 @@
 		
 		//Instanciation et affichage de la fenetre de dialogue
 		public function instanceDialBox(){
-			this.test.text = "6";
 			dialBox = new DialogueBox(this);
-			this.test.text = "7";
 			dialBox.afficherThis();
-			this.test.text = "8";
 		}
 		
 		//Affichage de la Fenetre
