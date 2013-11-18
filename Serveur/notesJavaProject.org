@@ -51,6 +51,7 @@ Pour afficher usage:
 
 * File parsing
 
+http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java
 ** avec buffered reader
 - BufferedReader br = new BufferedReader(new FileReader(file));
   the readline
@@ -111,6 +112,11 @@ new Thread(){
 
 extends thread.
 si fait run, exécuté dans le code courant
+** Sockets
+#+BEGIN_SRC java
+client.setSoTimeout(3000);
+catch (SocketTimeoutException ste)
+#+END_SRC
 * Idées
 
 traceur: 

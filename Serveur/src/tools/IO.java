@@ -49,9 +49,24 @@ public class IO {
 		System.err.println("Nouvelle Trace dans fichier " + file);
 
 	}
-
 	
+	public static void turnOnPrintThread (){
+		printThread = true;
+	}
 	
+	public static void turnOffPrintThread (){
+		printThread = false;
+	}
+	
+	public static void turnOnPrintTime (){
+		printTime = true;
+	}
+	
+	public static void turnOffPrintTime (){
+		printTime = false;
+	}
+	
+	// TODO Overload (+ chaine println?)
 	public static void trace(String message) {
 
 		String result = message;
@@ -148,6 +163,7 @@ public class IO {
 	public static void main(String[] args) {
 		IO.trace("a");
 		IO.setLogFile("B");
+		IO.turnOffPrintThread();
 		IO.trace("B in B");
 		IO.endLogTrace();
 		IO.trace("C");

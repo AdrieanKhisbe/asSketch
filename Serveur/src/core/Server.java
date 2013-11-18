@@ -28,7 +28,7 @@ public class Server implements Runnable {
 	// Threads and connexions
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
-	private ConnexionHandler ch[]; 
+	private ConnexionHandler ch[];
 	// TODO Thread handler
 	// private GameManager gm;
 
@@ -51,8 +51,9 @@ public class Server implements Runnable {
 
 			waitingSockets = new LinkedList<Socket>();
 			cs = new ConnexionStacker();
-			ch = new ConnexionHandler[2]; //PARAM
-			for(int i = 0;i<ch.length;i++) ch[i] = new ConnexionHandler();
+			ch = new ConnexionHandler[2]; // PARAM
+			for (int i = 0; i < ch.length; i++)
+				ch[i] = new ConnexionHandler();
 
 			dico = new Dictionnaire(opt.dico);
 			joueurs = new ArrayList<Joueur>();
@@ -104,8 +105,8 @@ public class Server implements Runnable {
 		// TODO
 
 		cs.start();
-		for(ConnexionHandler i : ch) i.start();
-		//ch.start();
+		for (ConnexionHandler chi : ch)
+			chi.start();
 
 	}
 
@@ -115,6 +116,7 @@ public class Server implements Runnable {
 	class ConnexionStacker extends Thread {
 
 		public void run() {
+			@SuppressWarnings("resource") // close in another thread
 			Socket client = new Socket();
 			try {
 				while (true) {
@@ -139,17 +141,17 @@ public class Server implements Runnable {
 
 	class ConnexionHandler extends Thread {
 
+		private Socket client;
+		private BufferedReader inchan;
+		private DataOutputStream outchan;
+
 		// TODO: changer: blockant sur la socket traitée en cours!!
 		// REFACTOR!!!
 		public void run() {
-			Socket client;
-			BufferedReader inchan;
-			DataOutputStream outchan;
 
 			// Q? ou variables instances
-			
-			HandleLoop: 
-			while (true) {
+
+			HandleLoop: while (true) {
 				synchronized (waitingSockets) {
 					while (!waitingConnexion()) {
 						try {
@@ -164,76 +166,105 @@ public class Server implements Runnable {
 					IO.trace("Traitement connexion en attente.");
 					client = takeWaitingSocket();
 				}
-					// BONUX handle error.
+				// BONUX handle error.
 
-					try {
+				try {
 
-						inchan = new BufferedReader(new InputStreamReader(
-								client.getInputStream()));
-						outchan = new DataOutputStream(client.getOutputStream());
+					inchan = new BufferedReader(new InputStreamReader(
+							client.getInputStream()));
+					outchan = new DataOutputStream(client.getOutputStream());
 
-						// Met un timeout à la lecture sur la socket
-						client.setSoTimeout(3000); //BONUX: temps augmente au fur et à mesure
+					// Met un timeout à la lecture sur la socket
+					client.setSoTimeout(3000); // BONUX: temps augmente au fur
+												// et à mesure
 
-						// Traitement selon commande reçue
-						String command = null;
+					// Traitement selon commande reçue
+					String command = null;
 
-						// WARNING: is that the good way to do?
-						TryReadTimeout: while(true){
-							try {
+					// WARNING: is that the good way to do?
+					TryReadTimeout: while (true) {
+						try {
+							command = inchan.readLine();
+
+							// Handling of ActionsScript ask
+							if (command.equals("<policy-file-request/>")) // maybe
+																			// add:
+																			// <policy-file-request/>\0
+							{
+								IO.traceDebug("Et un actionscript qui se pointe");
+								outchan.writeChars("<?xml version=\"1.0\"?><cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>\0");
+								outchan.flush();
+								// read new command
 								command = inchan.readLine();
-								
-								// Handling of ActionsScript ask
-								// if(command.equals() )
-								
-								break TryReadTimeout; 							
-								
-							} catch (SocketTimeoutException ste) {
-								//
-								if (waitingConnexion()) {
-									IO.traceDebug("Renvoie dormir");
-								//	inchan.close();outchan.close();
-									synchronized (waitingSockets) {
-										waitingSockets.add(client);
-										waitingSockets.notify();
-									}
-									continue HandleLoop;
-								} else { // si personne attend
-									IO.traceDebug("Et un tour de manège");
-									continue TryReadTimeout;
+							}
+
+							break TryReadTimeout;
+
+						} catch (SocketTimeoutException ste) {
+							//
+							if (waitingConnexion()) {
+								IO.traceDebug("Renvoie dormir");
+								// inchan.close();outchan.close();
+								synchronized (waitingSockets) {
+									waitingSockets.add(client);
+									waitingSockets.notify();
 								}
+								continue HandleLoop;
+							} else { // si personne attend
+								IO.traceDebug("Et un tour de manège");
+								continue TryReadTimeout;
 							}
 						}
-						// NOTA: was intialy a dowhile(false), mais marche pas bien sur avec continue
-						
-						
+					}
+					// NOTA: was intialy a dowhile(false), mais marche pas bien
+					// sur avec continue
 
-						if (command.equals("CONNECT/")) {
-							// parser
-							outchan.writeChars("CONNECTED/\n");
+					// Bonux CONNEXION HANDLING
 
-							// TODO : GET HERE
-
-						} else {
-
-							outchan.writeChars("GOODBYE/BOLOS/\n");
-							IO.traceDebug("Kick out Bolos");
-							inchan.close();
-							outchan.close();
-							client.close();
-
+					String[] tokens = command.split("/");
+					if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
+						// parser
+						if (tokens.length == 2) {
+							// gère connexion joueur de nom tokens[1]
+							outchan.writeChars("CONNECTED/" + tokens[1] + "\n");
 						}
 
-					} catch (IOException e) {
-						// TODO ?? rajoute
-						e.printStackTrace();
+						else {
+							closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
+							// ERROR:name to find 
+						}
+
+				// BONUX: spectateur
+					} else {
+
+						closeConnexion("GOODBYE/BOLOS/");
+						IO.traceDebug("Kick out Bolos");
 
 					}
 
+				} catch (IOException e) {
+					// TODO ?? rajoute
+					e.printStackTrace();
+
 				}
 
+			}
 
 		}
+
+		// Q? Throws or Try
+		public void closeConnexion(String message) throws IOException {
+			outchan.writeChars(message + "\n");
+			closeConnexion();
+
+		}
+
+		public void closeConnexion() throws IOException {
+			inchan.close();
+			outchan.close();
+			client.close();
+		}
+
 	} // end of ConnexionHandler
 
 }
