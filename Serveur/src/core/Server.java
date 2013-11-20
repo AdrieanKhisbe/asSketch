@@ -44,6 +44,8 @@ public class Server implements Runnable {
 
 	protected ArrayList<Partie> parties; // TODO ? distinguer partie, et round?
 
+	
+	
 	/**
 	 * Simple constructeurs
 	 * 
@@ -84,7 +86,9 @@ public class Server implements Runnable {
 			System.exit(1);
 		}
 
-	}
+	} // End of Constructeur
+	
+	/** Socket Handling */
 
 	public synchronized void addWaitingSocket(Socket s) {
 		waitingSockets.add(s);
@@ -98,8 +102,13 @@ public class Server implements Runnable {
 		return waitingSockets.pollFirst();
 	}
 
+	
+	/** Joueurs Handling */
+	// SEE? good place to put them?
 	public void addJoueur(Joueur j) {
-		joueurs.add(j);
+		synchronized (joueurs) {
+			joueurs.add(j);
+		}
 	}
 
 	public synchronized void removeJoueur(Joueur j) {
@@ -109,8 +118,10 @@ public class Server implements Runnable {
 
 	}
 
-	// EXT Spect
+	// BONUX EXT Spect
 
+	
+	
 	/**
 	 * --------------SERVER RUN ----------
 	 * 
@@ -122,6 +133,10 @@ public class Server implements Runnable {
 		cs.start();
 		for (ConnexionHandler chi : ch)
 			chi.start();
+		
+		
+		
+		
 
 	}
 
@@ -250,8 +265,20 @@ public class Server implements Runnable {
 					if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
 						// parser
 						if (tokens.length == 2) {
-							// gère connexion joueur de nom tokens[1]
-							outchan.writeChars("CONNECTED/" + tokens[1] + "\n");
+							String joueurName = tokens[1];
+							Connexion con = new Connexion(client, inchan, outchan);
+							Joueur jou = new Joueur(con, joueurName);
+							synchronized (joueurs) {
+								joueurs.add(jou);
+								//TODO: synchroniser avec Game manager? ou le lancer?
+							}
+
+							outchan.writeChars("CONNECTED/" + joueurName + "\n");
+						
+						
+						
+						
+						
 						}
 
 						else {
@@ -277,6 +304,7 @@ public class Server implements Runnable {
 
 		}
 
+		//TODO: del 
 		// Q? Throws or Try
 		public void closeConnexion(String message) throws IOException {
 			outchan.writeChars(message + "\n");
