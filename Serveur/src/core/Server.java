@@ -13,6 +13,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import tools.IO;
 import core.ASSketchServer.Options;
@@ -29,7 +32,11 @@ public class Server implements Runnable {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
+
 	// TODO Thread handler
+	// Pool worker
+	private ExecutorService workers;
+
 	// private GameManager gm;
 
 	// EXT Spectateur
@@ -46,19 +53,27 @@ public class Server implements Runnable {
 	public Server(Options opt) {
 
 		try {
-			port = opt.port;
-			sockServ = new ServerSocket(port);
 
-			waitingSockets = new LinkedList<Socket>();
-			cs = new ConnexionStacker();
-			ch = new ConnexionHandler[2]; // PARAM
-			for (int i = 0; i < ch.length; i++)
-				ch[i] = new ConnexionHandler();
-
+			// OBJECTS
 			dico = new Dictionnaire(opt.dico);
 			joueurs = new ArrayList<Joueur>();
 
 			nbMax = opt.nbJoueurs;
+
+			port = opt.port;
+			sockServ = new ServerSocket(port);
+
+			waitingSockets = new LinkedList<Socket>();
+			// THREADS.
+			cs = new ConnexionStacker();
+			ch = new ConnexionHandler[2]; // PARAM
+			for (int i = 0; i < ch.length; i++) {
+				ch[i] = new ConnexionHandler(i);
+			}
+
+			workers = Executors.newFixedThreadPool(nbMax);
+			// PARAM
+			// See: differents excutors
 
 			// TODO: initialisation des threads
 
@@ -115,8 +130,13 @@ public class Server implements Runnable {
 	 */
 	class ConnexionStacker extends Thread {
 
+		public ConnexionStacker() {
+			this.setName("ConnexionStacker");
+		}
+
 		public void run() {
-			@SuppressWarnings("resource") // close in another thread
+			@SuppressWarnings("resource")
+			// close in another thread
 			Socket client = new Socket();
 			try {
 				while (true) {
@@ -144,6 +164,11 @@ public class Server implements Runnable {
 		private Socket client;
 		private BufferedReader inchan;
 		private DataOutputStream outchan;
+
+		public ConnexionHandler(int i) {
+			this.setName("ConnexionHandler<"+i+">");
+		}
+		public ConnexionHandler(){this(-1);}
 
 		// TODO: changer: blockant sur la socket traitée en cours!!
 		// REFACTOR!!!
@@ -231,10 +256,10 @@ public class Server implements Runnable {
 
 						else {
 							closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
-							// ERROR:name to find 
+							// ERROR:name to find
 						}
 
-				// BONUX: spectateur
+						// BONUX: spectateur
 					} else {
 
 						closeConnexion("GOODBYE/BOLOS/");
