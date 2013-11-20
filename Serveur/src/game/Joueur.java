@@ -10,12 +10,15 @@ public class Joueur {
 
 	
 	private final String username;
+	private Integer score;
+	
+	// There?? Regroup in connexion object?
 	private final BufferedReader in;
 	private final DataOutputStream out;
 	private final Socket socket;
 	
 	//TODO: autres variables à créer!
-	// -> role courant
+	// -> role courant? (ou dans partie?)
 	
 	
 	public Joueur(Socket client, String login) throws IOException{
@@ -23,6 +26,7 @@ public class Joueur {
 		username = login;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new DataOutputStream(socket.getOutputStream());
+		score = 0; // BONUX: refine when recreating client.
 		
 	}
 	

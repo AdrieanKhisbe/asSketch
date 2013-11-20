@@ -50,6 +50,10 @@ public class IO {
 
 	}
 	
+	public static Calendar getCal(){
+		return cal;
+	}
+	
 	public static void turnOnPrintThread (){
 		printThread = true;
 	}
