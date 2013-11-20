@@ -14,28 +14,28 @@ annotation
 
 #+BEGIN_SRC java
   import com.beust.jcommander.Parameter;
-   
+
   public class JCommanderExample {
       @Parameter
       private List<String> parameters = new ArrayList<String>();
-   
+
       @Parameter(names = { "-log", "-verbose" }, description = "Level of verbosity")
       private Integer verbose = 1;
-   
+
       @Parameter(names = "-groups", description = "Comma-separated list of group names to be run")
       private String groups;
-   
+
       @Parameter(names = "-debug", description = "Debug mode")
       private boolean debug = false;
   }
-  
-  /////// Dans le main: 
+
+  /////// Dans le main:
   JCommanderExample jct = new JCommanderExample();
   String[] argv = { "-log", "2", "-groups", "unit" };
   new JCommander(jct, argv);
-   
+
   Assert.assertEquals(jct.verbose.intValue(), 2);
-  
+
 #+END_SRC
 
 
@@ -48,9 +48,23 @@ Pour afficher usage:
   }
 #+END_SRC
 
+* Threads,
+** Executors
 
+#+BEGIN_SRC java
+
+#+END_SRC
+** divers trhead
+runnable vs extends thread
+
+#+BEGIN_SRC java
+Thread.activeCount();
+
+#+END_SRC
+§LATER: §SEE http://stackoverflow.com/questions/6113746/naming-threads-and-thread-pools-of-executorservice
 * File parsing
 
+http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-vs-split-method-in-java
 ** avec buffered reader
 - BufferedReader br = new BufferedReader(new FileReader(file));
   the readline
@@ -91,6 +105,13 @@ fair threads? : http://www-sop.inria.fr/mimosa/rp/FairThreads/FTJava/documentati
 http://docs.oracle.com/javase/tutorial/essential/io/pathOps.html
 *** concurrency
 http://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html
+*** Timer
+
+http://stackoverflow.com/questions/2275443/how-to-timeout-a-thread
+http://stackoverflow.com/questions/1453295/timer-timertask-versus-thread-sleep-in-java
+
+**** div
+http://stackoverflow.com/questions/541487/implements-runnable-vs-extends-thread?rq=1
 
 ** Dual thread
 
@@ -104,7 +125,15 @@ new Thread(){
 
 extends thread.
 si fait run, exécuté dans le code courant
+** Sockets
+#+BEGIN_SRC java
+client.setSoTimeout(3000);
+catch (SocketTimeoutException ste)
+#+END_SRC
 * Idées
 
-traceur: 
+traceur:
 recupère le thread courant qui va l'exécuter!!
+** Bonux
+- pririty thread managing
+- profiling

@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Tools to trace. RENAME Imprime à
@@ -16,6 +18,10 @@ public class IO {
 	static private boolean printTime = true; //TODO
 	static private boolean printThread = true;
 	static private boolean debugMode = true;
+	
+	// Timing
+	static private Calendar cal = Calendar.getInstance();
+	static private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
 	public static void setLogFile(String file) {
 		// EXC
@@ -31,7 +37,7 @@ public class IO {
 			}
 		}
 		logfile = new File(file);
-		// TODO test existance fichier, pour ne pas écraser?
+		// TODO test existance fichier, pour ne pas écraser? (append sinon??)
 
 		try {
 			logwriter = new BufferedWriter(new FileWriter(logfile));
@@ -43,18 +49,53 @@ public class IO {
 		System.err.println("Nouvelle Trace dans fichier " + file);
 
 	}
-
 	
+	public static Calendar getCal(){
+		return cal;
+	}
 	
+	public static void turnOnPrintThread (){
+		printThread = true;
+	}
+	
+	public static void turnOffPrintThread (){
+		printThread = false;
+	}
+	
+	public static void turnOnPrintTime (){
+		printTime = true;
+	}
+	
+	public static void turnOffPrintTime (){
+		printTime = false;
+	}
+	
+	// TODO Overload (+ chaine println?)
 	public static void trace(String message) {
 
-		// Mise en forme du message. recupération thread et heure.
+		String result = message;
+		
+		// Ajoute timestamp et thread si demandé
+		if(printTime || printThread)
+		{	
+			StringBuffer sb = new StringBuffer();
+			if(printTime){
+				sb.append("[").append(sdf.format(cal.getTime())).append("]");
+			}
+			if(printThread){
+				sb.append("{").append(Thread.currentThread().getName()).append("}  ");
+			}
+			sb.append(message);
+			
+			result = sb.toString();
+		}
+		
+		
 
-		// Test si log file ouvert.
-
-		// Imprime message sur sortie standard et dans le log.
-
-		System.out.println(message);
+		// Affiche sortir standard
+		System.out.println(result);
+		
+		// Affiche dang log si ouvert
 		if (logwriter != null) {
 			try {
 
@@ -101,7 +142,7 @@ public class IO {
 			e.printStackTrace();
 		}
 
-		System.err.println("Fin de la trace ");
+		System.err.println("Fin de la trace\n");
 	}
 
 	/**
@@ -126,6 +167,7 @@ public class IO {
 	public static void main(String[] args) {
 		IO.trace("a");
 		IO.setLogFile("B");
+		IO.turnOffPrintThread();
 		IO.trace("B in B");
 		IO.endLogTrace();
 		IO.trace("C");
