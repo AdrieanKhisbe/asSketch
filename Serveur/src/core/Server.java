@@ -13,7 +13,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,7 +36,7 @@ public class Server implements Runnable {
 	// Pool worker
 	private ExecutorService workers;
 
-	// private GameManager gm;
+	private GameManager gm;
 
 	// EXT Spectateur
 	protected ArrayList<Joueur> joueurs;
@@ -72,6 +71,7 @@ public class Server implements Runnable {
 			for (int i = 0; i < ch.length; i++) {
 				ch[i] = new ConnexionHandler(i);
 			}
+			gm = new GameManager(joueurs, dico);
 
 			workers = Executors.newFixedThreadPool(nbMax);
 			// PARAM
