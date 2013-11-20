@@ -9,6 +9,23 @@ Améliorer le parse du protocol( envoie et reception , '/' dans les message ou ps
 
 Améliorer les else if en fonction de celui qui va etre appeler le plus de fois
 
+
+
+
+
+
 Ajout protocol :
 ERROR/x
 (S->C) Le serveur envois un erreur au client
+
+NEW_ROUND/user/mot/
+pour que tu les clients connaisse qui dessine mot=0 si le client n'est pas dessinateur
+
+Ajout d'un protocol poru projain joueur ?
+
+
+//WORD_FOUND_TIMEOUT/timeout/
+Tu m'envois un timeout en seconde et je chnage l'affichage du temps restant
+
+DELETE/
+C->S efface le dessin en cours

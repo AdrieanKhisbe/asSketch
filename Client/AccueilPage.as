@@ -1,4 +1,4 @@
-﻿package {	import flash.display.Sprite;	import flash.display.MovieClip;	import flash.events.MouseEvent;	import flash.events.KeyboardEvent;	/*Class AccueilPage		Fenetre d'acceuil du client		Elle permet pour l'instant seulement la connexion du client	*/	public class AccueilPage extends Sprite	{		private var connexion:ConnexionSocket;		private var scene:MovieClip;		private var HostIp:String ;		private var HostPort:Number ;		public function AccueilPage(connexion:ConnexionSocket,scene :MovieClip,ip:String,port:Number)		{			this.connexion = connexion;			this.scene = scene;			this.HostIp=ip;			this.HostPort=port;			this.afficherThis();
+﻿package {	import flash.display.Sprite;	import flash.display.MovieClip;	import flash.events.MouseEvent;	import flash.events.KeyboardEvent;	/*Class AccueilPage		Fenetre d'acceuil du client		Elle permet pour l'instant seulement la connexion du client	*/	public class AccueilPage extends Sprite	{		private var connexion= InterfaceSock.connexion;		private var scene:MovieClip = InterfaceSock.scene;		private var HostIp:String ;		private var HostPort:Number ;		public function AccueilPage(ip:String,port:Number)		{			this.HostIp=ip;			this.HostPort=port;			this.afficherThis();
 			this.lanceCo();
 			
 			//Affichage correcte
@@ -41,7 +41,8 @@
 			if (mGuest.pseudo.text != "" && e.keyCode == 13)
 			{
 				pseudo = mGuest.pseudo.text;
-				//connexion.connexionGuest(pseudo);
+				scene.gotoAndPlay(2);
+				InterfaceSock.connexionGuest(pseudo);
 				this.effacerThis();
 			}
 			/*
@@ -58,7 +59,7 @@
 			if (mGuest.pseudo.text != "" )
 			{
 				pseudo = mGuest.pseudo.text;
-				//connexion.connexionGuest(pseudo);
+				InterfaceSock.connexionGuest(pseudo);
 				scene.gotoAndPlay(2);
 				this.effacerThis();
 			}
@@ -176,4 +177,4 @@
 			this.mInscription.mdp.displayAsPassword=true;
 			this.retour.visible = true;
 		}				
-				//Lance une connexionsocket , instanci la class		public function lanceCo():void		{			scene.connexion = new ConnexionSocket(scene,HostIp,HostPort);					}	}}
+				//Lance une connexionsocket , instanci la class		public function lanceCo():void		{			scene.connexion = new ConnexionSocket(HostIp,HostPort);					}	}}

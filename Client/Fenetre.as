@@ -8,29 +8,35 @@
 		Class Contener qui contient toute les classes graphic et qui gere l'affichage principal des sous fenetres
 	*/
 	public class Fenetre extends Sprite{
-		public var scene:MovieClip;  
-		public var dialBox:DialogueBox; //Fenetre de Dialogues
+		public var scene:MovieClip=InterfaceSock.scene;  
+		public var iRC:IRC; //Fenetre de Dialogues
+		public var reponse:Reponse; //Fenetre de Dialogues
 		public var lesCo:LesCo; // Fenetre des connecté
-		public var pseudo:String;
+		public var info:InfoPartie;
+		public var dessin:Dessin;
 		public var currentUser:User;
 		public var buffClient:User;
 		public var tabClients:Array = new Array(); //Tableau des Clients
 		
 		
-		public function Fenetre(scene:MovieClip) {
-			this.scene=scene;
+		public function Fenetre() {
+			this.debug.text = "deb";
 			this.afficherThis();
-			this.instanceDialBox();
+			this.instanceDialBoxs();
 			this.instanceLesCo();
-			//scene.connexion.getPseudo()
-			this.addNew("Pene");
+			this.instanceInfoP();
+			this.debug.text = "1";
+			this.instanceDessin();
+			this.debug.text = "2";
+			this.addNew(InterfaceSock.pseudo);
+			this.debug.text = "fin";
 		}
 		
 		//Cree LE client 
 		public function addNew(pseudo:String):void{
 			this.currentUser = new User(pseudo);
 			tabClients.push(currentUser);
-			this.lesCo.addP(pseudo); // ajoute le pseudo dans la fenetre des connecté
+			this.lesCo.addC(currentUser); // ajoute le pseudo dans la fenetre des connecté
 		}
 		
 		
@@ -38,7 +44,7 @@
 		public function addPre(pseudo:String):void{
 			this. buffClient = new User(pseudo);
 			tabClients.push(buffClient);
-			this.lesCo.addP(pseudo); // ajoute le pseudo dans la fenetre des connecté
+			this.lesCo.addC(buffClient); // ajoute le pseudo dans la fenetre des connecté
 		}
 		
 		
@@ -56,10 +62,27 @@
 			lesCo.afficherThis();
 		}
 		
+		//Instanciation et affichage de la fenetre des connecté
+		public function instanceDessin(){
+			this.debug.text = "aa";
+			dessin = new Dessin(this);
+			this.debug.text = "bb";
+			dessin.afficherThis();
+		}
+		
+		//Instanciation et affichage de la fenetre des connecté
+		public function instanceInfoP(){
+			info = new InfoPartie(this);
+			info.afficherThis();
+		}
+		
 		//Instanciation et affichage de la fenetre de dialogue
-		public function instanceDialBox(){
-			dialBox = new DialogueBox(this);
-			dialBox.afficherThis();
+		public function instanceDialBoxs(){
+			iRC = new IRC(this);
+			iRC.afficherThis();
+			
+			reponse = new Reponse(this);
+			reponse.afficherThis();
 		}
 		
 		//Affichage de la Fenetre
