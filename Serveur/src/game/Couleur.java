@@ -35,6 +35,9 @@ public class Couleur {
 		// return String.format("#%02x%02x%02x", r,g,b);
 
 	}
+	public String toString(){
+		return r+"/"+g+"/"+b+"/";
+	}
 
 	
 	public static void main(String[] args) {

@@ -6,4 +6,5 @@ public enum JoueurRole {
 	// SEE KEEP?
 	, indéterminé
 	// TODO Waiting game?: si joueur déco cavant démarage
+	, nonconnecté
 }

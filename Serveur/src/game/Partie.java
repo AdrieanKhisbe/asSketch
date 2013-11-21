@@ -13,10 +13,14 @@ public class Partie {
 	
 	public void  newRound(Joueur dessinateur, String mot){
 	 
-		//tourCourrant = new Round (dessinateur, mot);
-		//TODO
+		tourCourrant = new Round (dessinateur, mot);
+		//TODO HERE
 		
 		
+	}
+	
+	public Round getTourCourrant(){
+		return tourCourrant;
 	}
 	
 	

@@ -14,15 +14,14 @@ public class Joueur {
 	private final Connexion connexion;
 
 	private JoueurRole roleCourrant;
-	
+
 	// TODO: autres variables à créer!
-	
 
 	public Joueur(Connexion client, String login) throws IOException {
 		connexion = client;
 		username = login;
 		score = 0; // BONUX: refine when recreating client.
-		
+
 		roleCourrant = JoueurRole.indéterminé;
 
 	}
@@ -45,8 +44,7 @@ public class Joueur {
 	public void setRoleCourrant(JoueurRole roleCourrant) {
 		this.roleCourrant = roleCourrant;
 	}
-	
-	
+
 	// SEND, READ, and Close
 	public void send(String command) {
 		try {
@@ -56,19 +54,19 @@ public class Joueur {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// ASK? is getConnexion a good practice?
 
-		public String readCommand() throws IOException {
-			return connexion.getCommand();
-		}
+	public String readCommand() throws IOException {
+		return connexion.getCommand();
+	}
 
 	public void close() {
 		try {
 			connexion.close();
-			IO.trace("Connexion joueur " + this.username
+			IO.trace("Connexion du joueur " + this.username
 					+ " viens d'etre fermé");
-
+			// BUG? doublon mystère
 			// TODO Trace. (faire un level d'importance?)
 
 		} catch (IOException e) {
@@ -77,9 +75,4 @@ public class Joueur {
 		}
 	}
 
-	
-
-	
-	
-	
 }

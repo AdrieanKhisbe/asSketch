@@ -2,12 +2,12 @@ package core.exceptions;
 
 /**
  * Exception si commande inconnue
- *
+ * 
  */
 public class UnknownCommandException extends InvalidCommandException {
 
 	public UnknownCommandException(String message) {
-		super(message);
+		super("Commande inconnue: " + message);
 	}
 
 	/**

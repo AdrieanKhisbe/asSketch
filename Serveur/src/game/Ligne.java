@@ -2,6 +2,11 @@ package game;
 
 public class Ligne extends Forme {
 
+	final Integer x1;
+	final Integer y1;
+	final Integer x2;
+	final Integer y2;
+	
 	public Ligne(Integer x1, Integer y1, Integer x2, Integer y2,
 			Integer taille, Couleur couleur) {
 		super(taille, couleur);
@@ -10,12 +15,20 @@ public class Ligne extends Forme {
 		this.x2 = x2;
 		this.y2 = y2;
 	}
+	
+	//TODO del, uiseless
+	public Ligne(String x1, String y1 ,String x2, String y2, String taille, String red , String green, String blue){
+		super(Integer.parseInt(taille), 
+				new Couleur(Integer.parseInt(red),Integer.parseInt(green),Integer.parseInt(blue)));
+		this.x1 = Integer.parseInt(x1);
+		this.y1 = Integer.parseInt(y1);
+		this.x2 = Integer.parseInt(x2);
+		this.y2 = Integer.parseInt(y2);
+	}
 
+	
 	// début, fin
-	Integer x1;
-	Integer y1;
-	Integer x2;
-	Integer y2;
+
 
 	@Override
 	public String toCommand() {

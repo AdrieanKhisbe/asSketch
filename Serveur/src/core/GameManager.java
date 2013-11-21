@@ -13,10 +13,15 @@ public class GameManager extends Thread {
 
 	// BONUX Singleton pattern?
 
+	private Server server;
+
 	private ArrayList<Joueur> joueurs;
 	private Partie game;
 	private Dictionnaire dico;
 	private Joueur[] frozenJoueurs;
+
+	// FLAG
+	private final Object wordFound; // HERE
 
 	// SEE usefull?
 
@@ -26,6 +31,8 @@ public class GameManager extends Thread {
 		game = new Partie();
 		this.dico = dico;
 		frozenJoueurs = null; // calculé après lancement de la partie
+
+		wordFound = new Object(); // used as sync var
 	}
 
 	public void run() {
@@ -54,15 +61,41 @@ public class GameManager extends Thread {
 
 			//
 
-			IO.trace("Fini de Joueur!!" );
-			
+			IO.trace("Fini de Joueur!!");
+
 		}
 
 	}
 
 	private void manageRound(Joueur dessinateur) {
 		String mot = dico.getWord();
-		game.newRound(dessinateur, mot);
-//HERE 
+
+		game.newRound(dessinateur, mot, wordFound);
+
+		// HERE
 	}
+
+	// Transmetteur
+	public void broadcastJoueurs(final String message) {
+		server.broadcastJoueurs(message);
+		// leger surcout, mais bon, pas duplication code
+	}
+
+	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
+		server.broadcastJoueursExcept(message, null);
+	}
+	
+	public Partie getPartie(){
+		return game;
+	}
+	
+	
+	
+	// HERE TAT, méthode ou les game Joueur Handler envoient message!
+	
+	
+	
+	
+	
+
 }

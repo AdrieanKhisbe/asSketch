@@ -1,5 +1,7 @@
 package core.exceptions;
 
+import tools.IO;
+
 /**
  * Exception père des commandes invalides reçues du client
  *
@@ -7,7 +9,8 @@ package core.exceptions;
 public class InvalidCommandException extends Exception {
 
 	public InvalidCommandException(String message) {
-		super(message); // maybe, remplacer les " " par "_"?
+		super(message); // maybe, remplacer ici les " " par "_"?
+		IO.traceDebug("InvalidCommandException: "+ message);
 	}
 
 	/**

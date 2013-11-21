@@ -2,6 +2,7 @@ package core;
 
 import game.Dictionnaire;
 import game.Joueur;
+import game.JoueurRole;
 import game.Partie;
 
 import java.io.BufferedReader;
@@ -19,6 +20,8 @@ import java.util.concurrent.Executors;
 
 import tools.IO;
 import core.ASSketchServer.Options;
+import core.exceptions.InvalidCommandException;
+import core.exceptions.WrongArityCommandException;
 
 public class Server implements Runnable {
 
@@ -89,6 +92,15 @@ public class Server implements Runnable {
 		}
 
 	} // End of Constructeur
+	
+	/** Getters */
+	
+	GameManager getGameManager(){
+		return gm;
+	}
+	
+	
+	
 
 	/** Socket Handling */
 
@@ -113,29 +125,34 @@ public class Server implements Runnable {
 	}
 
 	public synchronized void removeJoueur(Joueur j) {
-		// ?? ferme ton à ce niveau les flux?
-		j.close();
 		joueurs.remove(j);
-
 	}
 
 	// BONUX EXT Spect
 
 	//
 	public void broadcastJoueurs(final String message) {
+		broadcastJoueursExcept(message, null);
+		// leger surcout, mais bon, pas duplication code
+	}
+
+	
+
+	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
 		// SEE callable pour avoir retour d'erreur?
 		Runnable messenger = new Runnable() {
 			@Override
 			public void run() {
 				synchronized (joueurs) {
 					// SEE: not performant?
-					if(joueurs.isEmpty()){
+					if (joueurs.isEmpty()) {
 						return;
 					}
 
 					IO.trace(joueurs.toString());
 					for (Joueur j : joueurs) {
-						j.send(message);
+						if (!j.equals(deaf))
+							j.send(message);
 					}
 				}
 				IO.trace("Message \"" + message + "\" brodcasté ");
@@ -144,20 +161,16 @@ public class Server implements Runnable {
 		workers.submit(messenger);
 
 	}
-	
-	
-	private void addGamerListener(Joueur j){
-		TATJoueurHandler gl = new TATJoueurHandler(j, j.getUsername(), this);
+
+	private void addGamerListener(Joueur j) {
+		TATJoueurHandler gl = new TATJoueurHandler(this,j);
 		synchronized (gamerListers) {
 			gamerListers.add(gl);
 			gl.start();
-			
+
 		}
-		
-		
+
 	}
-	
-	
 
 	/**
 	 * --------------SERVER RUN ----------
@@ -296,40 +309,39 @@ public class Server implements Runnable {
 					// Bonux CONNEXION HANDLING
 
 					// / ----- TRAITEMENT REPONSE
-					String[] tokens = command.split("/");
-					if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
-						// REFACTOR parser
-						if (tokens.length == 2) {
-
+					try {
+						String[] tokens = Protocol.parseCommand(command,
+								JoueurRole.nonconnecté);
+						if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
+							// REFACTOR parser
 							if (acceptingNewJoueurs) {
 
 								String joueurName = tokens[1];
 								Connexion con = new Connexion(client, inchan,
 										outchan);
 								Joueur jou = new Joueur(con, joueurName);
-								 addGamerListener(jou);
-								//CHECK name non présent?
-								
+								addGamerListener(jou);
+								// CHECK name non présent?
+
 								synchronized (joueurs) {
 									// confirm me
-									jou.send("CONNECTED/"+jou.getUsername()+"/");
+									jou.send(Protocol.newConnected(jou));
 									// previens joueur courant autres connecté
-									for(Joueur j : joueurs){
-										jou.send("CONNECTED/"+j.getUsername()+"/");
+									for (Joueur j : joueurs) {
+										jou.send(Protocol.newConnected(j));
 									}
-									
 
 									// averti connexion autres joueurs
-									broadcastJoueurs("CONNECTED/" + joueurName +"/");
-									//TODO brodcast but Me
+									broadcastJoueursExcept(
+											Protocol.newConnected(jou), jou);
+
 									joueurs.add(jou);
-											
 
 									// Lance le jeu si tout le monde est là
 									if (joueurs.size() == nbMax) {
 										acceptingNewJoueurs = false;
 										gm.start();
-										
+
 										// SEE: synchronzied accept?: can't do
 										// on a boolean.
 										// TODO Rafinner Liste joueurs!!
@@ -342,25 +354,21 @@ public class Server implements Runnable {
 							}
 						}
 
-						else {
-							closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
-							// ERROR:name to find
-						}
-
 						// BONUX: spectateur
-					} else {
+					} catch (WrongArityCommandException e) {
+						closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
+					} catch (InvalidCommandException e) {
 
 						closeConnexion("GOODBYE/BOLOS/");
 						IO.traceDebug("Kick out Bolos");
-
 					}
-				} catch (SocketException se){
+
+				} catch (SocketException se) {
 					IO.trace("Socket deconnectée avant connexion joueur");
 				} catch (IOException e) {
 					// TODO ?? rajoute
 					e.printStackTrace();
 
-					
 				}
 
 			}
