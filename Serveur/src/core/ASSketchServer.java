@@ -38,7 +38,7 @@ public class ASSketchServer {
 		// Nota: visibilité default pour les options initialisant le serveur
 		
 		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joeurs")
-		Integer nbJoueurs =1;
+		Integer nbJoueurs = 2;
 
 
 		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")

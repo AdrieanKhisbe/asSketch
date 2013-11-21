@@ -1,6 +1,6 @@
 package game;
 
-public enum JoueurRole {
+public enum Role {
 	chercheur, trouveur, dessinateur
 	
 	// SEE KEEP?

@@ -3,14 +3,12 @@ package game;
 import java.util.ArrayList;
 import java.util.Collections;
 
-// BONUX:: à revoir plus tard: penser au papier, trouver bonne structure et revenir
-
-// moyen de figer joueur initiaux?, gérer deconnection?
+// TODO: améliorer: durabilité. moyen de préserver joueurs plus connectés
 
 public class ListeJoueur {
 
 	// private  ArrayList<Joueur> joueursConnexion; + joueur Partie?
-	private  ArrayList<Joueur> joueurs;
+	private  ArrayList<Joueur> joueurs; // still connected
 	private boolean locked;
 	private final Integer nbMax;
 	private Joueur[] ordreJoueurs; 
@@ -84,6 +82,16 @@ public class ListeJoueur {
 		//TODO improve
 		return joueurs.toString();
 		
+		
+	}
+	
+	// ferme toutes socket existante, et détrui reste objets
+	public synchronized void close() {
+		
+		for(Joueur j : joueurs){
+			j.close();
+		}
+		joueurs.clear();
 		
 	}
 	

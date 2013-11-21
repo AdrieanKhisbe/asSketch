@@ -1,11 +1,14 @@
 package core;
 
 import game.Joueur;
-import game.JoueurRole;
+import game.Role;
 import game.Ligne;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import tools.IO;
 
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
@@ -20,32 +23,32 @@ public class Protocol {
 
 	static { // Génère la liste des commandes
 		// CONNECT & EXIT
-		gameCommand.put("CONNECT", new CommandParameter(JoueurRole.nonconnecté,
+		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté,
 				1));
 
 		// SEE connect?
 		gameCommand
-				.put("EXIT", new CommandParameter(JoueurRole.indéterminé, 1));
+				.put("EXIT", new CommandParameter(Role.indéterminé, 1));
 
 		// SUGGESTION
-		gameCommand.put("GUESS", new CommandParameter(JoueurRole.chercheur, 1));
+		gameCommand.put("GUESS", new CommandParameter(Role.chercheur, 1));
 
 		// DESSIN
 
-		gameCommand.put("SET_COLOR", new CommandParameter(JoueurRole.chercheur,
+		gameCommand.put("SET_COLOR", new CommandParameter(Role.chercheur,
 				3));
 		gameCommand.put("SET_SIZE", new CommandParameter(
-				JoueurRole.dessinateur, 1));
+				Role.dessinateur, 1));
 		gameCommand.put("SET_LINE", new CommandParameter(
-				JoueurRole.dessinateur, 4));
+				Role.dessinateur, 4));
 
 		// TALK
 		gameCommand
-				.put("TALK", new CommandParameter(JoueurRole.indéterminé, 1));
+				.put("TALK", new CommandParameter(Role.indéterminé, 1));
 		// considère que tous peuvent parler. meme si cheat possible
 	}
 
-	static String[] parseCommand(String command, JoueurRole roleCourant)
+	static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
 		// TODO Handle échappement ? \/
@@ -60,7 +63,7 @@ public class Protocol {
 					+ "; was " + nbArgs);
 
 		// check legalité
-		if (cp.equals(JoueurRole.indéterminé)) {
+		if (cp.equals(Role.indéterminé)) {
 			// what?
 		} else if (!roleCourant.equals(cp.role)) {
 			throw new IllegalCommandException("command " + tokens[0]
@@ -100,13 +103,29 @@ public class Protocol {
 		return "WORD_FOUND_TIMEOUT/" + sec + "/";
 	}
 
+	// si j null, pas de vainqueurs donc Looooser
 	public static String newEndRound(Joueur j, String mot) {
-		return "END_ROND/" + j.getUsername() + "/" + mot + "/";
+		return "END_ROND/" + ((j != null) ? j.getUsername() : "LOSERS")
+				+ "/" + mot + "/";
 	}
 
-	public static String newScoreRound(Joueur j, String mot) { // PARAM
+	public static String newScoreRound(ArrayList<Joueur> joueurs) { // PARAM
 		// TODO
 		StringBuffer sb = new StringBuffer("SCORE_ROUND/");
+		for(Joueur j : joueurs){
+			sb.append(j.getUsername()).append("/");
+			sb.append(j.getScore()).append("/");
+		}
+		return sb.toString();
+	}
+	
+	public static String newScoreGame(ArrayList<Joueur> joueurs) {
+		StringBuffer sb = new StringBuffer("SCORE_GAME/");
+		// BONUX: score by score....
+		for(Joueur j : joueurs){
+			sb.append(j.getUsername()).append("/");
+			sb.append(j.getScore()).append("/");
+		}
 		return sb.toString();
 	}
 
@@ -130,15 +149,20 @@ public class Protocol {
 	public static String newInvalidCommand(InvalidCommandException e) {
 		return "INVALID_COMMAND/" + e.getMessage().replace(" ", "_") + "/";
 	}
+
+
+
 }
 
 class CommandParameter {
 
-	JoueurRole role;
+	Role role;
 	Integer arité;
 
-	CommandParameter(JoueurRole r, Integer arité) {
+	CommandParameter(Role r, Integer arité) {
 		this.role = r;
 		this.arité = arité;
 	}
+	
+	
 }

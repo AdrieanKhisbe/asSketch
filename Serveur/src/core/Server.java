@@ -2,9 +2,8 @@ package core;
 
 import game.Dictionnaire;
 import game.Joueur;
-import game.JoueurRole;
 import game.ListeJoueur;
-import game.Partie;
+import game.Role;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -37,7 +36,7 @@ public class Server implements Runnable {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
-	private ArrayList<TATJoueurHandler> gamerListers;
+	private ArrayList<TATJoueurHandler> gamerListeners;
 
 	// TODO Thread handler
 	// Pool worker
@@ -47,8 +46,6 @@ public class Server implements Runnable {
 
 	// EXT Spectateur
 	protected ListeJoueur joueurs;
-
-	protected ArrayList<Partie> parties; // TODO ? distinguer partie, et round?
 
 	/**
 	 * Simple constructeurs
@@ -76,8 +73,8 @@ public class Server implements Runnable {
 			for (int i = 0; i < ch.length; i++) {
 				ch[i] = new ConnexionHandler(i);
 			}
-			gm = new GameManager(joueurs, dico);
-			gamerListers = new ArrayList<TATJoueurHandler>();
+			gm = new GameManager(this, joueurs, dico);
+			gamerListeners = new ArrayList<TATJoueurHandler>();
 
 			workers = Executors.newFixedThreadPool(nbMax);
 			// PARAM
@@ -139,6 +136,8 @@ public class Server implements Runnable {
 			@Override
 			public void run() {
 				synchronized (joueurs) {
+					// LOCK??
+					
 					// SEE: not performant?
 					if (joueurs.isEmpty()) {
 						return;
@@ -150,7 +149,7 @@ public class Server implements Runnable {
 							j.send(message);
 					}
 				}
-				IO.trace("Message \"" + message + "\" brodcasté ");
+				IO.trace("Message \"" + message + "\" broadcasté ");
 			}
 		};
 		workers.submit(messenger);
@@ -159,8 +158,8 @@ public class Server implements Runnable {
 
 	private void addGamerListener(Joueur j) {
 		TATJoueurHandler gl = new TATJoueurHandler(this, j);
-		synchronized (gamerListers) {
-			gamerListers.add(gl);
+		synchronized (gamerListeners) {
+			gamerListeners.add(gl);
 			gl.start();
 
 		}
@@ -307,7 +306,7 @@ public class Server implements Runnable {
 					// / ----- TRAITEMENT REPONSE
 					try {
 						String[] tokens = Protocol.parseCommand(command,
-								JoueurRole.nonconnecté);
+								Role.nonconnecté);
 
 						if (tokens[0].equals("CONNECT")) {
 							synchronized (joueurs) {

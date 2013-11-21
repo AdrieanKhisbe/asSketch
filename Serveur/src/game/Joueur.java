@@ -8,12 +8,13 @@ import core.Connexion;
 public class Joueur {
 
 	private final String username;
-	private Integer score; // SEE not a good idea?
+	private Integer score; 
+	// TODO : scoreTotal
 
 	// There?? Regroup in connexion object?
 	private final Connexion connexion;
 
-	private JoueurRole roleCourrant;
+	private Role roleCourrant;
 
 	// TODO: autres variables à créer!
 
@@ -22,7 +23,7 @@ public class Joueur {
 		username = login;
 		score = 0; // BONUX: refine when recreating client.
 
-		roleCourrant = JoueurRole.indéterminé;
+		roleCourrant = Role.indéterminé;
 
 	}
 
@@ -37,11 +38,11 @@ public class Joueur {
 		return this.username;
 	}
 
-	public JoueurRole getRoleCourrant() {
+	public Role getRoleCourrant() {
 		return roleCourrant;
 	}
 
-	public void setRoleCourrant(JoueurRole roleCourrant) {
+	public void setRoleCourrant(Role roleCourrant) {
 		this.roleCourrant = roleCourrant;
 	}
 
@@ -74,5 +75,17 @@ public class Joueur {
 			e.printStackTrace();
 		}
 	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void addScore(Integer score) {
+		this.score += score;
+	}
+	
+	
+	
+	
 
 }
