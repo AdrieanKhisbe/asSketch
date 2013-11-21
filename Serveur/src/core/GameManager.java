@@ -22,12 +22,14 @@ public class GameManager extends Thread {
 
 	public GameManager(ArrayList<Joueur> joueurs, Dictionnaire dico) {
 		this.setName("Game Manager");
+		this.joueurs = joueurs;
 		game = new Partie();
 		this.dico = dico;
 		frozenJoueurs = null; // calculé après lancement de la partie
 	}
 
 	public void run() {
+		IO.trace("Démarrage Game Manager");
 		Integer i = 1;
 
 		// Détermine role de passage
@@ -52,6 +54,8 @@ public class GameManager extends Thread {
 
 			//
 
+			IO.trace("Fini de Joueur!!" );
+			
 		}
 
 	}

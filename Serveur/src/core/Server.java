@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -31,6 +32,7 @@ public class Server implements Runnable {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
+	private ArrayList<TATJoueurHandler> gamerListers;
 
 	// TODO Thread handler
 	// Pool worker
@@ -40,11 +42,10 @@ public class Server implements Runnable {
 
 	// EXT Spectateur
 	protected ArrayList<Joueur> joueurs;
+	private boolean acceptingNewJoueurs;
 
 	protected ArrayList<Partie> parties; // TODO ? distinguer partie, et round?
 
-	
-	
 	/**
 	 * Simple constructeurs
 	 * 
@@ -58,7 +59,7 @@ public class Server implements Runnable {
 			// OBJECTS
 			dico = new Dictionnaire(opt.dico);
 			joueurs = new ArrayList<Joueur>();
-
+			acceptingNewJoueurs = true;
 			nbMax = opt.nbJoueurs;
 
 			port = opt.port;
@@ -72,6 +73,7 @@ public class Server implements Runnable {
 				ch[i] = new ConnexionHandler(i);
 			}
 			gm = new GameManager(joueurs, dico);
+			gamerListers = new ArrayList<TATJoueurHandler>();
 
 			workers = Executors.newFixedThreadPool(nbMax);
 			// PARAM
@@ -87,7 +89,7 @@ public class Server implements Runnable {
 		}
 
 	} // End of Constructeur
-	
+
 	/** Socket Handling */
 
 	public synchronized void addWaitingSocket(Socket s) {
@@ -102,7 +104,6 @@ public class Server implements Runnable {
 		return waitingSockets.pollFirst();
 	}
 
-	
 	/** Joueurs Handling */
 	// SEE? good place to put them?
 	public void addJoueur(Joueur j) {
@@ -120,8 +121,44 @@ public class Server implements Runnable {
 
 	// BONUX EXT Spect
 
+	//
+	public void broadcastJoueurs(final String message) {
+		// SEE callable pour avoir retour d'erreur?
+		Runnable messenger = new Runnable() {
+			@Override
+			public void run() {
+				synchronized (joueurs) {
+					// SEE: not performant?
+					if(joueurs.isEmpty()){
+						return;
+					}
+
+					IO.trace(joueurs.toString());
+					for (Joueur j : joueurs) {
+						j.send(message);
+					}
+				}
+				IO.trace("Message \"" + message + "\" brodcasté ");
+			}
+		};
+		workers.submit(messenger);
+
+	}
 	
 	
+	private void addGamerListener(Joueur j){
+		TATJoueurHandler gl = new TATJoueurHandler(j, j.getUsername(), this);
+		synchronized (gamerListers) {
+			gamerListers.add(gl);
+			gl.start();
+			
+		}
+		
+		
+	}
+	
+	
+
 	/**
 	 * --------------SERVER RUN ----------
 	 * 
@@ -133,10 +170,6 @@ public class Server implements Runnable {
 		cs.start();
 		for (ConnexionHandler chi : ch)
 			chi.start();
-		
-		
-		
-		
 
 	}
 
@@ -181,9 +214,12 @@ public class Server implements Runnable {
 		private DataOutputStream outchan;
 
 		public ConnexionHandler(int i) {
-			this.setName("ConnexionHandler<"+i+">");
+			this.setName("ConnexionHandler<" + i + ">");
 		}
-		public ConnexionHandler(){this(-1);}
+
+		public ConnexionHandler() {
+			this(-1);
+		}
 
 		// TODO: changer: blockant sur la socket traitée en cours!!
 		// REFACTOR!!!
@@ -208,6 +244,7 @@ public class Server implements Runnable {
 				}
 				// BONUX handle error.
 
+				// // TRAITEMENT CONNEXION
 				try {
 
 					inchan = new BufferedReader(new InputStreamReader(
@@ -227,10 +264,7 @@ public class Server implements Runnable {
 							command = inchan.readLine();
 
 							// Handling of ActionsScript ask
-							if (command.equals("<policy-file-request/>")) // maybe
-																			// add:
-																			// <policy-file-request/>\0
-							{
+							if (command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
 								outchan.writeChars("<?xml version=\"1.0\"?><cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>\0");
 								outchan.flush();
@@ -261,24 +295,51 @@ public class Server implements Runnable {
 
 					// Bonux CONNEXION HANDLING
 
+					// / ----- TRAITEMENT REPONSE
 					String[] tokens = command.split("/");
 					if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
-						// parser
+						// REFACTOR parser
 						if (tokens.length == 2) {
-							String joueurName = tokens[1];
-							Connexion con = new Connexion(client, inchan, outchan);
-							Joueur jou = new Joueur(con, joueurName);
-							synchronized (joueurs) {
-								joueurs.add(jou);
-								//TODO: synchroniser avec Game manager? ou le lancer?
-							}
 
-							outchan.writeChars("CONNECTED/" + joueurName + "\n");
-						
-						
-						
-						
-						
+							if (acceptingNewJoueurs) {
+
+								String joueurName = tokens[1];
+								Connexion con = new Connexion(client, inchan,
+										outchan);
+								Joueur jou = new Joueur(con, joueurName);
+								 addGamerListener(jou);
+								//CHECK name non présent?
+								
+								synchronized (joueurs) {
+									// confirm me
+									jou.send("CONNECTED/"+jou.getUsername()+"/");
+									// previens joueur courant autres connecté
+									for(Joueur j : joueurs){
+										jou.send("CONNECTED/"+j.getUsername()+"/");
+									}
+									
+
+									// averti connexion autres joueurs
+									broadcastJoueurs("CONNECTED/" + joueurName +"/");
+									//TODO brodcast but Me
+									joueurs.add(jou);
+											
+
+									// Lance le jeu si tout le monde est là
+									if (joueurs.size() == nbMax) {
+										acceptingNewJoueurs = false;
+										gm.start();
+										
+										// SEE: synchronzied accept?: can't do
+										// on a boolean.
+										// TODO Rafinner Liste joueurs!!
+									}
+								}
+
+							} else {
+								IO.trace("Connexion Refusée, jeu plein");
+								closeConnexion("GAME_FULL");
+							}
 						}
 
 						else {
@@ -293,18 +354,20 @@ public class Server implements Runnable {
 						IO.traceDebug("Kick out Bolos");
 
 					}
-
+				} catch (SocketException se){
+					IO.trace("Socket deconnectée avant connexion joueur");
 				} catch (IOException e) {
 					// TODO ?? rajoute
 					e.printStackTrace();
 
+					
 				}
 
 			}
 
 		}
 
-		//TODO: del 
+		// TODO: del
 		// Q? Throws or Try
 		public void closeConnexion(String message) throws IOException {
 			outchan.writeChars(message + "\n");

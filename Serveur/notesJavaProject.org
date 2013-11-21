@@ -137,3 +137,9 @@ recupère le thread courant qui va l'exécuter!!
 ** Bonux
 - pririty thread managing
 - profiling
+* Notes pour rapport.
+
+
+Parti pour un système d'uatomate pour vérifier et traiter les commandes reçues par le serveur.
+Thread listeneur attitré.
+Etat changé par manager
