@@ -27,11 +27,11 @@ public class Protocol {
 		gameCommand
 				.put("EXIT", new CommandParameter(JoueurRole.indéterminé, 1));
 
-		// DESSIN
-		gameCommand
-				.put("EXIT", new CommandParameter(JoueurRole.indéterminé, 1));
-
 		// SUGGESTION
+		gameCommand.put("GUESS", new CommandParameter(JoueurRole.chercheur, 1));
+
+		// DESSIN
+
 		gameCommand.put("SET_COLOR", new CommandParameter(JoueurRole.chercheur,
 				3));
 		gameCommand.put("SET_SIZE", new CommandParameter(

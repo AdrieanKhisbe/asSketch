@@ -3,6 +3,7 @@ package core;
 import game.Dictionnaire;
 import game.Joueur;
 import game.JoueurRole;
+import game.ListeJoueur;
 import game.Partie;
 
 import java.io.BufferedReader;
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import tools.IO;
 import core.ASSketchServer.Options;
+import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.WrongArityCommandException;
 
@@ -44,8 +46,7 @@ public class Server implements Runnable {
 	private GameManager gm;
 
 	// EXT Spectateur
-	protected ArrayList<Joueur> joueurs;
-	private boolean acceptingNewJoueurs;
+	protected ListeJoueur joueurs;
 
 	protected ArrayList<Partie> parties; // TODO ? distinguer partie, et round?
 
@@ -61,9 +62,9 @@ public class Server implements Runnable {
 
 			// OBJECTS
 			dico = new Dictionnaire(opt.dico);
-			joueurs = new ArrayList<Joueur>();
-			acceptingNewJoueurs = true;
+
 			nbMax = opt.nbJoueurs;
+			joueurs = new ListeJoueur(nbMax);
 
 			port = opt.port;
 			sockServ = new ServerSocket(port);
@@ -92,15 +93,12 @@ public class Server implements Runnable {
 		}
 
 	} // End of Constructeur
-	
+
 	/** Getters */
-	
-	GameManager getGameManager(){
+
+	GameManager getGameManager() {
 		return gm;
 	}
-	
-	
-	
 
 	/** Socket Handling */
 
@@ -119,13 +117,12 @@ public class Server implements Runnable {
 	/** Joueurs Handling */
 	// SEE? good place to put them?
 	public void addJoueur(Joueur j) {
-		synchronized (joueurs) {
-			joueurs.add(j);
-		}
+		joueurs.addJoueur(j);
 	}
 
-	public synchronized void removeJoueur(Joueur j) {
-		joueurs.remove(j);
+	// KEEP?
+	public void removeJoueur(Joueur j) {
+		joueurs.removeJoueur(j);
 	}
 
 	// BONUX EXT Spect
@@ -135,8 +132,6 @@ public class Server implements Runnable {
 		broadcastJoueursExcept(message, null);
 		// leger surcout, mais bon, pas duplication code
 	}
-
-	
 
 	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
 		// SEE callable pour avoir retour d'erreur?
@@ -150,7 +145,7 @@ public class Server implements Runnable {
 					}
 
 					IO.trace(joueurs.toString());
-					for (Joueur j : joueurs) {
+					for (Joueur j : joueurs.getJoueurs()) {
 						if (!j.equals(deaf))
 							j.send(message);
 					}
@@ -163,7 +158,7 @@ public class Server implements Runnable {
 	}
 
 	private void addGamerListener(Joueur j) {
-		TATJoueurHandler gl = new TATJoueurHandler(this,j);
+		TATJoueurHandler gl = new TATJoueurHandler(this, j);
 		synchronized (gamerListers) {
 			gamerListers.add(gl);
 			gl.start();
@@ -183,6 +178,8 @@ public class Server implements Runnable {
 		cs.start();
 		for (ConnexionHandler chi : ch)
 			chi.start();
+
+		// SEE plus rien d'autre à faire?
 
 	}
 
@@ -268,9 +265,8 @@ public class Server implements Runnable {
 					client.setSoTimeout(3000); // BONUX: temps augmente au fur
 												// et à mesure
 
-					// Traitement selon commande reçue
+					// Lecture commande
 					String command = null;
-
 					// WARNING: is that the good way to do?
 					TryReadTimeout: while (true) {
 						try {
@@ -312,22 +308,32 @@ public class Server implements Runnable {
 					try {
 						String[] tokens = Protocol.parseCommand(command,
 								JoueurRole.nonconnecté);
-						if (tokens.length > 0 && tokens[0].equals("CONNECT")) {
-							// REFACTOR parser
-							if (acceptingNewJoueurs) {
 
-								String joueurName = tokens[1];
-								Connexion con = new Connexion(client, inchan,
-										outchan);
-								Joueur jou = new Joueur(con, joueurName);
-								addGamerListener(jou);
-								// CHECK name non présent?
+						if (tokens[0].equals("CONNECT")) {
+							synchronized (joueurs) {
+								if (!joueurs.isLocked()) {
 
-								synchronized (joueurs) {
+									String joueurName = tokens[1];
+
+									// Check Login
+									if (!joueurs.isLoginDuplicate(joueurName)) {
+										throw new IllegalCommandException(
+												"Existing Login");
+									}
+
+									// NOTE: à partir de ce stade là, en théorie
+									// tout est bon, donc on créer l'objet
+									// connexion, puis joueur
+									Connexion con = new Connexion(client,
+											inchan, outchan);
+									Joueur jou = new Joueur(con, joueurName);
+
+									addGamerListener(jou);
+
 									// confirm me
 									jou.send(Protocol.newConnected(jou));
 									// previens joueur courant autres connecté
-									for (Joueur j : joueurs) {
+									for (Joueur j : joueurs.getJoueurs()) {
 										jou.send(Protocol.newConnected(j));
 									}
 
@@ -335,33 +341,36 @@ public class Server implements Runnable {
 									broadcastJoueursExcept(
 											Protocol.newConnected(jou), jou);
 
-									joueurs.add(jou);
+									joueurs.addJoueur(jou);
 
 									// Lance le jeu si tout le monde est là
-									if (joueurs.size() == nbMax) {
-										acceptingNewJoueurs = false;
+									if (joueurs.isReady()) {
+										joueurs.figer();
 										gm.start();
 
 										// SEE: synchronzied accept?: can't do
 										// on a boolean.
 										// TODO Rafinner Liste joueurs!!
 									}
-								}
 
-							} else {
-								IO.trace("Connexion Refusée, jeu plein");
-								closeConnexion("GAME_FULL");
+								} else {
+									IO.trace("Connexion Refusée, jeu plein");
+									closeConnexion("GAME_FULL");
+								}
 							}
 						}
 
 						// BONUX: spectateur
 					} catch (WrongArityCommandException e) {
+						// Utilise close connexion, puisque ne communique pas via objet connexion
 						closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
 					} catch (InvalidCommandException e) {
 
 						closeConnexion("GOODBYE/BOLOS/");
 						IO.traceDebug("Kick out Bolos");
 					}
+
+					// Fin traitement Connexion reçue en cours
 
 				} catch (SocketException se) {
 					IO.trace("Socket deconnectée avant connexion joueur");
@@ -375,7 +384,7 @@ public class Server implements Runnable {
 
 		}
 
-		// TODO: del
+		// TODO: del REFACTOR
 		// Q? Throws or Try
 		public void closeConnexion(String message) throws IOException {
 			outchan.writeChars(message + "\n");

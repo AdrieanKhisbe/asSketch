@@ -19,7 +19,7 @@ public class TATJoueurHandler extends Thread {
 
 	// What else?
 
-	public TATJoueurHandler( Server server,Joueur gamer) {
+	public TATJoueurHandler(Server server, Joueur gamer) {
 		super();
 		this.gamer = gamer;
 		this.username = gamer.getUsername();
@@ -59,17 +59,40 @@ public class TATJoueurHandler extends Thread {
 					server.broadcastJoueurs(Protocol.newExited(gamer));
 
 					return;
+					
+					
+				case "GUESS":
+					
+					gm.tryGuess(gamer, parsedCommand[1]);
+					
 
 				case "SET_LINE":
 					// non atteignable si pas de partie en cours (CHECK)
 					// TODO: passer par game manager?
-					gm.getPartie()
-							.getTourCourrant()
-							.addLigne(Integer.parseInt(parsedCommand[1]),
-									Integer.parseInt(parsedCommand[2]),
-									Integer.parseInt(parsedCommand[3]),
-									Integer.parseInt(parsedCommand[4]));
+					gm.addLigne(Integer.parseInt(parsedCommand[1]),
+							Integer.parseInt(parsedCommand[2]),
+							Integer.parseInt(parsedCommand[3]),
+							Integer.parseInt(parsedCommand[4]));
+					// 404
+					break;
 
+				case "SET_SIZE":
+					// non atteignable si pas de partie en cours (CHECK)
+					// TODO: passer par game manager?
+					gm.setSize(Integer.parseInt(parsedCommand[1]));
+					break;
+
+				case "SET_COLOR":
+					// non atteignable si pas de partie en cours (CHECK)
+					// TODO: passer par game manager?
+					gm.setColor(Integer.parseInt(parsedCommand[1]),
+							Integer.parseInt(parsedCommand[2]),
+							Integer.parseInt(parsedCommand[3]));
+					break;
+					
+					//TODO talk
+					
+					
 				}
 
 			} catch (IOException e) {

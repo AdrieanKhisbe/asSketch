@@ -7,6 +7,8 @@ import core.Protocol;
 
 public class Round {
 	
+	// HERE we change status?
+	
 	Joueur dessinateur;
 	ArrayList<Joueur> chercheurs;
 	ArrayList<Joueur> trouveurs; //? good idea?
@@ -29,6 +31,10 @@ public class Round {
 		sketch = new Dessin();
 	}
 	
+	
+	public Joueur getDessinateur() {
+		return dessinateur;
+	}
 	public Integer getCurrentSize() {
 		return currentSize;
 	}
@@ -42,11 +48,10 @@ public class Round {
 		this.currentColor = new Couleur(r,g,b);
 	}
 	
-	public void addLigne(Integer x1, Integer y1,
+	public Ligne addLigne(Integer x1, Integer y1,
 			Integer x2, Integer y2){
-		Ligne l = sketch.addLine(x1, y1, x2, y2, currentSize, currentColor);
+		return sketch.addLine(x1, y1, x2, y2, currentSize, currentColor);
 		
-		gm.broadcastJoueursExcept(Protocol.newLigne(l), dessinateur); 
 		// SEE DOUBT not good place?
 	}
 	

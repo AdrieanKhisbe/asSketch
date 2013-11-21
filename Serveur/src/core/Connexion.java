@@ -37,6 +37,7 @@ public class Connexion {
 	}
 
 	public void close() throws IOException {
+		//BONUX TODO : relier au traceur en mode debug?
 		inchan.close();
 		outchan.close();
 		socket.close();

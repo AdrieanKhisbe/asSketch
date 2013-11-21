@@ -1,0 +1,90 @@
+package game;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+// BONUX:: à revoir plus tard: penser au papier, trouver bonne structure et revenir
+
+// moyen de figer joueur initiaux?, gérer deconnection?
+
+public class ListeJoueur {
+
+	// private  ArrayList<Joueur> joueursConnexion; + joueur Partie?
+	private  ArrayList<Joueur> joueurs;
+	private boolean locked;
+	private final Integer nbMax;
+	private Joueur[] ordreJoueurs; 
+	// liste figée des joueurs (on les gardes, mais c'est pas dans elle qu'on écrit
+	
+	//MAYBE Scores? here?
+	
+	
+	
+	public synchronized void addJoueur(Joueur j){
+		// TODO: check capacity inside
+		joueurs.add(j);		
+	}
+	public synchronized void removeJoueur(Joueur j) {
+		joueurs.remove(j);
+	}
+	
+	
+	public ListeJoueur(Integer nbMax) {
+		super();
+		this.joueurs = new ArrayList<>();
+		this.locked = false;
+		this.nbMax = nbMax;
+	}
+
+	public synchronized boolean isLoginDuplicate(String login){
+		for(Joueur j : joueurs){
+			if(j.getUsername().equals(login)) return false;
+		}
+		return true;
+	}
+	
+	public synchronized boolean isLocked(){
+		return locked;
+	}
+	
+	public synchronized boolean isReady(){
+		return joueurs.size() == nbMax;
+	}
+	
+	public synchronized boolean isEmpty(){
+		return joueurs.isEmpty();
+	}
+	
+	public synchronized void figer(){
+		// joueursPartie = joueursConnexion.clone();
+		// copie partie pour garder liste initiale?
+		locked = true;
+		Collections.shuffle(joueurs);
+		ordreJoueurs = joueurs.toArray(new Joueur[joueurs.size()]);
+		
+	}
+	
+	public ArrayList<Joueur> getJoueurs(){
+		return joueurs;
+	}
+	
+	public Joueur[] getOrdre(){
+		// Checking to do
+		return ordreJoueurs;
+		
+	}
+	
+	public boolean checkStillConnected(Joueur j){
+		
+		return joueurs.contains(j);
+		
+	}
+	
+	public String toString(){
+		//TODO improve
+		return joueurs.toString();
+		
+		
+	}
+	
+}
