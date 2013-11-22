@@ -51,14 +51,18 @@
 		
 		//Envois au serveur le message du client
 		public function sendT(evt:MouseEvent){
-			InterfaceSock.motClient(fond.IPT.text);
-			fond.IPT.text = "";
+			
+				InterfaceSock.motClient(fond.IPT.text);
+				fond.IPT.text = "";
+			
 		}
 		
 		//Envois au serveur le message du client
 		public function sendTT(evt:KeyboardEvent){
-			InterfaceSock.motClient(fond.IPT.text);
-			fond.IPT.text = "";
+			if (fond.IPT.text != "" && evt.keyCode == 13){
+				InterfaceSock.motClient(fond.IPT.text);
+				fond.IPT.text = "";
+			}
 		}
 		
 		//Deplacement graphique de la fenetre

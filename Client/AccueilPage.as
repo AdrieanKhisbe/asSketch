@@ -5,7 +5,7 @@
 			this.retour.visible = false;
 			this.mGuest.visible = false;
 			this.mInscription.visible = false;
-			this.mInscrit.visible = false;						//Redimention de la fenetre			this.width = this.width* (stage.fullScreenWidth/1680);			this.height = this.height* ( stage.fullScreenHeight/1050 );					}		//Afficher la page d'accueil sur la scene		public function afficherThis(){
+			this.mInscrit.visible = false;								}		//Afficher la page d'accueil sur la scene		public function afficherThis(){
 						//Rajoute des ecouteurs de click sur les boutons			this.iMenu.invite.addEventListener(MouseEvent.CLICK, clickInvite);
 			this.iMenu.inscrit.addEventListener(MouseEvent.CLICK, clickInscrit);
 			this.iMenu.spectateur.addEventListener(MouseEvent.CLICK, clickSpec);
@@ -23,7 +23,6 @@
 			this.iMenu.inscrit.removeEventListener(MouseEvent.CLICK, clickInscrit);
 			this.iMenu.spectateur.removeEventListener(MouseEvent.CLICK, clickSpec);
 			this.iMenu.inscription.removeEventListener(MouseEvent.CLICK, clickInscrip);
-			this.iMenu.retour.removeEventListener(MouseEvent.CLICK, clickRetour);
 			this.retour.removeEventListener(MouseEvent.CLICK, clickRetour);
 			this.mGuest.entrer.removeEventListener(MouseEvent.CLICK, envoyerGuest);
 			this.mGuest.pseudo.removeEventListener(KeyboardEvent.KEY_DOWN, envoyerGuest);
@@ -41,7 +40,6 @@
 			if (mGuest.pseudo.text != "" && e.keyCode == 13)
 			{
 				pseudo = mGuest.pseudo.text;
-				scene.gotoAndPlay(2);
 				InterfaceSock.connexionGuest(pseudo);
 				this.effacerThis();
 			}
@@ -60,7 +58,6 @@
 			{
 				pseudo = mGuest.pseudo.text;
 				InterfaceSock.connexionGuest(pseudo);
-				scene.gotoAndPlay(2);
 				this.effacerThis();
 			}
 			/*
@@ -177,4 +174,4 @@
 			this.mInscription.mdp.displayAsPassword=true;
 			this.retour.visible = true;
 		}				
-				//Lance une connexionsocket , instanci la class		public function lanceCo():void		{			scene.connexion = new ConnexionSocket(HostIp,HostPort);					}	}}
+				//Lance une connexionsocket , instanci la class		public function lanceCo():void		{					}	}}

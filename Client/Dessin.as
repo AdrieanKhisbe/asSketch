@@ -25,7 +25,7 @@
 			fenetre.debug.text = "c";
 			fenetre.addChild(this);
 			fenetre.debug.text = "d";
-			drawer(675,600, 0.5);
+			drawer(675,600, 1);
 			PALETTE(2);
 			fenetre.debug.text = "fina";
 		}

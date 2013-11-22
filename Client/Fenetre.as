@@ -20,16 +20,12 @@
 		
 		
 		public function Fenetre() {
-			this.debug.text = "deb";
 			this.afficherThis();
 			this.instanceDialBoxs();
 			this.instanceLesCo();
 			this.instanceInfoP();
-			this.debug.text = "1";
 			this.instanceDessin();
-			this.debug.text = "2";
 			this.addNew(InterfaceSock.pseudo);
-			this.debug.text = "fin";
 		}
 		
 		//Cree LE client 
@@ -64,9 +60,7 @@
 		
 		//Instanciation et affichage de la fenetre des connecté
 		public function instanceDessin(){
-			this.debug.text = "aa";
 			dessin = new Dessin(this);
-			this.debug.text = "bb";
 			dessin.afficherThis();
 		}
 		

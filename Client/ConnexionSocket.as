@@ -6,13 +6,13 @@
 			this.host = host;
 			this.port = port;
 						//connexion.addEventListener(SecurityErrorEvent.SECURITY_ERROR, connexionN2);			//Connexion non etablie			connexion.addEventListener(IOErrorEvent.IO_ERROR, connexionN1);			//CONECTION AU SOCKET REUSSI			connexion.addEventListener(Event.CONNECT, connexionR);			//Conection au socket interrompu;			connexion.addEventListener(Event.CLOSE, connexionC);			//Reception de donné;			connexion.addEventListener(DataEvent.DATA, receiveData);			//On établie la conection au server
-			/*
+			
 			try{
 				connexion.connect(host,port);
 			}catch(error:Error){
 				scene.gotoAndStop(1);
 			}
-			*/		}
+					}
 		
 		public function getCo():XMLSocket		{			return connexion;		}
 		

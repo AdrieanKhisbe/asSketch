@@ -21,11 +21,12 @@
 		
 		//Fonctions  client -> Serveur
 		//OK
-		public static function connexionGuest(pseudo:String)
+		public static function connexionGuest(pseudoo:String)
 		{
-			//connexion.sendText("CONNECT/" + escape(pseudo));
-			pseudo=pseudo;
-			//scene.gotoAndPlay(2);
+			
+			pseudo=pseudoo;
+			connexion.sendText("CONNECT/" + escape(pseudo));
+			scene.gotoAndPlay(2);
 		}
 		public static function deconnexionGuest(pseudo:String)
 		{
