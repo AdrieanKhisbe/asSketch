@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -24,7 +25,7 @@ import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.WrongArityCommandException;
 
-public class Server implements Runnable {
+public class Server extends Thread {
 
 	private ServerSocket sockServ;
 
@@ -39,7 +40,7 @@ public class Server implements Runnable {
 	private ArrayList<TATJoueurHandler> gamerListeners;
 
 	// TODO Thread handler
-	// Pool worker
+	// Pool worker DIS
 	private ExecutorService workers;
 
 	private GameManager gm;
@@ -54,6 +55,7 @@ public class Server implements Runnable {
 	 *            les options crées avec JCommander
 	 */
 	public Server(Options opt) {
+		
 
 		try {
 
@@ -177,11 +179,25 @@ public class Server implements Runnable {
 	public void run() {
 		// TODO
 
+		// cs.setDaemon(true); DIS TODO (le temps nbloquant
 		cs.start();
-		for (ConnexionHandler chi : ch)
-			chi.start();
+		for (ConnexionHandler chi : ch){
 
+			chi.setDaemon(true);
+			chi.start();
+		}
 		// SEE plus rien d'autre à faire?
+		
+		//TODO: find way que soit bloqué ici le temps de lancer gamemanager.
+		try {
+			// gm tourne pas encore...
+			gm.join();
+		
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 
@@ -223,7 +239,7 @@ public class Server implements Runnable {
 
 		private Socket client;
 		private BufferedReader inchan;
-		private DataOutputStream outchan;
+		private PrintWriter outchan;
 
 		public ConnexionHandler(int i) {
 			this.setName("ConnexionHandler<" + i + ">");
@@ -261,22 +277,11 @@ public class Server implements Runnable {
 
 					inchan = new BufferedReader(new InputStreamReader(
 							client.getInputStream()));
-					outchan = new DataOutputStream(client.getOutputStream());
-					
-					
-					///// TEMPMPMPMP
-					outchan.writeUTF(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-							+ "<cross-domain-policy>"
-							+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
-							+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
-							+ "</cross-domain-policy>");
-					// bouffe premier caractère
-					outchan.flush();
-					IO.traceDebug("Quinte envoyée");
-					// END TEMP --->
-					
+					outchan = new PrintWriter(client.getOutputStream(), true); 
+					// nota    :autoflush
+
 					// Met un timeout à la lecture sur la socket
-					client.setSoTimeout(3000); // BONUX: temps augmente au fur
+					client.setSoTimeout(4000); // BONUX: temps augmente au fur
 												// et à mesure
 
 					// Lecture commande
@@ -291,7 +296,7 @@ public class Server implements Runnable {
 							// Handling of ActionsScript ask
 							if (command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
-								outchan.writeChars(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+								outchan.write(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 										+ "<cross-domain-policy>"
 										+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
 										+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
@@ -300,21 +305,12 @@ public class Server implements Runnable {
 								outchan.flush();
 								// read new command
 								IO.traceDebug("Policy file envoyé");
-								command = inchan.readLine();
+								closeConnexion("BYEBYE");
+								IO.traceDebug("fermé connexion Action");
+								continue HandleLoop;
+								// se déconnecte immédiatement
 							}
-							if (command.startsWith("GET")) {
-								// TEMP TODO FIXMEà supprimer après bug actionscript reglé
-								
-								client.setSoTimeout(0); // s'assure va pas
-														// couiller
-
-								for (int j = 0; j < 12; j++) {
-									IO.trace(command);
-									command = inchan.readLine();
-								}
-
-								client.setSoTimeout(3000);
-							}
+							// FIXME
 
 							break TryReadTimeout;
 
@@ -322,7 +318,8 @@ public class Server implements Runnable {
 							//
 							if (waitingConnexion()) {
 								IO.traceDebug("Autre socket en attente, renvoie dormir celle courante.");
-								// inchan.close();outchan.close();
+								// inchan.close();outchan.close(); // SEE
+								// restore?
 								synchronized (waitingSockets) {
 									waitingSockets.add(client);
 									waitingSockets.notify();
@@ -364,6 +361,8 @@ public class Server implements Runnable {
 									Joueur jou = new Joueur(con, joueurName);
 
 									addGamerListener(jou);
+									
+									IO.traceDebug("Envoi confirmation connexion");
 
 									// confirm me
 									jou.send(Protocol.newConnected(jou));
@@ -425,7 +424,7 @@ public class Server implements Runnable {
 		// TODO: del REFACTOR
 		// Q? Throws or Try
 		public void closeConnexion(String message) throws IOException {
-			outchan.writeChars(message + "\n");
+			outchan.println(message);
 			closeConnexion();
 
 		}

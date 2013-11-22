@@ -49,7 +49,7 @@ public class Joueur {
 	// SEND, READ, and Close
 	public void send(String command) {
 		try {
-			connexion.send(command + "\n");
+			connexion.send(command);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

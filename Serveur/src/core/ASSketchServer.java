@@ -1,5 +1,7 @@
 package core;
 
+import tools.IO;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
@@ -25,9 +27,9 @@ public class ASSketchServer {
 
 		System.out.println("Lancement du serveur AssScketch"); 
 		Server asServer = new Server(options);
-		asServer.run();
-		
-		System.out.println("Arret du serveur AssScketch"); 
+		asServer.start();
+		asServer.join();
+		IO.trace("Arret du serveur AssScketch");
 	}
 	
 

@@ -45,6 +45,7 @@ public class GameManager extends Thread {
 	}
 
 	public void run() {
+			
 		IO.trace("Démarrage Game Manager");
 		Integer i = 1;
 

@@ -51,7 +51,11 @@ public class Protocol {
 	static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
+		IO.traceDebug("Message reçu: " + command );
+		
+		
 		// TODO Handle échappement ? \/
+		
 		String[] tokens = command.split("/");
 		CommandParameter cp = gameCommand.get(tokens[0]);
 		if (cp == null)

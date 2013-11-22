@@ -10,6 +10,8 @@ import core.exceptions.InvalidCommandException;
 
 public class TATJoueurHandler extends Thread {
 
+	//BONUX: DP State...
+	
 	final Joueur gamer;
 	final String username;
 	final Server server;
@@ -25,6 +27,9 @@ public class TATJoueurHandler extends Thread {
 		this.username = gamer.getUsername();
 		this.server = server;
 		gm = server.getGameManager();
+		
+		// TEMP
+		this.setDaemon(true);
 	}
 
 	// / Run Run Run
