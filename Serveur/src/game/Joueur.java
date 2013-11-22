@@ -67,7 +67,6 @@ public class Joueur {
 			connexion.close();
 			IO.trace("Connexion du joueur " + this.username
 					+ " viens d'etre fermé");
-			// BUG? doublon mystère
 			// TODO Trace. (faire un level d'importance?)
 
 		} catch (IOException e) {

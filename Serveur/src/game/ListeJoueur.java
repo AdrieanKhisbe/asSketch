@@ -3,6 +3,8 @@ package game;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import tools.IO;
+
 // TODO: améliorer: durabilité. moyen de préserver joueurs plus connectés
 
 public class ListeJoueur {
@@ -88,10 +90,15 @@ public class ListeJoueur {
 	// ferme toutes socket existante, et détrui reste objets
 	public synchronized void close() {
 		
+		
+//		
 		for(Joueur j : joueurs){
-			j.close();
+		IO.trace(j.toString());
+		// FIXME 
+			//	j.close();
+		// buggée: le close broadcast le message ????
 		}
-		joueurs.clear();
+		//joueurs.clear();
 		
 	}
 	

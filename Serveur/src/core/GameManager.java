@@ -71,7 +71,8 @@ public class GameManager extends Thread {
 			broadcastJoueurs(Protocol.newScoreGame(joueurs.getJoueurs()));
 			broadcastJoueurs("GOODBYE/");
 			// suppress game object/
-			joueurs.close();
+			IO.trace("Avant joueur close!!");
+			joueurs.close(); // LOCK induces
 			IO.trace("Fini de Joueur!!");
 
 		}

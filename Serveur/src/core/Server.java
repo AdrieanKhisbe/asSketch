@@ -132,27 +132,30 @@ public class Server implements Runnable {
 
 	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
 		// SEE callable pour avoir retour d'erreur?
-		Runnable messenger = new Runnable() {
-			@Override
-			public void run() {
-				synchronized (joueurs) {
-					// LOCK??
-					
-					// SEE: not performant?
-					if (joueurs.isEmpty()) {
-						return;
-					}
 
-					IO.trace(joueurs.toString());
-					for (Joueur j : joueurs.getJoueurs()) {
-						if (!j.equals(deaf))
-							j.send(message);
-					}
-				}
-				IO.trace("Message \"" + message + "\" broadcasté ");
+		// NOTE: Temps, disable le thread run
+
+		// Runnable messenger = new Runnable() {
+		// @Override
+		// public void run() {
+		synchronized (joueurs) {
+			// LOCK??
+
+			// SEE: not performant?
+			if (joueurs.isEmpty()) {
+				return;
 			}
-		};
-		workers.submit(messenger);
+
+			IO.trace("Liste joueurs: " + joueurs.toString());
+			for (Joueur j : joueurs.getJoueurs()) {
+				if (!j.equals(deaf))
+					j.send(message);
+			}
+		}
+		IO.trace("Message \"" + message + "\" broadcasté ");
+		// }
+		// };
+		// workers.submit(messenger);
 
 	}
 
@@ -259,7 +262,19 @@ public class Server implements Runnable {
 					inchan = new BufferedReader(new InputStreamReader(
 							client.getInputStream()));
 					outchan = new DataOutputStream(client.getOutputStream());
-
+					
+					
+					///// TEMPMPMPMP
+					outchan.writeUTF(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+							+ "<cross-domain-policy>"
+							+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
+							+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
+							+ "</cross-domain-policy>");
+					// bouffe premier caractère
+					outchan.flush();
+					IO.traceDebug("Quinte envoyée");
+					// END TEMP --->
+					
 					// Met un timeout à la lecture sur la socket
 					client.setSoTimeout(3000); // BONUX: temps augmente au fur
 												// et à mesure
@@ -270,14 +285,35 @@ public class Server implements Runnable {
 					TryReadTimeout: while (true) {
 						try {
 							command = inchan.readLine();
+							IO.traceDebug(command);
+							// TODO: handle raw deconnection
 
 							// Handling of ActionsScript ask
 							if (command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
-								outchan.writeChars("<?xml version=\"1.0\"?><cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>\0");
+								outchan.writeChars(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+										+ "<cross-domain-policy>"
+										+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
+										+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
+										+ "</cross-domain-policy>\0");
+								// Flash handling
 								outchan.flush();
 								// read new command
+								IO.traceDebug("Policy file envoyé");
 								command = inchan.readLine();
+							}
+							if (command.startsWith("GET")) {
+								// TEMP TODO FIXMEà supprimer après bug actionscript reglé
+								
+								client.setSoTimeout(0); // s'assure va pas
+														// couiller
+
+								for (int j = 0; j < 12; j++) {
+									IO.trace(command);
+									command = inchan.readLine();
+								}
+
+								client.setSoTimeout(3000);
 							}
 
 							break TryReadTimeout;
@@ -285,7 +321,7 @@ public class Server implements Runnable {
 						} catch (SocketTimeoutException ste) {
 							//
 							if (waitingConnexion()) {
-								IO.traceDebug("Renvoie dormir");
+								IO.traceDebug("Autre socket en attente, renvoie dormir celle courante.");
 								// inchan.close();outchan.close();
 								synchronized (waitingSockets) {
 									waitingSockets.add(client);
@@ -361,7 +397,8 @@ public class Server implements Runnable {
 
 						// BONUX: spectateur
 					} catch (WrongArityCommandException e) {
-						// Utilise close connexion, puisque ne communique pas via objet connexion
+						// Utilise close connexion, puisque ne communique pas
+						// via objet connexion
 						closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
 					} catch (InvalidCommandException e) {
 
@@ -373,6 +410,8 @@ public class Server implements Runnable {
 
 				} catch (SocketException se) {
 					IO.trace("Socket deconnectée avant connexion joueur");
+					// TODO close connection??
+
 				} catch (IOException e) {
 					// TODO ?? rajoute
 					e.printStackTrace();
