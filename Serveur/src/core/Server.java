@@ -217,6 +217,19 @@ public class Server extends Thread {
 			try {
 				while (true) {
 					client = sockServ.accept();
+					
+					// TEMPORARY (possible leak)
+					PrintWriter outchan = new PrintWriter(client.getOutputStream(), true); 
+					
+					outchan.print(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+							+ "<cross-domain-policy>"
+							+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
+							+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
+							+ "</cross-domain-policy>\0");
+					// Flash handling
+					outchan.flush();
+					
+					
 					IO.trace("Nouvelle connexion incoming mise en attente.");
 					synchronized (waitingSockets) {
 						addWaitingSocket(client);
@@ -296,7 +309,7 @@ public class Server extends Thread {
 							// Handling of ActionsScript ask
 							if (command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
-								outchan.write(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+								outchan.print(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 										+ "<cross-domain-policy>"
 										+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
 										+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
@@ -305,8 +318,8 @@ public class Server extends Thread {
 								outchan.flush();
 								// read new command
 								IO.traceDebug("Policy file envoyé");
-								closeConnexion("BYEBYE");
-								IO.traceDebug("fermé connexion Action");
+								// closeConnexion("BYEBYE");
+								//IO.traceDebug("fermé connexion Action");
 								continue HandleLoop;
 								// se déconnecte immédiatement
 							}

@@ -73,7 +73,7 @@ public class GameManager extends Thread {
 			broadcastJoueurs("GOODBYE/");
 			// suppress game object/
 			IO.trace("Avant joueur close!!");
-			joueurs.close(); // LOCK induces
+			joueurs.close(); // LOCK induces FIXME
 			IO.trace("Fini de Joueur!!");
 
 		}
@@ -193,5 +193,5 @@ public class GameManager extends Thread {
 		tourCourrant.setCurrentColor(r, g, b);
 		IO.trace("Taille dessin fixée à " + r + "/" + g + "/" + b + "/");
 	}
-
+	
 }
