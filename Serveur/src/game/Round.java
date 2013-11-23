@@ -6,11 +6,11 @@ public class Round {
 
 	// HERE we change status?
 
-	Joueur dessinateur;
-	ArrayList<Joueur> chercheurs;
-	ArrayList<Joueur> trouveurs; // ? good idea?
-	Dessin sketch;
-	String mot; // copy
+	final Joueur dessinateur;
+	final ArrayList<Joueur> chercheurs;
+	final ArrayList<Joueur> trouveurs; // ? good idea?
+	final Dessin sketch;
+	final String mot; // copy
 	// GameManager gm;
 	// final Object wordFound; //DIS
 
@@ -36,33 +36,37 @@ public class Round {
 		return currentSize;
 	}
 
-	public void setCurrentSize(Integer currentSize) {
+	public synchronized boolean stillSearching(){
+		return chercheurs.size() == 0;
+	}
+	
+	public synchronized void setCurrentSize(Integer currentSize) {
 		this.currentSize = currentSize;
 	}
 
-	public Couleur getCurrentColor() {
+	public synchronized  Couleur getCurrentColor() {
 		return currentColor;
 	}
 
-	public void setCurrentColor(int r, int g, int b) {
+	public synchronized  void setCurrentColor(int r, int g, int b) {
 		this.currentColor = new Couleur(r, g, b);
 	}
 
-	public Ligne addLigne(Integer x1, Integer y1, Integer x2, Integer y2) {
+	public synchronized  Ligne addLigne(Integer x1, Integer y1, Integer x2, Integer y2) {
 		return sketch.addLine(x1, y1, x2, y2, currentSize, currentColor);
 
 		// SEE DOUBT not good place?
 	}
 
-	public String getDessinCommands() {
+	public synchronized String getDessinCommands() {
 		return sketch.toCommand();
 	}
 
-	public ArrayList<Joueur> getTrouveurs() {
+	public synchronized ArrayList<Joueur> getTrouveurs() {
 		return trouveurs;
 	}
 
-	public void setHasFound(Joueur j) {
+	public synchronized void setHasFound(Joueur j) {
 		// CHECK + sync
 		trouveurs.add(j);
 		j.setRoleCourrant(Role.trouveur);
@@ -70,7 +74,7 @@ public class Round {
 
 	}
 
-	public boolean guess(String essai) {
+	public synchronized boolean guess(String essai) {
 		return mot.equals(essai);
 	}
 }

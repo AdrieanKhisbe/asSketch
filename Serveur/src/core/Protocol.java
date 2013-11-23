@@ -25,12 +25,14 @@ public class Protocol {
 		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté,
 				1));
 
-		// SEE connect?
 		gameCommand
 				.put("EXIT", new CommandParameter(Role.indéterminé, 1));
 
 		// SUGGESTION
 		gameCommand.put("GUESS", new CommandParameter(Role.chercheur, 1));
+		
+		gameCommand.put("WARN", new CommandParameter(Role.chercheur, 1));
+		gameCommand.put("SKIP", new CommandParameter(Role.dessinateur, 1));
 
 		// DESSIN
 
@@ -146,6 +148,12 @@ public class Protocol {
 
 	public static String newExited(Joueur j) {
 		return "EXITED/" + j.getUsername() + "/";
+	}
+	public static String newSkip(Joueur j) {
+		return "SKIPED/" + j.getUsername() + "/"; // SEE: redondant
+	}
+	public static String newWarned(Joueur j) {
+		return "WARNED/" + j.getUsername() + "/";
 	}
 
 	// TODO invalid command

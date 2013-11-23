@@ -8,6 +8,8 @@ import game.Role;
 import game.Round;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -19,6 +21,7 @@ public class GameManager extends Thread {
 	private static final int TROUND = 1000 * 60;
 	private static final int TFOUND = 1000 * 5;
 	private static final int TPAUSE = 1000 * 5;
+	private static final int NBCHEATWARN = 3;
 	// fusionné avec partie
 
 	// BONUX Singleton pattern?
@@ -30,13 +33,14 @@ public class GameManager extends Thread {
 
 	// Timer
 	private final ExecutorService timer;
-	private final Object endRound;
-	private final AtomicBoolean wordFound; // HERE
+	private final Object endRound; // HERE : switch to atomic (utilisé quand partie anulée)
+	// ou objet etat. 
+	private final AtomicBoolean wordFound; 
 	private final Runnable timerGame;
 	private final Runnable timerFound;
 
-	// TODO in game:
-	// throw Illegal command exception...????
+	// Cheat Warning
+	Set<Joueur> cheatWarningList;
 
 	// Rounds
 	ArrayList<Round> rounds;
@@ -54,9 +58,11 @@ public class GameManager extends Thread {
 
 		this.timer = Executors.newFixedThreadPool(2);
 		this.wordFound = new AtomicBoolean(false); // used as sync var
-		endRound = new Object();
+		this.endRound = new Object();
 
-		timerFound = new Runnable() {
+		this.cheatWarningList = new HashSet<>();
+
+		this.timerFound = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -75,7 +81,7 @@ public class GameManager extends Thread {
 				}
 			}
 		};
-		timerGame = new Runnable() {
+		this.timerGame = new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -110,14 +116,14 @@ public class GameManager extends Thread {
 						+ dessinateur);
 				manageRound(dessinateur);
 				i++;
-				
-				//Pause entre parties
+
+				// Pause entre parties
 				try {
 					Thread.sleep(TPAUSE);
 				} catch (InterruptedException e) {
 					IO.traceDebug("Jeu interrompu (ne devrait pas avoir lieu)");
 				}
-				
+
 			} else {
 				IO.trace("Round annulé, " + dessinateur.getUsername()
 						+ "ayant quitté le jeu avant son tour");
@@ -149,6 +155,7 @@ public class GameManager extends Thread {
 				j.setRoleCourrant(Role.chercheur);
 		}
 
+		// Crée nouveau objet tour.
 		tourCourrant = new Round(dessinateur, chercheurs, mot);
 		rounds.add(tourCourrant);
 
@@ -183,7 +190,7 @@ public class GameManager extends Thread {
 		// arrete les timer si tournent encore
 		futureGame.cancel(true);
 		futureFound.cancel(true);
-		// timer.
+		cheatWarningList.clear(); // later if use info
 
 		// remet joueur etat indéterminé
 		for (Joueur j : joueurs.getJoueurs()) {
@@ -194,7 +201,8 @@ public class GameManager extends Thread {
 		// Gère résultats
 		ArrayList<Joueur> trouveurs = tourCourrant.getTrouveurs();
 
-		// TODO compute score : modifie dessinateur et trouveur
+		//compute score 
+		// TODO handle skip, quit, 
 		if (!trouveurs.isEmpty()) {
 
 			broadcastJoueurs(Protocol.newEndRound(trouveurs.get(0), mot));
@@ -229,8 +237,9 @@ public class GameManager extends Thread {
 	}
 
 	// /////////////////////
-	// HERE TAT, méthode ou les game Joueur Handler envoient message!
+	// Méthodes ou les game Joueur Handler envoient message!
 
+	// TODO: syncrhonized to change. (so delete synchronize block
 	void tryGuess(Joueur j, String mot) {
 		// CHECK in game statut
 
@@ -242,8 +251,13 @@ public class GameManager extends Thread {
 
 			broadcastJoueurs(Protocol.newWordFound(j));
 
-			// handle timeout si mot pas déjà trouvé
-			if (!wordFound.get()) {
+			// vérifie si tous n'ont pas trouvé
+			if (!tourCourrant.stillSearching()) {
+				synchronized (endRound) {
+					endRound.notify();
+				}
+			} // handle timeout si mot pas déjà trouvé
+			else if (!wordFound.get()) {
 				synchronized (wordFound) {
 					wordFound.set(true);
 					wordFound.notify();
@@ -254,10 +268,10 @@ public class GameManager extends Thread {
 
 		} else {
 			broadcastJoueurs(Protocol.newGuess(mot));
-			IO.trace("Guess infructuex de " + j + " : '" + mot+"'");
+			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 
-		IO.trace("Joueur " + j + " suggere '" + mot+"'");
+		IO.trace("Joueur " + j + " suggere '" + mot + "'");
 
 	}
 
@@ -283,4 +297,23 @@ public class GameManager extends Thread {
 		IO.trace("Taille dessin fixée à " + r + "/" + g + "/" + b + "/");
 	}
 
+	void notifyCheat(Joueur j) {
+		synchronized (cheatWarningList) {
+			if (cheatWarningList.add(j)) {
+				IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
+				broadcastJoueurs(Protocol.newWarned(j));
+				if(cheatWarningList.size() >= NBCHEATWARN){
+					IO.trace("Trop c'est trop, on arrete de jouer");
+					synchronized (endRound) {
+						endRound.notify();
+					}
+				}
+				
+			} else {
+				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
+				// MAYBE: balance mot protocole
+			}
+		}
+
+	}
 }

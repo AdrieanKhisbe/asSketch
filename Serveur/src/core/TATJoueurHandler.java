@@ -58,8 +58,8 @@ public class TATJoueurHandler extends Thread {
 					if (!parsedCommand[1].equals(username))
 						throw new IllegalCommandException("Nom Joueur Invalide");
 
-					// TODO: gérer si dessintaeur
-					// Notify le game manager?
+					// HERE: gérer si dessintaeur
+					// Notify le game manager? : TODO: fonction dans gamemanager
 
 					gamer.send(Protocol.newExited(gamer));
 					// close connexion
@@ -71,9 +71,15 @@ public class TATJoueurHandler extends Thread {
 
 					return;
 					
+				case "SKIP":
+					//TODO; cf exit du dessinateur
+					break;
+					
+				case "WARN":
+					gm.notifyCheat(gamer);
+					break;
 					
 				case "GUESS":
-					
 					gm.tryGuess(gamer, parsedCommand[1]);
 					break;
 
