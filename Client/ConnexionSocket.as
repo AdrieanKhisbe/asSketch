@@ -5,18 +5,23 @@
 		private var host:String;		//Constructeur :		public function ConnexionSocket(host:String,port:Number)		{
 			this.host = host;
 			this.port = port;
-						//connexion.addEventListener(SecurityErrorEvent.SECURITY_ERROR, connexionN2);			//Connexion non etablie			connexion.addEventListener(IOErrorEvent.IO_ERROR, connexionN1);			//CONECTION AU SOCKET REUSSI			connexion.addEventListener(Event.CONNECT, connexionR);			//Conection au socket interrompu;			connexion.addEventListener(Event.CLOSE, connexionC);			//Reception de donné;			connexion.addEventListener(DataEvent.DATA, receiveData);			//On établie la conection au server
+			
 			
 			try{
 				connexion.connect(host,port);
 			}catch(error:Error){
 				scene.gotoAndStop(1);
 			}
+						connexion.addEventListener(SecurityErrorEvent.SECURITY_ERROR, connexionN2);			//Connexion non etablie			connexion.addEventListener(IOErrorEvent.IO_ERROR, connexionN1);			//CONECTION AU SOCKET REUSSI			connexion.addEventListener(Event.CONNECT, connexionR);			//Conection au socket interrompu;			connexion.addEventListener(Event.CLOSE, connexionC);			//Reception de donné;			connexion.addEventListener(DataEvent.DATA, receiveData);			//On établie la conection au server
+			
 					}
 		
 		public function getCo():XMLSocket		{			return connexion;		}
 		
-				//Affcihe sur le client lorsque la conexion est établie		public function connexionR(Evt:Event):void		{					}		//Affiche sur le client lorsque la conexion est perdu		public function connexionC(Evt:Event):void		{				scene.gotoAndStop(1);				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN2(e:SecurityErrorEvent):void		{				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
+				//Affcihe sur le client lorsque la conexion est établie		public function connexionR(Evt:Event):void		{			scene.bug.text="connexion Reussi";		}		//Affiche sur le client lorsque la conexion est perdu		public function connexionC(Evt:Event):void		{
+				scene.bug.text="connexion couper";				scene.gotoAndStop(1);				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{
+				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN2(e:SecurityErrorEvent):void		{
+				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
 						var tabData:Array = Evt.data.split("/");			if (tabData[0] == "CONNECTED")			{
 				//CONNECTED/user/
 				InterfaceSock.clientCo(tabData[1]);			}			else if (tabData[0] == "EXITED")			{
