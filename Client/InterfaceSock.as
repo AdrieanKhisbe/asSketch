@@ -13,7 +13,7 @@
 		public function InterfaceSock(s:MovieClip,c:ConnexionSocket,a:AccueilPage,f:Fenetre) {
 			scene=s;
 			fenetre=f;
-			connexion=c;
+			connexion= new ConnexionSocket("localhost",2013);;
 			acceuil=a;
 		}
 		
@@ -25,7 +25,10 @@
 		{
 			
 			pseudo=pseudoo;
+			trace(1);
+			trace(connexion);
 			connexion.sendText("CONNECT/" + escape(pseudo));
+			trace(2);
 			scene.gotoAndPlay(2);
 		}
 		public static function deconnexionGuest(pseudo:String)
