@@ -43,6 +43,12 @@ public class TATJoueurHandler extends Thread {
 				// parse
 				String[] parsedCommand = Protocol.parseCommand(textCommand,
 						gamer.getRoleCourrant());
+				
+//				StringBuffer sb = new StringBuffer();
+//						for(String i : parsedCommand)
+//							sb.append(i).append(":");
+//						
+//				IO.traceDebug(sb.toString());
 
 				// Handle
 
@@ -69,7 +75,7 @@ public class TATJoueurHandler extends Thread {
 				case "GUESS":
 					
 					gm.tryGuess(gamer, parsedCommand[1]);
-					
+					break;
 
 				case "SET_LINE":
 					// non atteignable si pas de partie en cours (CHECK)

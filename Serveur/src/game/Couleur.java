@@ -35,11 +35,12 @@ public class Couleur {
 		// return String.format("#%02x%02x%02x", r,g,b);
 
 	}
-	public String toString(){
-		return r+"/"+g+"/"+b+"/";
+
+	public String toString() {
+		return r + "/" + g + "/" + b + "/";
 	}
 
-	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
 		long prev_time = System.currentTimeMillis();
@@ -49,6 +50,7 @@ public class Couleur {
 		for (int i = 0; i < 100000; i++) {
 			String s = c.toHexa();
 		}
+
 		time = System.currentTimeMillis() - prev_time;
 
 		System.out.println("temps execution: " + time);

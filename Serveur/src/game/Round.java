@@ -2,9 +2,6 @@ package game;
 
 import java.util.ArrayList;
 
-import core.GameManager;
-import core.Protocol;
-
 public class Round {
 
 	// HERE we change status?
@@ -26,7 +23,7 @@ public class Round {
 		this.dessinateur = dessinateur;
 		this.chercheurs = chercheurs;
 		// this.wordFound = wordFound;
-
+		this.mot = mot;
 		trouveurs = new ArrayList<>();
 		sketch = new Dessin();
 	}
@@ -72,8 +69,8 @@ public class Round {
 		chercheurs.remove(j);
 
 	}
-	
-	public boolean guess(String essai){
+
+	public boolean guess(String essai) {
 		return mot.equals(essai);
 	}
 }

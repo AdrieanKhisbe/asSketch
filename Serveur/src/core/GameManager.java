@@ -8,10 +8,17 @@ import game.Role;
 import game.Round;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import tools.IO;
 
 public class GameManager extends Thread {
+	private static final int TROUND = 1000 * 60;
+	private static final int TFOUND = 1000 * 5;
+	private static final int TPAUSE = 1000 * 5;
 	// fusionné avec partie
 
 	// BONUX Singleton pattern?
@@ -21,8 +28,12 @@ public class GameManager extends Thread {
 	private ListeJoueur joueurs;
 	private Dictionnaire dico;
 
-	// FLAG
-	private final Object wordFound; // HERE
+	// Timer
+	private final ExecutorService timer;
+	private final Object endRound;
+	private final AtomicBoolean wordFound; // HERE
+	private final Runnable timerGame;
+	private final Runnable timerFound;
 
 	// TODO in game:
 	// throw Illegal command exception...????
@@ -41,11 +52,48 @@ public class GameManager extends Thread {
 		this.tourCourrant = null;
 		this.dico = dico;
 
-		wordFound = new Object(); // used as sync var
+		this.timer = Executors.newFixedThreadPool(2);
+		this.wordFound = new AtomicBoolean(false); // used as sync var
+		endRound = new Object();
+
+		timerFound = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					synchronized (wordFound) {
+						wordFound.wait();
+					}
+					IO.trace("Début timer motTrouvé de Xs");
+					Thread.sleep(TFOUND);
+
+					IO.trace("Temps écoulé");
+					synchronized (endRound) {
+						endRound.notify();
+					}
+				} catch (InterruptedException e) {
+					IO.traceDebug("Timer Found Interrompu");
+				}
+			}
+		};
+		timerGame = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					IO.trace("Début timer tour de Xs");
+					Thread.sleep(TROUND);
+					IO.trace("Temps écoulé");
+					synchronized (endRound) {
+						endRound.notify();
+					}
+				} catch (InterruptedException e) {
+					IO.traceDebug("Timer Round Interrompu");
+				}
+			}
+		};
 	}
 
 	public void run() {
-			
+
 		IO.trace("Démarrage Game Manager");
 		Integer i = 1;
 
@@ -62,21 +110,29 @@ public class GameManager extends Thread {
 						+ dessinateur);
 				manageRound(dessinateur);
 				i++;
-
+				
+				//Pause entre parties
+				try {
+					Thread.sleep(TPAUSE);
+				} catch (InterruptedException e) {
+					IO.traceDebug("Jeu interrompu (ne devrait pas avoir lieu)");
+				}
+				
 			} else {
 				IO.trace("Round annulé, " + dessinateur.getUsername()
 						+ "ayant quitté le jeu avant son tour");
 			}
 
-			//
-			broadcastJoueurs(Protocol.newScoreGame(joueurs.getJoueurs()));
-			broadcastJoueurs("GOODBYE/");
-			// suppress game object/
-			IO.trace("Avant joueur close!!");
-			joueurs.close(); // LOCK induces FIXME
-			IO.trace("Fini de Joueur!!");
-
 		}
+		//
+		broadcastJoueurs(Protocol.newScoreGame(joueurs.getJoueurs()));
+		broadcastJoueurs("GOODBYE/");
+		// suppress game object/
+		IO.trace("Avant joueur close!!");
+		joueurs.close(); // LOCK induces FIXME
+
+		timer.shutdown();
+		IO.trace("Fini de Joueur!!");
 
 	}
 
@@ -96,23 +152,45 @@ public class GameManager extends Thread {
 		tourCourrant = new Round(dessinateur, chercheurs, mot);
 		rounds.add(tourCourrant);
 
-		// HERE
-		dessinateur.send(Protocol.newRoundDesinateur(mot));
-		String tmp = Protocol.newRoundChercheur(dessinateur);
-		IO.trace(tmp);
-		broadcastJoueursExcept(tmp, dessinateur);
+		// Met en place le timer
+		wordFound.set(false);
+		Future<?> futureGame = timer.submit(timerGame);
+		Future<?> futureFound = timer.submit(timerFound);
 
-		// TIMER LOCK
+		// alt with futures.
+		// http://stackoverflow.com/questions/2275443/how-to-timeout-a-thread
+
+		// Avertit début du tour
+		dessinateur.send(Protocol.newRoundDesinateur(mot));
+
+		broadcastJoueursExcept(Protocol.newRoundChercheur(dessinateur),
+				dessinateur);
+
+		IO.trace("Partie en cours");
+		synchronized (endRound) {
+			try {
+				endRound.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// TODO traitement supplémentaire
+			// get raison fin
+
+		}
+		IO.trace("Fin du round");
+		// arrete les timer si tournent encore
+		futureGame.cancel(true);
+		futureFound.cancel(true);
+		// timer.
 
 		// remet joueur etat indéterminé
 		for (Joueur j : joueurs.getJoueurs()) {
 			j.setRoleCourrant(Role.indéterminé);
 		}
 
-		IO.trace("Partie en cours");
-		// SEE, order? INTERLOCK
-		// FIXME
-
+		// ---------------
 		// Gère résultats
 		ArrayList<Joueur> trouveurs = tourCourrant.getTrouveurs();
 
@@ -155,20 +233,31 @@ public class GameManager extends Thread {
 
 	void tryGuess(Joueur j, String mot) {
 		// CHECK in game statut
+
 		// Si bonne suggestion
 		if (tourCourrant.guess(mot)) {
+			IO.trace("Guess réussi de " + j + " : " + mot);
+
 			tourCourrant.setHasFound(j);
 
 			broadcastJoueurs(Protocol.newWordFound(j));
 
-			// HERE HANDLE timeout
+			// handle timeout si mot pas déjà trouvé
+			if (!wordFound.get()) {
+				synchronized (wordFound) {
+					wordFound.set(true);
+					wordFound.notify();
+				}
+
+				broadcastJoueurs(Protocol.newWordFoundTimeout(TFOUND));
+			}
 
 		} else {
 			broadcastJoueurs(Protocol.newGuess(mot));
-			IO.trace("Guess infructuex de " + j + " : " + mot);
+			IO.trace("Guess infructuex de " + j + " : '" + mot+"'");
 		}
 
-		IO.trace("Joueur " + j + "suggere" + mot);
+		IO.trace("Joueur " + j + " suggere '" + mot+"'");
 
 	}
 
@@ -193,5 +282,5 @@ public class GameManager extends Thread {
 		tourCourrant.setCurrentColor(r, g, b);
 		IO.trace("Taille dessin fixée à " + r + "/" + g + "/" + b + "/");
 	}
-	
+
 }

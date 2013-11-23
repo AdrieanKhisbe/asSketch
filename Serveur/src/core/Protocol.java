@@ -1,15 +1,14 @@
 package core;
 
 import game.Joueur;
-import game.Role;
 import game.Ligne;
+import game.Role;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import tools.IO;
-
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
@@ -170,3 +169,4 @@ class CommandParameter {
 	
 	
 }
+
