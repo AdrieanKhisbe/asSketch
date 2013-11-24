@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import tools.IO;
 import core.ASSketchServer.Options;
@@ -24,6 +25,7 @@ import core.exceptions.WrongArityCommandException;
 
 public class Server extends Thread {
 
+	// BONUX: see finals?
 	private ServerSocket sockServ;
 
 	private Integer port;
@@ -36,6 +38,7 @@ public class Server extends Thread {
 	private ConnexionHandler ch[];
 	private ArrayList<TATJoueurHandler> gamerListeners;
 
+	private AtomicBoolean gameOn;
 	private GameManager gm;
 
 	// EXT Spectateur
@@ -49,6 +52,7 @@ public class Server extends Thread {
 	 */
 	public Server(Options opt) {
 
+		this.setName("Server");
 		try {
 
 			// OBJECTS
@@ -61,6 +65,9 @@ public class Server extends Thread {
 			sockServ = new ServerSocket(port);
 
 			waitingSockets = new LinkedList<Socket>();
+
+			gameOn = new AtomicBoolean(false);
+
 			// THREADS.
 			cs = new ConnexionStacker();
 			ch = new ConnexionHandler[2]; // PARAM
@@ -70,10 +77,9 @@ public class Server extends Thread {
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<TATJoueurHandler>();
 
-			// TODO: initialisation des threads
-
 		} catch (IOException e) {
-			// TODO To improve error handling (ressayer ouvrir socket
+			// BONUX To improve error handling (ressayer ouvrir Serversocket)
+			// ou dico par default
 			System.err.println("error:" + e.getMessage());
 			// e.printStackTrace();
 			System.exit(1);
@@ -102,7 +108,6 @@ public class Server extends Thread {
 	}
 
 	/** Joueurs Handling */
-	// SEE? good place to put them?
 	public void addJoueur(Joueur j) {
 		joueurs.addJoueur(j);
 	}
@@ -165,25 +170,34 @@ public class Server extends Thread {
 	 */
 
 	public void run() {
-		// TODO
 
-		// cs.setDaemon(true); DIS TODO (le temps nbloquant
+		cs.setDaemon(true);
 		cs.start();
 		for (ConnexionHandler chi : ch) {
 
 			chi.setDaemon(true);
 			chi.start();
 		}
-		// SEE plus rien d'autre à faire?
+		IO.trace("Lancement des threads gérants les connexions entrantes");
 
-		// TODO: find way que soit bloqué ici le temps de lancer gamemanager.
+		synchronized (gameOn) {
+			try {
+				gameOn.wait();
+				gameOn.set(true);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				IO.trace("Erreur précédent le lancement de la partie");
+			}
+		}
+		IO.trace("Active game Manager");
+		gm.start();
+
 		try {
-			// gm tourne pas encore...
 			gm.join();
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			IO.trace("Arret inattendu du serveur");
 		}
 
 	}
@@ -383,12 +397,9 @@ public class Server extends Thread {
 
 									// Lance le jeu si tout le monde est là
 									if (joueurs.isReady()) {
-										joueurs.figer();
-										gm.start();
-
-										// SEE: synchronzied accept?: can't do
-										// on a boolean.
-										// TODO Rafinner Liste joueurs!!
+										synchronized (gameOn) {
+											gameOn.notify();
+										}
 									}
 
 								} else {

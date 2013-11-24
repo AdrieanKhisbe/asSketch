@@ -11,14 +11,17 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import tools.IO;
 
 public class GameManager extends Thread {
-	private static final int TROUND = 1000 * 60;
-	private static final int TFOUND = 1000 * 5;
-	private static final int TPAUSE = 1000 * 5;
+	private static final int TROUND = 60; // en secondes
+	private static final int TFOUND = 5; // TODO, récupérer opt. PAsser
+											// directement l'objet au
+											// constructeur
+	private static final int TPAUSE = 5;
 	private static final int NBCHEATWARN = 3;
 	// fusionné avec partie
 
@@ -66,7 +69,7 @@ public class GameManager extends Thread {
 						wordFound.wait();
 					}
 					IO.trace("Début timer motTrouvé de Xs");
-					Thread.sleep(TFOUND);
+					TimeUnit.SECONDS.sleep(TFOUND);
 
 					IO.trace("Temps écoulé");
 					synchronized (endRound) {
@@ -82,7 +85,7 @@ public class GameManager extends Thread {
 			public void run() {
 				try {
 					IO.trace("Début timer tour de Xs");
-					Thread.sleep(TROUND);
+					TimeUnit.SECONDS.sleep(TROUND);
 					IO.trace("Temps écoulé");
 					synchronized (endRound) {
 						endRound.notify();
@@ -115,7 +118,7 @@ public class GameManager extends Thread {
 
 				// Pause entre parties
 				try {
-					Thread.sleep(TPAUSE);
+					TimeUnit.SECONDS.sleep(TPAUSE);
 				} catch (InterruptedException e) {
 					IO.traceDebug("Jeu interrompu (ne devrait pas avoir lieu)");
 				}

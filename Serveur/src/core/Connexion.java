@@ -15,8 +15,8 @@ public class Connexion {
 	private BufferedReader inchan;
 	private PrintWriter outchan;
 
-	public Connexion(Socket socket, BufferedReader inchan,
-			PrintWriter outchan) throws SocketException {
+	public Connexion(Socket socket, BufferedReader inchan, PrintWriter outchan)
+			throws SocketException {
 		super();
 		this.socket = socket;
 		this.inchan = inchan;
@@ -39,23 +39,19 @@ public class Connexion {
 	}
 
 	public void close() throws IOException {
-		socket.shutdownInput(); //SEE!! redefinete game endler pour que IOException, on ferme socket et bye
+		socket.shutdownInput();
 		socket.shutdownOutput();
-		//BONUX TODO : relier au traceur en mode debug?
-		IO.traceDebug("Tentative fermeture Socket");
-//		inchan.close();
-		// HERE; ne peut la fermet acr quelqu'un lit dessus
-		IO.traceDebug("Inchan closed");
-//		outchan.close();
-		IO.traceDebug("Outchan closed");
-		socket.close(); // SEE fermée par permeture du chanell
+		// Note :induce IOException pour les writer/reader qui l'utilise, meme si
+		// peut éventuellement etre caché par le buffer
+		socket.close();
+		// Note: socket fermée par fermeture des channels avec close
 		IO.traceDebug("Socket fermée");
 	}
 
 	public void send(String message) throws IOException {
 
 		outchan.println(message);
-		// if not autoflush use:  outchan.flush(); 
+		// if not autoflush use: outchan.flush();
 	}
 
 	public String getCommand() throws IOException {

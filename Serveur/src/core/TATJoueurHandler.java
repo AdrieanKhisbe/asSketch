@@ -2,7 +2,6 @@ package core;
 
 import game.Joueur;
 
-import java.io.EOFException;
 import java.io.IOException;
 
 import tools.IO;
@@ -85,7 +84,6 @@ public class TATJoueurHandler extends Thread {
 					break;
 
 				case "SET_LINE":
-
 					try {
 						gm.addLigne(Integer.parseInt(parsedCommand[1]),
 								Integer.parseInt(parsedCommand[2]),
@@ -123,19 +121,30 @@ public class TATJoueurHandler extends Thread {
 				// TODO talk
 
 				}
-			} catch (EOFException e) {
+			} catch (NullPointerException e) {
 				// Note: avec Buffered Reader, les endOfFile exception sont
-				// cachées, il faut tester si readline renvoit pas null
+				// cachées (comme toutes les IOExceptions)
+				// il faut tester si readline renvoit pas null
+				// on préférera utiliser une exception 
 				IO.trace("CONNEXION coupéeee");
-				// Buffered reader realine don't throw it!!!!
-				// HERE: handle disconnexion.
+
+				// TODO HERE: handle exit si dessinateur!! (todo: fonction
+				// réutilisée avec exit
+
+				server.removeJoueur(gamer);
+				server.broadcastJoueurs(Protocol.newExited(gamer));
+				// TODO: comment distingue avec fin de partie?
+				IO.traceDebug("Thread gestionnaire de " + gamer
+						+ " s'arrete suite à la déconnexion de ce dernier");
+				// ? se retirer liste des kistener?
+				return;
 
 			} catch (IOException e) {
 				IO.traceDebug("IO exception: " + e.getMessage());
 				// continue boucle SEE change?
 			} catch (InvalidCommandException e) {
 				gamer.send(Protocol.newInvalidCommand(e));
-			} // TODO
+			} 
 
 		}
 
