@@ -100,6 +100,10 @@ in.close();
 Java tuts
 
 fair threads? : http://www-sop.inria.fr/mimosa/rp/FairThreads/FTJava/documentation/FairThreads.html
+Time Unit enum!: http://thecodersbreakfast.net/index.php?post/2011/01/04/Au-coeur-du-JDK-%3A-TimeUnit
+TimeUnit.HOURS.toMillis(1), TimeUnit.MINUTES.sleep(1);
+
+
 *** Paths
 
 http://docs.oracle.com/javase/tutorial/essential/io/pathOps.html

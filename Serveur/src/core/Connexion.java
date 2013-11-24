@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+import tools.IO;
+
 public class Connexion {
 
 	private Socket socket;
@@ -37,10 +39,17 @@ public class Connexion {
 	}
 
 	public void close() throws IOException {
+		socket.shutdownInput(); //SEE!! redefinete game endler pour que IOException, on ferme socket et bye
+		socket.shutdownOutput();
 		//BONUX TODO : relier au traceur en mode debug?
-		inchan.close();
-		outchan.close();
-		socket.close();
+		IO.traceDebug("Tentative fermeture Socket");
+//		inchan.close();
+		// HERE; ne peut la fermet acr quelqu'un lit dessus
+		IO.traceDebug("Inchan closed");
+//		outchan.close();
+		IO.traceDebug("Outchan closed");
+		socket.close(); // SEE fermée par permeture du chanell
+		IO.traceDebug("Socket fermée");
 	}
 
 	public void send(String message) throws IOException {

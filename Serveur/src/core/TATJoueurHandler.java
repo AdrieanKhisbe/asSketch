@@ -2,6 +2,7 @@ package core;
 
 import game.Joueur;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import tools.IO;
@@ -10,8 +11,8 @@ import core.exceptions.InvalidCommandException;
 
 public class TATJoueurHandler extends Thread {
 
-	//BONUX: DP State...
-	
+	// BONUX: DP State...
+
 	final Joueur gamer;
 	final String username;
 	final Server server;
@@ -27,7 +28,7 @@ public class TATJoueurHandler extends Thread {
 		this.username = gamer.getUsername();
 		this.server = server;
 		gm = server.getGameManager();
-		
+
 		// TEMP
 		this.setDaemon(true);
 	}
@@ -43,12 +44,12 @@ public class TATJoueurHandler extends Thread {
 				// parse
 				String[] parsedCommand = Protocol.parseCommand(textCommand,
 						gamer.getRoleCourrant());
-				
-//				StringBuffer sb = new StringBuffer();
-//						for(String i : parsedCommand)
-//							sb.append(i).append(":");
-//						
-//				IO.traceDebug(sb.toString());
+
+				// StringBuffer sb = new StringBuffer();
+				// for(String i : parsedCommand)
+				// sb.append(i).append(":");
+				//
+				// IO.traceDebug(sb.toString());
 
 				// Handle
 
@@ -70,47 +71,64 @@ public class TATJoueurHandler extends Thread {
 					server.broadcastJoueurs(Protocol.newExited(gamer));
 
 					return;
-					
+
 				case "SKIP":
-					//TODO; cf exit du dessinateur
+					// TODO; cf exit du dessinateur
 					break;
-					
+
 				case "WARN":
 					gm.notifyCheat(gamer);
 					break;
-					
+
 				case "GUESS":
 					gm.tryGuess(gamer, parsedCommand[1]);
 					break;
 
 				case "SET_LINE":
-					// non atteignable si pas de partie en cours (CHECK)
-					// TODO: passer par game manager?
-					gm.addLigne(Integer.parseInt(parsedCommand[1]),
-							Integer.parseInt(parsedCommand[2]),
-							Integer.parseInt(parsedCommand[3]),
-							Integer.parseInt(parsedCommand[4]));
+
+					try {
+						gm.addLigne(Integer.parseInt(parsedCommand[1]),
+								Integer.parseInt(parsedCommand[2]),
+								Integer.parseInt(parsedCommand[3]),
+								Integer.parseInt(parsedCommand[4]));
+					} catch (NumberFormatException e) {
+						throw new InvalidCommandException(
+								"Les arguments doivent être des nombres");
+					}
+
 					// 404
 					break;
 
 				case "SET_SIZE":
-					// non atteignable si pas de partie en cours (CHECK)
-					// TODO: passer par game manager?
-					gm.setSize(Integer.parseInt(parsedCommand[1]));
+
+					try {
+						gm.setSize(Integer.parseInt(parsedCommand[1]));
+					} catch (NumberFormatException e) {
+						throw new InvalidCommandException(
+								"Les arguments doivent être des nombres");
+					}
 					break;
 
 				case "SET_COLOR":
-					// non atteignable si pas de partie en cours (CHECK)
-					// TODO: passer par game manager?
-					gm.setColor(Integer.parseInt(parsedCommand[1]),
-							Integer.parseInt(parsedCommand[2]),
-							Integer.parseInt(parsedCommand[3]));
+					try {
+						gm.setColor(Integer.parseInt(parsedCommand[1]),
+								Integer.parseInt(parsedCommand[2]),
+								Integer.parseInt(parsedCommand[3]));
+					} catch (NumberFormatException e) {
+						throw new InvalidCommandException(
+								"Les arguments doivent être des nombres");
+					}
 					break;
-					
-					//TODO talk
-					
-					
+
+				// TODO talk
+
 				}
+			} catch (EOFException e) {
+				// Note: avec Buffered Reader, les endOfFile exception sont
+				// cachées, il faut tester si readline renvoit pas null
+				IO.trace("CONNEXION coupéeee");
+				// Buffered reader realine don't throw it!!!!
+				// HERE: handle disconnexion.
 
 			} catch (IOException e) {
 				IO.traceDebug("IO exception: " + e.getMessage());

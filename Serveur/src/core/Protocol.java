@@ -55,9 +55,11 @@ public class Protocol {
 		IO.traceDebug("Message reçu: " + command );
 		
 		
-		// TODO Handle échappement ? \/
+		// Handle échappement ? \/
+		String[] tokens = command.split("(?<!\\\\)/");
+		// Déséchappement autres caractères TODO
+		//TODO: échapement des chaines envoyées devra aussi être fait!
 		
-		String[] tokens = command.split("/");
 		CommandParameter cp = gameCommand.get(tokens[0]);
 		if (cp == null)
 			throw new UnknownCommandException(tokens[0]);
@@ -161,7 +163,9 @@ public class Protocol {
 		return "INVALID_COMMAND/" + e.getMessage().replace(" ", "_") + "/";
 	}
 
-
+public static void main(String[] args) throws InvalidCommandException {
+	System.out.println(Protocol.parseCommand("CONNECT/AA\\/ABC",Role.nonconnecté)[1]);
+}
 
 }
 

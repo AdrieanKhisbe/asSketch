@@ -8,8 +8,6 @@ import game.Role;
 import game.Round;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,14 +31,14 @@ public class GameManager extends Thread {
 
 	// Timer
 	private final ExecutorService timer;
-	private final Object endRound; // HERE : switch to atomic (utilisé quand partie anulée)
-	// ou objet etat. 
-	private final AtomicBoolean wordFound; 
+	private final Object endRound; // HERE : switch to atomic (utilisé quand
+									// partie anulée)
+	// ou objet etat.
+	private final AtomicBoolean wordFound;
 	private final Runnable timerGame;
 	private final Runnable timerFound;
 
 	// Cheat Warning
-	Set<Joueur> cheatWarningList;
 
 	// Rounds
 	ArrayList<Round> rounds;
@@ -59,8 +57,6 @@ public class GameManager extends Thread {
 		this.timer = Executors.newFixedThreadPool(2);
 		this.wordFound = new AtomicBoolean(false); // used as sync var
 		this.endRound = new Object();
-
-		this.cheatWarningList = new HashSet<>();
 
 		this.timerFound = new Runnable() {
 			@Override
@@ -190,7 +186,6 @@ public class GameManager extends Thread {
 		// arrete les timer si tournent encore
 		futureGame.cancel(true);
 		futureFound.cancel(true);
-		cheatWarningList.clear(); // later if use info
 
 		// remet joueur etat indéterminé
 		for (Joueur j : joueurs.getJoueurs()) {
@@ -201,8 +196,8 @@ public class GameManager extends Thread {
 		// Gère résultats
 		ArrayList<Joueur> trouveurs = tourCourrant.getTrouveurs();
 
-		//compute score 
-		// TODO handle skip, quit, 
+		// compute score
+		// TODO handle skip, quit,
 		if (!trouveurs.isEmpty()) {
 
 			broadcastJoueurs(Protocol.newEndRound(trouveurs.get(0), mot));
@@ -238,8 +233,8 @@ public class GameManager extends Thread {
 
 	// /////////////////////
 	// Méthodes ou les game Joueur Handler envoient message!
+	// TODO: syncrhonized to change. (so delete synchronize block) Voir
 
-	// TODO: syncrhonized to change. (so delete synchronize block
 	void tryGuess(Joueur j, String mot) {
 		// CHECK in game statut
 
@@ -298,17 +293,16 @@ public class GameManager extends Thread {
 	}
 
 	void notifyCheat(Joueur j) {
-		synchronized (cheatWarningList) {
-			if (cheatWarningList.add(j)) {
-				IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
-				broadcastJoueurs(Protocol.newWarned(j));
-				if(cheatWarningList.size() >= NBCHEATWARN){
-					IO.trace("Trop c'est trop, on arrete de jouer");
-					synchronized (endRound) {
-						endRound.notify();
-					}
+
+		if (tourCourrant.addCheatWarn(j)) {
+			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
+			broadcastJoueurs(Protocol.newWarned(j));
+			if (tourCourrant.getNbWarn() >= NBCHEATWARN) {
+				IO.trace("Trop c'est trop, on arrete de jouer");
+				synchronized (endRound) {
+					endRound.notify();
 				}
-				
+
 			} else {
 				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
 				// MAYBE: balance mot protocole

@@ -15,8 +15,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import tools.IO;
 import core.ASSketchServer.Options;
@@ -38,10 +36,6 @@ public class Server extends Thread {
 	private ConnexionHandler ch[];
 	private ArrayList<TATJoueurHandler> gamerListeners;
 
-	// TODO Thread handler
-	// Pool worker DIS
-	private ExecutorService workers;
-
 	private GameManager gm;
 
 	// EXT Spectateur
@@ -54,7 +48,6 @@ public class Server extends Thread {
 	 *            les options crées avec JCommander
 	 */
 	public Server(Options opt) {
-		
 
 		try {
 
@@ -76,10 +69,6 @@ public class Server extends Thread {
 			}
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<TATJoueurHandler>();
-
-			workers = Executors.newFixedThreadPool(nbMax);
-			// PARAM
-			// See: differents excutors
 
 			// TODO: initialisation des threads
 
@@ -180,23 +169,22 @@ public class Server extends Thread {
 
 		// cs.setDaemon(true); DIS TODO (le temps nbloquant
 		cs.start();
-		for (ConnexionHandler chi : ch){
+		for (ConnexionHandler chi : ch) {
 
 			chi.setDaemon(true);
 			chi.start();
 		}
 		// SEE plus rien d'autre à faire?
-		
-		//TODO: find way que soit bloqué ici le temps de lancer gamemanager.
+
+		// TODO: find way que soit bloqué ici le temps de lancer gamemanager.
 		try {
 			// gm tourne pas encore...
 			gm.join();
-		
+
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -216,19 +204,20 @@ public class Server extends Thread {
 			try {
 				while (true) {
 					client = sockServ.accept();
-					
+
 					// TEMPORARY (possible leak)
-					PrintWriter outchan = new PrintWriter(client.getOutputStream(), true); 
-					
+					PrintWriter outchan = new PrintWriter(
+							client.getOutputStream(), true);
+
 					outchan.print(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 							+ "<cross-domain-policy>"
 							+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
 							+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
 							+ "</cross-domain-policy>\0");
 					// Flash handling
+					IO.traceDebug("Putain de policy envoyé automatiquement....");
 					outchan.flush();
-					
-					
+
 					IO.trace("Nouvelle connexion incoming mise en attente.");
 					synchronized (waitingSockets) {
 						addWaitingSocket(client);
@@ -289,8 +278,8 @@ public class Server extends Thread {
 
 					inchan = new BufferedReader(new InputStreamReader(
 							client.getInputStream()));
-					outchan = new PrintWriter(client.getOutputStream(), true); 
-					// nota    :autoflush
+					outchan = new PrintWriter(client.getOutputStream(), true);
+					// nota :autoflush
 
 					// Met un timeout à la lecture sur la socket
 					client.setSoTimeout(4000); // BONUX: temps augmente au fur
@@ -313,12 +302,14 @@ public class Server extends Thread {
 										+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
 										+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
 										+ "</cross-domain-policy>\0");
+
 								// Flash handling
 								outchan.flush();
 								// read new command
 								IO.traceDebug("Policy file envoyé");
 								// closeConnexion("BYEBYE");
-								//IO.traceDebug("fermé connexion Action");
+								// IO.traceDebug("fermé connexion Action");
+
 								continue HandleLoop;
 								// se déconnecte immédiatement
 							}
@@ -331,6 +322,7 @@ public class Server extends Thread {
 							if (waitingConnexion()) {
 								IO.traceDebug("Autre socket en attente, renvoie dormir celle courante.");
 								// inchan.close();outchan.close(); // SEE
+								// (risque fermer socket)
 								// restore?
 								synchronized (waitingSockets) {
 									waitingSockets.add(client);
@@ -373,7 +365,7 @@ public class Server extends Thread {
 									Joueur jou = new Joueur(con, joueurName);
 
 									addGamerListener(jou);
-									
+
 									IO.traceDebug("Envoi confirmation connexion");
 
 									// confirm me
@@ -422,7 +414,10 @@ public class Server extends Thread {
 				} catch (SocketException se) {
 					IO.trace("Socket deconnectée avant connexion joueur");
 					// TODO close connection??
-
+				} catch (NullPointerException e) {
+					// TODO ?? rajoute
+					IO.traceDebug("Déconnexion barbabre (null)");
+					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO ?? rajoute
 					e.printStackTrace();

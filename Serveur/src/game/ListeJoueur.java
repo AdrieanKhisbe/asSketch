@@ -95,7 +95,7 @@ public class ListeJoueur {
 		for(Joueur j : joueurs){
 		IO.trace(j.toString());
 		// FIXME 
-			//	j.close();
+				j.close();
 		// buggée: le close broadcast le message ????
 		}
 		//joueurs.clear();
