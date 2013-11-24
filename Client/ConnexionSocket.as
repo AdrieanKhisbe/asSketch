@@ -71,4 +71,5 @@
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{			var xText:XML = new XML(sText);
+			scene.traceBug.text += " --- " +sText;
 			connexion.send(xText);		}	}}
