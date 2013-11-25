@@ -113,6 +113,9 @@ public class GameManager extends Thread {
 			if (joueurs.checkStillConnected(dessinateur)) {
 				IO.trace("Nouveau Round n°" + i + ", dessinateur "
 						+ dessinateur);
+				
+				// TODO: check s'il reste au moins plus d'un joueur en lice!
+				
 				manageRound(dessinateur);
 				i++;
 
@@ -265,7 +268,7 @@ public class GameManager extends Thread {
 			}
 
 		} else {
-			broadcastJoueurs(Protocol.newGuess(j,mot));
+			broadcastJoueurs(Protocol.newGuess(j, mot));
 			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 
@@ -310,6 +313,21 @@ public class GameManager extends Thread {
 				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
 				// MAYBE: balance mot protocole
 			}
+		}
+
+	}
+
+	public void handleDessinateurExit() {
+
+		if (wordFound.get()) {
+			IO.trace("Mot trouvé, le jeu continue donc");
+		} else {
+			synchronized (endRound) {
+				endRound.notify();
+			}
+			IO.trace("Le dessinateur étant parti sans que personne ait trouvé: interrompt round");
+			// TODO message ?
+
 		}
 
 	}

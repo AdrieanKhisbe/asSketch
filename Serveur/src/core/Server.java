@@ -36,7 +36,8 @@ public class Server extends Thread {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
-	private ArrayList<JoueurHandler> gamerListeners;
+	private ArrayList<JoueurHandler> gamerListeners; 
+	// BONUX: descendre au niveau du game handler quand mise en place rooms
 
 	private AtomicBoolean gameOn;
 	private GameManager gm;
@@ -50,7 +51,7 @@ public class Server extends Thread {
 	 * @param opt
 	 *            les options crées avec JCommander
 	 */
-	public Server(Options opt) {
+	public Server(final Options opt) {
 
 		this.setName("Server");
 		try {

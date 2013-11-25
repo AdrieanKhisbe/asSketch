@@ -41,8 +41,8 @@ public class Connexion {
 	public void close() throws IOException {
 		socket.shutdownInput();
 		socket.shutdownOutput();
-		// Note :induce IOException pour les writer/reader qui l'utilise, meme si
-		// peut éventuellement etre caché par le buffer
+		// Note :induce IOException pour les writer/reader qui l'utilise, meme
+		// si peut éventuellement etre caché par le buffer
 		socket.close();
 		// Note: socket fermée par fermeture des channels avec close
 		IO.traceDebug("Socket fermée");
@@ -50,7 +50,9 @@ public class Connexion {
 
 	public void send(String message) throws IOException {
 
-		outchan.println(message);
+		outchan.print(message + "\n\u0000"); // SEE flash test
+		outchan.flush();
+		// outchan.println(message);
 		// if not autoflush use: outchan.flush();
 	}
 

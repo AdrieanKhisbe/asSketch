@@ -1,12 +1,14 @@
 package core;
 
 import game.Joueur;
+import game.Role;
 
 import java.io.IOException;
 
 import tools.IO;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
+import core.exceptions.UnknownCommandException;
 
 public class JoueurHandler extends Thread {
 
@@ -59,19 +61,8 @@ public class JoueurHandler extends Thread {
 							throw new IllegalCommandException(
 									"Nom Joueur Invalide");
 
-						// HERE: gérer si dessintaeur
-						// Notify le game manager? : TODO: fonction dans
-						// gamemanager
-
-						gamer.send(Protocol.newExited(gamer));
-						// close connexion
-						server.removeJoueur(gamer);
-						gamer.close();
-
-						// avertit autre joueur
-						server.broadcastJoueurs(Protocol.newExited(gamer));
-
-						return;
+						manageExit(true);
+						break; // non atteint
 
 					case "SKIP":
 						// TODO; cf exit du dessinateur
@@ -120,61 +111,76 @@ public class JoueurHandler extends Thread {
 						}
 						break;
 
-					// TODO talk
+					case "TALK":
+						gm.broadcastJoueursExcept(
+								Protocol.newListen(gamer, parsedCommand[1]),
+								gamer);
+						// SEE ?? up to game manager?
+						break;
+
+					default:
+						// devrait pas arriver la en théorie.
+						throw new UnknownCommandException(
+								"Command inconnue, check if upcase");
 
 					}
+
 				} catch (NullPointerException e) {
 					// Note: avec Buffered Reader, les endOfFile exception sont
 					// cachées (comme toutes les IOExceptions)
 					// il faut tester si readline renvoit pas null
 					// on préférera utiliser une exception
 					IO.trace("CONNEXION coupéeee");
-					manageExit();
-					// ? se retirer liste des kistener?
-					return;
+					manageExit(false);
 
 				} catch (IOException e) {
 					IO.traceDebug("IO exception: " + e.getMessage());
-					// continue boucle SEE change?
+					manageExit(false);
 				} catch (InvalidCommandException e) {
 					gamer.send(Protocol.newInvalidCommand(e));
 
 				}
 
-			} //end while
+			} // end while
+
 		} catch (ExitException e) {
-			
-			// MAYBE ou mettre code de gestion directement ici
+
+			// MAYBE ou mettre code de gestion directement ici?
+
+			// retire le threads des handler.
 			IO.traceDebug("Arret du thread handler courant");
 
 		}
 
 	}
 
-	private void manageExit() throws ExitException {
-		// Si jeux non lancé
-		if (!server.isInGame()) {
+	private synchronized void manageExit(boolean cleanExit)
+			throws ExitException {
+		// Si jeux non lancé: if (!server.isInGame()) {NOtused?
 
-			// retire liste, et se tue.
-			throw new ExitException();
+		// retire liste, et se tue.
+		if (cleanExit) {
+			server.broadcastJoueurs(Protocol.newExited(gamer));
+			gamer.close();
 		}
+		server.removeJoueur(gamer);
 
 		// Si dessinateur
+		if (gamer.getRoleCourrant().equals(Role.dessinateur)) {
+			gm.handleDessinateurExit();
+		}
 
-		// teste mot trouvé
-
-		// sinon
-		server.removeJoueur(gamer);
-		server.broadcastJoueurs(Protocol.newExited(gamer));
-		// TODO: comment distingue avec fin de partie?
 		IO.traceDebug("Thread gestionnaire de " + gamer
 				+ " s'arrete suite à la déconnexion de ce dernier");
+		throw new ExitException();
 
-		// Fin de partie??
+		// SEE Fin de partie??
 
 	}
 
+	// SEE that usefull?
 	class ExitException extends Exception {
 
+		private static final long serialVersionUID = 7237200611853588544L;
 	}
 }

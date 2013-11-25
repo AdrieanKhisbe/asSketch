@@ -16,10 +16,20 @@ import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
 import core.exceptions.WrongArityCommandException;
 
+/**
+ * Classe Utilitaire à propos du protocole, tant en émission (MessageBuilder)
+ * qu'en réception (parser et checker)
+ * 
+ * @author adriean
+ * 
+ */
 public class Protocol {
 
 	// TODO BONUX: check typage.....
 
+	/**
+	 * Hashmap contenant les COmmande valide, leur arité, et Etat associé.
+	 */
 	private static final HashMap<String, CommandParameter> gameCommand = new HashMap<>();
 
 	static { // Génère la liste des commandes
@@ -45,19 +55,30 @@ public class Protocol {
 		// considère que tous peuvent parler. meme si cheat possible
 	}
 
+	/**
+	 * S'assure confrmité de la commande avant de la retourner splitée
+	 * 
+	 * @param command
+	 *            La commande à tester
+	 * @param roleCourant
+	 *            Le role du joueur géré par le handler
+	 * @return Le commande tokenisée
+	 * @throws InvalidCommandException
+	 *             Exception si commande non conforme protocole
+	 */
 	static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
 		IO.traceDebug("Message reçu: " + command);
 
-		// Handle échappement ? \/
 		// Gestion des échappement
 		command.replaceAll("\u0000", ""); // suppression chaines Javascript
 		command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
 		// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
+
+		// Découpe
 		String[] tokens = command.split("(?<!\\\\)/");
 
-		// Déséchappement autres caractères TODO
 		// TODO: échapement des chaines envoyées devra aussi être fait!
 
 		CommandParameter cp = gameCommand.get(tokens[0]);
@@ -82,7 +103,10 @@ public class Protocol {
 
 	}
 
-	// Command Generators!
+	/**
+	 * Command Generators! Créer des Chaine de caractères correspondant aux
+	 * commandes émises.
+	 */
 	// createur de commandes: un peu bazooka
 	// BONUX: see si on aurait pu macro générer ceci?
 
@@ -165,6 +189,17 @@ public class Protocol {
 		return "INVALID_COMMAND/" + e.getMessage().replace(" ", "_") + "/";
 	}
 
+	public static String newListen(Joueur emetteur, String message) {
+		return "LISTEN/" + emetteur.getUsername() + "/"
+				+ message.replace("/", "\\/").replace("\\", "\\\\") + "/";
+	}
+
+	/**
+	 * Main ponctuel de test
+	 * 
+	 * @param args
+	 * @throws InvalidCommandException
+	 */
 	public static void main(String[] args) throws InvalidCommandException {
 		System.out.println(Protocol.parseCommand("CONNECT/AA\\/ABC",
 				Role.nonconnecté)[1]);
@@ -172,6 +207,10 @@ public class Protocol {
 
 }
 
+/**
+ * Objet local pour stocker les données relative à une commande, Lerole associé,
+ * ainsi que l'arité BONUX: utiliser un tableau pour le typage?
+ */
 class CommandParameter {
 
 	Role role;
