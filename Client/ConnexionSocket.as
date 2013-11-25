@@ -22,7 +22,9 @@
 				scene.bug.text="connexion couper";				scene.gotoAndStop(1);				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{
 				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN2(e:SecurityErrorEvent):void		{
 				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
-						var tabData:Array = Evt.data.split("/");			if (tabData[0] == "CONNECTED")			{
+			var s:String = Evt.data;
+			s = s.replace("\n","");
+			scene.traceBug.text +=  "reçus : "+s+"\n";			var tabData:Array = s.split("/");			if (tabData[0] == "CONNECTED")			{
 				//CONNECTED/user/
 				InterfaceSock.clientCo(tabData[1]);			}			else if (tabData[0] == "EXITED")			{
 				//EXITED/user/
@@ -70,6 +72,6 @@
 				//ERROR/x
 			}		}
 		
-				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{			var xText:XML = new XML(sText);
-			scene.traceBug.text += " --- " +sText;
-			connexion.send(xText);		}	}}
+				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{
+			scene.traceBug.text +=  "envoyé : "+sText+"\n";
+			connexion.send(sText+ "\n");		}	}}

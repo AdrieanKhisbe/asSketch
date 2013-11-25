@@ -31,8 +31,6 @@
 		//Cree LE client 
 		public function addNew(pseudo:String):void{
 			this.currentUser = new User(pseudo);
-			tabClients.push(currentUser);
-			this.lesCo.addC(currentUser); // ajoute le pseudo dans la fenetre des connecté
 		}
 		
 		

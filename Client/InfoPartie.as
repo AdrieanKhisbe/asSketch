@@ -28,6 +28,7 @@
 			this.vain.visible=false;
 			minutes = 3;
 			secondes = 0;
+			myTimer.reset();
 			myTimer.start();
 			myTimer.addEventListener("timer", InitTimer);
 			this.start=true;
