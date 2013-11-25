@@ -265,7 +265,7 @@ public class GameManager extends Thread {
 			}
 
 		} else {
-			broadcastJoueurs(Protocol.newGuess(mot));
+			broadcastJoueurs(Protocol.newGuess(j,mot));
 			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 

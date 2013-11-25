@@ -1,5 +1,6 @@
 package core;
 
+// MAYBE : move to tools?
 import game.Joueur;
 import game.Ligne;
 import game.Role;
@@ -7,6 +8,7 @@ import game.Role;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import tools.IO;
 import core.exceptions.IllegalCommandException;
@@ -22,44 +24,42 @@ public class Protocol {
 
 	static { // Génère la liste des commandes
 		// CONNECT & EXIT
-		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté,
-				1));
+		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté, 1));
 
-		gameCommand
-				.put("EXIT", new CommandParameter(Role.indéterminé, 1));
+		gameCommand.put("EXIT", new CommandParameter(Role.indéterminé, 1));
 
 		// SUGGESTION
 		gameCommand.put("GUESS", new CommandParameter(Role.chercheur, 1));
-		
+
 		gameCommand.put("WARN", new CommandParameter(Role.chercheur, 1));
 		gameCommand.put("SKIP", new CommandParameter(Role.dessinateur, 1));
 
 		// DESSIN
 
-		gameCommand.put("SET_COLOR", new CommandParameter(Role.chercheur,
-				3));
-		gameCommand.put("SET_SIZE", new CommandParameter(
-				Role.dessinateur, 1));
-		gameCommand.put("SET_LINE", new CommandParameter(
-				Role.dessinateur, 4));
+		gameCommand.put("SET_COLOR", new CommandParameter(Role.chercheur, 3));
+		gameCommand.put("SET_SIZE", new CommandParameter(Role.dessinateur, 1));
+		gameCommand.put("SET_LINE", new CommandParameter(Role.dessinateur, 4));
 
 		// TALK
-		gameCommand
-				.put("TALK", new CommandParameter(Role.indéterminé, 1));
+		gameCommand.put("TALK", new CommandParameter(Role.indéterminé, 1));
 		// considère que tous peuvent parler. meme si cheat possible
 	}
 
 	static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
-		IO.traceDebug("Message reçu: " + command );
-		
-		
+		IO.traceDebug("Message reçu: " + command);
+
 		// Handle échappement ? \/
+		// Gestion des échappement
+		command.replaceAll("\u0000", ""); // suppression chaines Javascript
+		command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
+		// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
 		String[] tokens = command.split("(?<!\\\\)/");
+
 		// Déséchappement autres caractères TODO
-		//TODO: échapement des chaines envoyées devra aussi être fait!
-		
+		// TODO: échapement des chaines envoyées devra aussi être fait!
+
 		CommandParameter cp = gameCommand.get(tokens[0]);
 		if (cp == null)
 			throw new UnknownCommandException(tokens[0]);
@@ -98,8 +98,8 @@ public class Protocol {
 		return "NEW_ROUND/chercheur/" + dessinateur.getUsername() + "/";
 	}
 
-	public static String newGuess(String mot) {
-		return "GUESSED/" + mot + "/";
+	public static String newGuess(Joueur j, String mot) {
+		return "GUESSED/" + j + "/" + mot + "/";
 	}
 
 	public static String newWordFound(Joueur j) {
@@ -112,24 +112,24 @@ public class Protocol {
 
 	// si j null, pas de vainqueurs donc Looooser
 	public static String newEndRound(Joueur j, String mot) {
-		return "END_ROND/" + ((j != null) ? j.getUsername() : "LOSERS")
-				+ "/" + mot + "/";
+		return "END_ROND/" + ((j != null) ? j.getUsername() : "LOSERS") + "/"
+				+ mot + "/";
 	}
 
 	public static String newScoreRound(ArrayList<Joueur> joueurs) { // PARAM
 		// TODO
 		StringBuffer sb = new StringBuffer("SCORE_ROUND/");
-		for(Joueur j : joueurs){
+		for (Joueur j : joueurs) {
 			sb.append(j.getUsername()).append("/");
 			sb.append(j.getScore()).append("/");
 		}
 		return sb.toString();
 	}
-	
+
 	public static String newScoreGame(ArrayList<Joueur> joueurs) {
 		StringBuffer sb = new StringBuffer("SCORE_GAME/");
 		// BONUX: score by score....
-		for(Joueur j : joueurs){
+		for (Joueur j : joueurs) {
 			sb.append(j.getUsername()).append("/");
 			sb.append(j.getScore()).append("/");
 		}
@@ -151,9 +151,11 @@ public class Protocol {
 	public static String newExited(Joueur j) {
 		return "EXITED/" + j.getUsername() + "/";
 	}
+
 	public static String newSkip(Joueur j) {
 		return "SKIPED/" + j.getUsername() + "/"; // SEE: redondant
 	}
+
 	public static String newWarned(Joueur j) {
 		return "WARNED/" + j.getUsername() + "/";
 	}
@@ -163,9 +165,10 @@ public class Protocol {
 		return "INVALID_COMMAND/" + e.getMessage().replace(" ", "_") + "/";
 	}
 
-public static void main(String[] args) throws InvalidCommandException {
-	System.out.println(Protocol.parseCommand("CONNECT/AA\\/ABC",Role.nonconnecté)[1]);
-}
+	public static void main(String[] args) throws InvalidCommandException {
+		System.out.println(Protocol.parseCommand("CONNECT/AA\\/ABC",
+				Role.nonconnecté)[1]);
+	}
 
 }
 
@@ -178,7 +181,5 @@ class CommandParameter {
 		this.role = r;
 		this.arité = arité;
 	}
-	
-	
-}
 
+}

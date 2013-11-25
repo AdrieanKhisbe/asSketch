@@ -36,7 +36,7 @@ public class Server extends Thread {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
-	private ArrayList<TATJoueurHandler> gamerListeners;
+	private ArrayList<JoueurHandler> gamerListeners;
 
 	private AtomicBoolean gameOn;
 	private GameManager gm;
@@ -75,7 +75,7 @@ public class Server extends Thread {
 				ch[i] = new ConnexionHandler(i);
 			}
 			gm = new GameManager(this, joueurs, dico);
-			gamerListeners = new ArrayList<TATJoueurHandler>();
+			gamerListeners = new ArrayList<JoueurHandler>();
 
 		} catch (IOException e) {
 			// BONUX To improve error handling (ressayer ouvrir Serversocket)
@@ -95,11 +95,15 @@ public class Server extends Thread {
 
 	/** Socket Handling */
 
+	public synchronized boolean isInGame(){
+		return gameOn.get();
+	}
+	
 	public synchronized void addWaitingSocket(Socket s) {
 		waitingSockets.add(s);
 	}
 
-	boolean waitingConnexion() {
+	synchronized boolean waitingConnexion() {
 		return (waitingSockets.size() != 0);
 	}
 
@@ -108,12 +112,12 @@ public class Server extends Thread {
 	}
 
 	/** Joueurs Handling */
-	public void addJoueur(Joueur j) {
+	public synchronized void addJoueur(Joueur j) {
 		joueurs.addJoueur(j);
 	}
 
 	// KEEP?
-	public void removeJoueur(Joueur j) {
+	public synchronized void removeJoueur(Joueur j) {
 		joueurs.removeJoueur(j);
 	}
 
@@ -155,7 +159,7 @@ public class Server extends Thread {
 	}
 
 	private void addGamerListener(Joueur j) {
-		TATJoueurHandler gl = new TATJoueurHandler(this, j);
+		JoueurHandler gl = new JoueurHandler(this, j);
 		synchronized (gamerListeners) {
 			gamerListeners.add(gl);
 			gl.start();
