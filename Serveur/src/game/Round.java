@@ -31,6 +31,11 @@ public class Round {
 		trouveurs = new ArrayList<>();
 		this.cheatWarningList = new HashSet<>();
 		sketch = new Dessin();
+          
+          // Valeur défaulrs
+           currentColor = new Couleur();
+	currentSize= 12;
+          
 	}
 
 	public Joueur getDessinateur() {

@@ -41,7 +41,7 @@
 		}
 		public static function traceTrait(x1:int,y1:int,x2:int,y2:int)
 		{
-			scene.connexion.sendText("SET_SIZE/" + x1 +"/"+ y1 +"/"+ x2 +"/"+ y2);
+			scene.connexion.sendText("SET_LINE/" + x1 +"/"+ y1 +"/"+ x2 +"/"+ y2);
 		}
 		
 		//Fonction Serveur->Client
@@ -68,7 +68,7 @@
 			}
 		}
 		public static function reponseC(mot:String,user:String){
-			scene.mainFenetre.reponse.addT(user+ " : " + mot);
+			scene.mainFenetre.reponse.addT(mot+ " : " + user);
 		}
 		public static function trouveC(user:String){
 			scene.mainFenetre.reponse.addT("***** " + user +" a trouvé le mot !");

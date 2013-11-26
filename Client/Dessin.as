@@ -8,6 +8,7 @@
 	import flash.display.BitmapData;
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
+	import flash.display3D.IndexBuffer3D;
 	
 	public class Dessin extends MovieClip {
 		var pal:Object;
@@ -153,8 +154,15 @@
 		}
 		function startDrawing(event:MouseEvent):void {	
 			 with(DRAW){
+				InterfaceSock.traceTrait(zone.mouseX,zone.mouseX,zone.mouseY,zone.mouseY);
 				graph.graphics.lineTo(zone.mouseX,zone.mouseY);
-			}}
+			}
+		}
+		function dessinExt(x1:int,y1:):void {	
+			 with(DRAW){
+				graph.graphics.lineTo();
+			}
+		}
 		function deleteStage(event:MouseEvent):void {
 			with(DRAW)graph.graphics.clear();
 		}

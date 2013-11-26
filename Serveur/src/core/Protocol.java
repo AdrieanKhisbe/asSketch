@@ -72,8 +72,8 @@ public class Protocol {
 		IO.traceDebug("Message reçu: " + command);
 
 		// Gestion des échappement
-		command.replaceAll("\u0000", ""); // suppression chaines Javascript
-		command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
+                    command = command.replaceAll("\u0000", ""); // suppression chaines Javascript
+		 command = command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
 		// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
 
 		// Découpe
@@ -123,7 +123,7 @@ public class Protocol {
 	}
 
 	public static String newGuess(Joueur j, String mot) {
-		return "GUESSED/" + j + "/" + mot + "/";
+		return "GUESSED/" + j.getUsername() + "/" + mot + "/";
 	}
 
 	public static String newWordFound(Joueur j) {

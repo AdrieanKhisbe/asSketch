@@ -1,5 +1,7 @@
 package game;
 
+import tools.IO;
+
 public class Ligne extends Forme {
 
 	final Integer x1;
@@ -46,5 +48,9 @@ public class Ligne extends Forme {
 				+ couleur.b + ")";
 		// Format more readable
 	}
-
+    
+     
+     public static void main(String[] a) {
+     IO.trace(new Ligne(1,2,3,4,6, new Couleur()).toString());    
+     }
 }

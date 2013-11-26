@@ -18,6 +18,8 @@ public abstract class Forme {
 
 	public abstract String toCommand();
 
+     
+    @Override
 	public abstract String toString();
 
 }

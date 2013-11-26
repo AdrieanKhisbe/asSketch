@@ -77,6 +77,7 @@ public class JoueurHandler extends Thread {
 						break;
 
 					case "SET_LINE":
+                             IO.trace("lignegnegnegn");
 						try {
 							gm.addLigne(Integer.parseInt(parsedCommand[1]),
 									Integer.parseInt(parsedCommand[2]),
@@ -130,6 +131,7 @@ public class JoueurHandler extends Thread {
 					// cachées (comme toutes les IOExceptions)
 					// il faut tester si readline renvoit pas null
 					// on préférera utiliser une exception
+                          e.printStackTrace();
 					IO.trace("CONNEXION coupéeee");
 					manageExit(false);
 
@@ -137,6 +139,8 @@ public class JoueurHandler extends Thread {
 					IO.traceDebug("IO exception: " + e.getMessage());
 					manageExit(false);
 				} catch (InvalidCommandException e) {
+                      
+                        IO.traceDebug("Commande invalide reçue:"+gamer.getUsername()+": "+ e.getMessage());
 					gamer.send(Protocol.newInvalidCommand(e));
 
 				}
