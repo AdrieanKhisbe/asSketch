@@ -152,17 +152,31 @@
 			TweenMax.to(DRAW, 0, {});
 			DRAW.zone.removeEventListener(MouseEvent.MOUSE_MOVE,startDrawing);
 		}
+		
+		
+		
+		
 		function startDrawing(event:MouseEvent):void {	
 			 with(DRAW){
 				InterfaceSock.traceTrait(zone.mouseX,zone.mouseX,zone.mouseY,zone.mouseY);
 				graph.graphics.lineTo(zone.mouseX,zone.mouseY);
 			}
 		}
-		function dessinExt(x1:int,y1:):void {	
-			 with(DRAW){
-				graph.graphics.lineTo();
+		
+		function dessinExt(x1:int,y1:int,x2:int,y2:int):void {	
+			 with(DRAW){size=fsize;
+				 TweenMax.to(DRAW, 1, {  onUpdate:upSize});
+				graph.graphics.moveTo(x1,y1);
+				graph.graphics.lineTo(x2+1,y2+1);
 			}
 		}
+		
+		
+		
+		
+		
+		
+		
 		function deleteStage(event:MouseEvent):void {
 			with(DRAW)graph.graphics.clear();
 		}

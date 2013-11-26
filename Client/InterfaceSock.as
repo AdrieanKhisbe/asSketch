@@ -98,9 +98,13 @@
 			while(true) {
 				if(getTimer() - init >= ms) {
 					break;
-        }
-    }
-}
+				}
+			}
+		}
+		
+		static function drawL(x1:int,y1:int,x2:int,y2:int){
+			scene.mainFenetre.dessin.dessinExt(x1,y1,x2,y2);
+		}
 		
 		
 	}
