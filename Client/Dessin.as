@@ -17,18 +17,14 @@
 		var fenetre:Fenetre;
 		
 		public function Dessin(fenetre:Fenetre) {
-			fenetre.debug.text = "a";
 			this.fenetre=fenetre;
-			fenetre.debug.text = "b";
 		}
 		
 		public function afficherThis(){
-			fenetre.debug.text = "c";
 			fenetre.addChild(this);
-			fenetre.debug.text = "d";
 			drawer(675,600, 1);
 			PALETTE(2);
-			fenetre.debug.text = "fina";
+			this.dessinExt(0,0,0,0);//Debug premeir ligne 
 		}
 		
 		public function effacerThis(){
@@ -139,15 +135,25 @@
 		}
 		
 		function handleMouseDown(event:MouseEvent):void {	
-		  with(DRAW){size=fsize;
+		  with(DRAW){
+			size=fsize;
+			InterfaceSock.x1 = zone.mouseX;
+			InterfaceSock.y1 = zone.mouseY;
+			  
 			//size  = 1;
 			//graph.graphics.lineStyle(size,color);
+			  
 			graph.graphics.lineStyle(undefined);
-			graph.graphics.moveTo(zone.mouseX,zone.mouseY);
+			
+			graph.graphics.moveTo(InterfaceSock.x1,InterfaceSock.y1);
+			
 			zone.addEventListener(MouseEvent.MOUSE_MOVE,startDrawing);
 			zone.addEventListener(MouseEvent.MOUSE_OUT,handleMouseUp);
 			TweenMax.to(DRAW, 1, {  onUpdate:upSize});
-		}}
+			
+			}
+		}
+		
 		function handleMouseUp(event:MouseEvent):void {
 			TweenMax.to(DRAW, 0, {});
 			DRAW.zone.removeEventListener(MouseEvent.MOUSE_MOVE,startDrawing);
@@ -158,16 +164,18 @@
 		
 		function startDrawing(event:MouseEvent):void {	
 			 with(DRAW){
-				InterfaceSock.traceTrait(zone.mouseX,zone.mouseX,zone.mouseY,zone.mouseY);
-				graph.graphics.lineTo(zone.mouseX,zone.mouseY);
+				var x2:int = zone.mouseX, y2:int = zone.mouseY;
+				InterfaceSock.traceTrait(x2,y2);
+				graph.graphics.lineTo(x2,y2);
 			}
 		}
 		
 		function dessinExt(x1:int,y1:int,x2:int,y2:int):void {	
-			 with(DRAW){size=fsize;
-				 TweenMax.to(DRAW, 1, {  onUpdate:upSize});
+			 with(DRAW){
+				size=fsize;
+				TweenMax.to(DRAW, 1, {  onUpdate:upSize});
 				graph.graphics.moveTo(x1,y1);
-				graph.graphics.lineTo(x2+1,y2+1);
+				graph.graphics.lineTo(x2,y2);
 			}
 		}
 		

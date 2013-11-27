@@ -7,6 +7,10 @@
 	public class InterfaceSock extends MovieClip {
 		public static var scene:MovieClip;
 		public static var pseudo:String;
+		public static var x1:int;
+		public static var y1:int;
+		public static var xB:int;
+		public static var yB:int;
 		
 		public function InterfaceSock(s:MovieClip) {
 			scene=s;
@@ -39,9 +43,20 @@
 		{
 			scene.connexion.sendText("SET_SIZE/" + s);
 		}
-		public static function traceTrait(x1:int,y1:int,x2:int,y2:int)
+		public static function traceTrait(x2:int,y2:int)
 		{
-			scene.connexion.sendText("SET_LINE/" + x1 +"/"+ y1 +"/"+ x2 +"/"+ y2);
+			//scene.connexion.sendText("SET_LINE/" + x2 +"/"+ y2 +"/"+ x2 +"/"+ y2);
+			if(x1 != -1 && y1 != -1){
+				xB = x2;
+				yB = y2;
+				scene.connexion.sendText("SET_LINE/" + x1 +"/"+ y1 +"/"+ x2 +"/"+ y2);
+				x1 = -1 ;
+				y1 = -1 ;
+			}else{
+				x1= x2;
+				y1 = y2;
+				scene.connexion.sendText("SET_LINE/" + xB +"/"+ yB +"/"+ x2 +"/"+ y2);
+			}
 		}
 		
 		//Fonction Serveur->Client
@@ -102,7 +117,7 @@
 			}
 		}
 		
-		static function drawL(x1:int,y1:int,x2:int,y2:int){
+		static function drawL(x1:int,x2:int,y1:int,y2:int){
 			scene.mainFenetre.dessin.dessinExt(x1,y1,x2,y2);
 		}
 		
