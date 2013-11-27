@@ -46,7 +46,7 @@ public class Protocol {
 
 		// DESSIN
 
-		gameCommand.put("SET_COLOR", new CommandParameter(Role.chercheur, 3));
+		gameCommand.put("SET_COLOR", new CommandParameter(Role.dessinateur, 3));
 		gameCommand.put("SET_SIZE", new CommandParameter(Role.dessinateur, 1));
 		gameCommand.put("SET_LINE", new CommandParameter(Role.dessinateur, 4));
 
@@ -69,14 +69,19 @@ public class Protocol {
 	static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
+		// suppression chaines actionscript \0
+		// MAYBE : check le mode?
+		command = command.replaceAll("\u0000", ""); 
+		
 		IO.traceDebug("Message reçu: " + command);
 
 		
 		// HERE CHECK handling of Action chains!!
 		
 		// Gestion des échappement
-                    command = command.replaceAll("\u0000", ""); // suppression chaines Javascript
-		 command = command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
+		command = command
+				.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
+
 		// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
 
 		// Découpe
@@ -93,15 +98,14 @@ public class Protocol {
 			throw new WrongArityCommandException("expected arity:" + cp.arité
 					+ "; was " + nbArgs);
 
-		// check legalité
+		// check "légalité" commande
 		if (cp.equals(Role.indéterminé)) {
-			// what?
+			// Dans ce cas, c'est Okay.
 		} else if (!roleCourant.equals(cp.role)) {
 			throw new IllegalCommandException("command " + tokens[0]
 					+ " not available for " + roleCourant);
 		}
 
-		// TODO HERE
 		return tokens;
 
 	}

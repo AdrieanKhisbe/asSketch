@@ -278,7 +278,7 @@ public class GameManager extends Thread {
 
 	void addLigne(Integer x1, Integer y1,
 	// SEE: surchage communication, traite ptetre pas au bon niveau. (mais à
-	// vouloirdséparer donnée de envoi message)
+	// vouloir séparer donnée de envoi message)
 			Integer x2, Integer y2) {
 
 		Joueur d = tourCourrant.getDessinateur();
