@@ -26,17 +26,19 @@ import core.exceptions.WrongArityCommandException;
 public class Server extends Thread {
 
 	// BONUX: see finals?
-	private ServerSocket sockServ;
 
+	private Options options; // KEEP?
 	private Integer port;
 	protected Integer nbMax;
 	protected Dictionnaire dico;
 
 	// Threads and connexions
+	private ServerSocket sockServ;
+
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
-	private ArrayList<JoueurHandler> gamerListeners; 
+	private ArrayList<JoueurHandler> gamerListeners;
 	// BONUX: descendre au niveau du game handler quand mise en place rooms
 
 	private AtomicBoolean gameOn;
@@ -44,6 +46,14 @@ public class Server extends Thread {
 
 	// EXT Spectateur
 	protected ListeJoueur joueurs;
+
+	// Autres
+	private boolean actionMode;
+	private final static String ACTION_POLICY_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+			+ "<cross-domain-policy>"
+			+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
+			+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
+			+ "</cross-domain-policy>\0";
 
 	/**
 	 * Simple constructeurs
@@ -57,8 +67,9 @@ public class Server extends Thread {
 		try {
 
 			// OBJECTS
+			options = opt;
 			dico = new Dictionnaire(opt.dico);
-
+			actionMode = opt.actionMode;
 			nbMax = opt.nbJoueurs;
 			joueurs = new ListeJoueur(nbMax);
 
@@ -77,6 +88,10 @@ public class Server extends Thread {
 			}
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<JoueurHandler>();
+			
+			if(actionMode){
+				IO.trace("Mode Action Script mis en place!");
+			}
 
 		} catch (IOException e) {
 			// BONUX To improve error handling (ressayer ouvrir Serversocket)
@@ -96,10 +111,10 @@ public class Server extends Thread {
 
 	/** Socket Handling */
 
-	public synchronized boolean isInGame(){
+	public synchronized boolean isInGame() {
 		return gameOn.get();
 	}
-	
+
 	public synchronized void addWaitingSocket(Socket s) {
 		waitingSockets.add(s);
 	}
@@ -224,18 +239,17 @@ public class Server extends Thread {
 				while (true) {
 					client = sockServ.accept();
 
+					// Traitement spécifique Actionscript
 					// TEMPORARY (possible leak)
+					if(actionMode){
 					PrintWriter outchan = new PrintWriter(
 							client.getOutputStream(), true);
 
-					outchan.print(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-							+ "<cross-domain-policy>"
-							+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
-							+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
-							+ "</cross-domain-policy>\0");
+					outchan.print(ACTION_POLICY_STRING);
 					// Flash handling
 					IO.traceDebug("Putain de policy envoyé automatiquement....");
 					outchan.flush();
+					}
 
 					IO.trace("Nouvelle connexion incoming mise en attente.");
 					synchronized (waitingSockets) {
@@ -314,13 +328,9 @@ public class Server extends Thread {
 							// TODO: handle raw deconnection
 
 							// Handling of ActionsScript ask
-							if (command.contains("policy-file-request")) {
+							if (actionMode && command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
-								outchan.print(" <?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-										+ "<cross-domain-policy>"
-										+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
-										+ "<site-control permitted-cross-domain-policies=\"master-only\" />"
-										+ "</cross-domain-policy>\0");
+								outchan.print(ACTION_POLICY_STRING);
 
 								// Flash handling
 								outchan.flush();

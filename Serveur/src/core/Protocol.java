@@ -71,6 +71,9 @@ public class Protocol {
 
 		IO.traceDebug("Message reçu: " + command);
 
+		
+		// HERE CHECK handling of Action chains!!
+		
 		// Gestion des échappement
                     command = command.replaceAll("\u0000", ""); // suppression chaines Javascript
 		 command = command.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));

@@ -116,7 +116,7 @@ public class JoueurHandler extends Thread {
 						gm.broadcastJoueursExcept(
 								Protocol.newListen(gamer, parsedCommand[1]),
 								gamer);
-						// SEE ?? up to game manager?
+						// SEE ? broadcast up to game manager?
 						break;
 
 					default:

@@ -15,8 +15,8 @@ public class Dessin {
 
 	public Ligne addLine(Integer x1, Integer y1, Integer x2, Integer y2,
 			Integer taille, Couleur couleur) {
-		Ligne l = new Ligne(x1, x2, y1, y2, taille, couleur);
-		IO.trace("Ligne ajoutée: " + l); // ASK bien de mettre traceur ici?
+		Ligne l = new Ligne(x1, y1, x2, y2, taille, couleur);
+		IO.traceDebug("Ligne ajoutée: " + l); 
 		tracés.add(l);
 		return l;
 	}
