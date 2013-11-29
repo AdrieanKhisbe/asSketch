@@ -1,11 +1,8 @@
 package core;
 
 import game.Dictionnaire;
-import game.Joueur;
-import game.Ligne;
-import game.ListeJoueur;
-import game.Role;
 import game.Round;
+import graphiques.Ligne;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -14,13 +11,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import joueurs.Joueur;
+import joueurs.ListeJoueur;
+import joueurs.Role;
 import tools.IO;
+import tools.Protocol;
 
 public class GameManager extends Thread {
-	private static final int TROUND = 60; // en secondes
-	private static final int TFOUND = 5; // TODO, récupérer opt. PAsser
-											// directement l'objet au
-											// constructeur
+	// BONUX, DP: singleton config!!
+	private static final int TROUND = 180; // en secondes
+	private static final int TFOUND = 30;
+	// directement l'objet au  constructeur
 	private static final int TPAUSE = 5;
 	private static final int NBCHEATWARN = 3;
 	// fusionné avec partie
@@ -34,9 +35,9 @@ public class GameManager extends Thread {
 
 	// Timer
 	private final ExecutorService timer;
-	private final Object endRound; // HERE : switch to atomic (utilisé quand
-									// partie anulée)
-	// ou objet etat.
+	private final Object endRound; 
+	// HERE : switch to atomic (utilisé quand partie annulée)
+	// ou enum Etat dans round avec statut fin partie
 	private final AtomicBoolean wordFound;
 	private final Runnable timerGame;
 	private final Runnable timerFound;
@@ -113,9 +114,9 @@ public class GameManager extends Thread {
 			if (joueurs.checkStillConnected(dessinateur)) {
 				IO.trace("Nouveau Round n°" + i + ", dessinateur "
 						+ dessinateur);
-				
+
 				// TODO: check s'il reste au moins plus d'un joueur en lice!
-				
+
 				manageRound(dessinateur);
 				i++;
 
@@ -137,8 +138,7 @@ public class GameManager extends Thread {
 		broadcastJoueurs("GOODBYE/");
 		// suppress game object/
 		IO.trace("Avant joueur close!!");
-		joueurs.close(); // LOCK induces FIXME
-
+		joueurs.close(); 
 		timer.shutdown();
 		IO.trace("Fini de Joueur!!");
 

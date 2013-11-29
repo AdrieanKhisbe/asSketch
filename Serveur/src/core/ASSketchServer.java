@@ -40,7 +40,7 @@ public class ASSketchServer {
 		// Nota: visibilité default pour les options initialisant le serveur
 		
 		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joeurs")
-		Integer nbJoueurs = 2;
+		Integer nbJoueurs = 2; //TODO change once test over.
 
 
 		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")
@@ -60,8 +60,7 @@ public class ASSketchServer {
 		private boolean help;
 		
 		@Parameter(names = { "-a", "--actionscript" }, help = true, hidden = true)
-		boolean actionMode;			
-		// TODO HERE ? mode no action scripty policy send? 
+		boolean actionMode;	
 
 		public void parse(String[] arguments) {
 			JCommander jcp = new JCommander(this, arguments);

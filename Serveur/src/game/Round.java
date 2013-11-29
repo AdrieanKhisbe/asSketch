@@ -1,8 +1,15 @@
 package game;
 
+import graphiques.Couleur;
+import graphiques.Dessin;
+import graphiques.Ligne;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import joueurs.Joueur;
+import joueurs.Role;
 
 public class Round {
 
@@ -10,13 +17,11 @@ public class Round {
 
 	final Joueur dessinateur;
 	final ArrayList<Joueur> chercheurs;
-	final ArrayList<Joueur> trouveurs; // ? good idea?
+	final ArrayList<Joueur> trouveurs; 
 	Set<Joueur> cheatWarningList;
 
 	final Dessin sketch;
 	final String mot; // copy
-	// GameManager gm;
-	// final Object wordFound; //DIS
 
 	Couleur currentColor;
 	Integer currentSize;
@@ -31,11 +36,11 @@ public class Round {
 		trouveurs = new ArrayList<>();
 		this.cheatWarningList = new HashSet<>();
 		sketch = new Dessin();
-          
-          // Valeur défaulrs
-           currentColor = new Couleur();
-	currentSize= 12;
-          
+
+		// Valeur défaulrs
+		currentColor = new Couleur(); // black
+		currentSize = 5;
+
 	}
 
 	public Joueur getDessinateur() {
@@ -88,16 +93,15 @@ public class Round {
 	public synchronized boolean guess(String essai) {
 		return mot.toLowerCase().equals(essai.toLowerCase());
 	}
-	
-	public synchronized boolean addCheatWarn(Joueur j){
+
+	public synchronized boolean addCheatWarn(Joueur j) {
 		return cheatWarningList.add(j);
 	}
-	
-	public synchronized Integer getNbWarn(){
+
+	public synchronized Integer getNbWarn() {
 		return cheatWarningList.size();
 	}
-	
+
 	// TODO: end turn: FIGE, et set la raison victoire
-	
-	
+
 }

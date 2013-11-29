@@ -1,4 +1,4 @@
-notesConstruction project
+#+TITLE: notesConstruction project
 
 * Jcommander
 
@@ -134,6 +134,13 @@ si fait run, exécuté dans le code courant
 client.setSoTimeout(3000);
 catch (SocketTimeoutException ste)
 #+END_SRC
+** Tools, extendtion
+générer comment javadoc!
+http://stackoverflow.com/questions/2530043/any-way-to-auto-generate-all-javadoc-comments-in-eclipse
+
+http://jautodoc.sourceforge.net/
+JAutodoc is an Eclipse Plugin for automatically adding Javadoc and file headers to your source code
+
 * Idées
 
 traceur:

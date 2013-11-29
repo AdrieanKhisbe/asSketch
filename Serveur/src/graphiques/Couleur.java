@@ -1,13 +1,26 @@
-package game;
+package graphiques;
 
+/**
+ * Simple Classe couleur format RGB
+ * @author 2863379
+ *
+ */
 public class Couleur {
 
 	Integer r;
 	Integer g;
 	Integer b;
 
-	// Todo: range checking: 0/255
+	// BONUX: range checking: 0/255
+	// to hsv.
 
+	
+	/**
+	 * Constructeur Couleur
+	 * @param r rouge
+	 * @param g vert/green
+	 * @param b bleu
+	 */
 	public Couleur(int r, int g, int b) {
 
 		this.r = r;
@@ -15,12 +28,19 @@ public class Couleur {
 		this.b = b;
 	}
 
+	/**
+	 * Constructeur noir par default
+	 */
 	public Couleur() {
-		this(255, 255, 255);
-		// default color
+		this(0,0,0);
+		
 	}
 
 	// RENAME
+	/**
+	 * Construit le code  #rrggbb
+	 * @return chaine de couleur format hexademal
+	 */
 	public String toHexa() {
 
 		return "#" + Integer.toHexString(0x100 | r).substring(1)
@@ -36,6 +56,9 @@ public class Couleur {
 
 	}
 
+	/**
+	 * To String classique r/g/b/
+	 */
 	public String toString() {
 		return r + "/" + g + "/" + b + "/";
 	}

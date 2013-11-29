@@ -1,16 +1,15 @@
-package core;
+package tools;
 
 // MAYBE : move to tools?
-import game.Joueur;
-import game.Ligne;
-import game.Role;
+import graphiques.Ligne;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import tools.IO;
+import joueurs.Joueur;
+import joueurs.Role;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
@@ -66,23 +65,22 @@ public class Protocol {
 	 * @throws InvalidCommandException
 	 *             Exception si commande non conforme protocole
 	 */
-	static String[] parseCommand(String command, Role roleCourant)
+	public static String[] parseCommand(String command, Role roleCourant)
 			throws InvalidCommandException {
 
 		// suppression chaines actionscript \0
-		// MAYBE : check le mode?
+		// TODO MAYBE : check le mode?
+		/// revoir si singleton option mis en place
 		command = command.replaceAll("\u0000", ""); 
 		
 		IO.traceDebug("Message reçu: " + command);
 
 		
-		// HERE CHECK handling of Action chains!!
-		
 		// Gestion des échappement
 		command = command
 				.replaceAll(Pattern.quote("\\\\"), Pattern.quote("\\"));
 
-		// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
+		/// command.replaceAll(Pattern.quote("\\'"), Pattern.quote("'"));
 
 		// Découpe
 		String[] tokens = command.split("(?<!\\\\)/");
@@ -114,7 +112,7 @@ public class Protocol {
 	 * Command Generators! Créer des Chaine de caractères correspondant aux
 	 * commandes émises.
 	 */
-	// createur de commandes: un peu bazooka
+	/// createur de commandes: un peu bazooka
 	// BONUX: see si on aurait pu macro générer ceci?
 
 	public static String newConnected(Joueur j) {
@@ -142,6 +140,7 @@ public class Protocol {
 	}
 
 	// si j null, pas de vainqueurs donc Looooser
+	// MAYBE: update avec nouveau protocole
 	public static String newEndRound(Joueur j, String mot) {
 		return "END_ROND/" + ((j != null) ? j.getUsername() : "LOSERS") + "/"
 				+ mot + "/";

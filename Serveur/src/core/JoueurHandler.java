@@ -1,11 +1,11 @@
 package core;
 
-import game.Joueur;
-import game.Role;
-
 import java.io.IOException;
 
+import joueurs.Joueur;
+import joueurs.Role;
 import tools.IO;
+import tools.Protocol;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
@@ -18,8 +18,6 @@ public class JoueurHandler extends Thread {
 	final String username;
 	final Server server;
 	final GameManager gm;
-
-	// HERE tourCourrant, partie courante?
 
 	// What else?
 

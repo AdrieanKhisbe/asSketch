@@ -1,9 +1,6 @@
 package core;
 
 import game.Dictionnaire;
-import game.Joueur;
-import game.ListeJoueur;
-import game.Role;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +14,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import joueurs.Joueur;
+import joueurs.ListeJoueur;
+import joueurs.Role;
 import tools.IO;
+import tools.Protocol;
 import core.ASSketchServer.Options;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
@@ -342,7 +343,6 @@ public class Server extends Thread {
 								continue HandleLoop;
 								// se déconnecte immédiatement
 							}
-							// FIXME
 
 							break TryReadTimeout;
 

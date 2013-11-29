@@ -1,4 +1,4 @@
-package game;
+package graphiques;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package game;
+package joueurs;
 
 import java.util.ArrayList;
 import java.util.Collections;
