@@ -5,6 +5,9 @@ import game.Round;
 import graphiques.Ligne;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,7 +24,7 @@ public class GameManager extends Thread {
 	// BONUX, DP: singleton config!!
 	private static final int TROUND = 180; // en secondes
 	private static final int TFOUND = 30;
-	// directement l'objet au  constructeur
+	// directement l'objet au constructeur
 	private static final int TPAUSE = 5;
 	private static final int NBCHEATWARN = 3;
 	// fusionné avec partie
@@ -35,7 +38,7 @@ public class GameManager extends Thread {
 
 	// Timer
 	private final ExecutorService timer;
-	private final Object endRound; 
+	private final Object endRound;
 	// HERE : switch to atomic (utilisé quand partie annulée)
 	// ou enum Etat dans round avec statut fin partie
 	private final AtomicBoolean wordFound;
@@ -47,8 +50,6 @@ public class GameManager extends Thread {
 	// Rounds
 	ArrayList<Round> rounds;
 	Round tourCourrant;
-
-	// SEE usefull?
 
 	public GameManager(Server server, ListeJoueur joueurs, Dictionnaire dico) {
 		this.setName("Game Manager");
@@ -111,6 +112,12 @@ public class GameManager extends Thread {
 
 		for (Joueur dessinateur : joueurs.getOrdre()) {
 			// Check si joueur ne s'est pas déconnecté entretemps
+
+			if (joueurs.getJoueurs().size() <= 1) {
+				IO.trace("Plus qu'un seul joueur en lice, on arrete");
+				break;
+			}
+
 			if (joueurs.checkStillConnected(dessinateur)) {
 				IO.trace("Nouveau Round n°" + i + ", dessinateur "
 						+ dessinateur);
@@ -133,12 +140,34 @@ public class GameManager extends Thread {
 			}
 
 		}
-		//
-		broadcastJoueurs(Protocol.newScoreGame(joueurs.getJoueurs()));
+		// Handle score game
+		// HERE
+		// ordonne list par Result
+		synchronized (joueurs) {
+			List<Joueur> finalJoueurs = joueurs.getJoueurs();
+			// tri liste
+			Collections.sort(finalJoueurs, new Comparator<Joueur>() {
+				@Override
+				public int compare(Joueur o1, Joueur o2) {
+					return o1.compareResult(o2);
+				} // TODO to joueur comparateur
+			});
+			broadcastJoueurs(Protocol.newScoreGame(finalJoueurs));
+			// Mise à jour "position"
+			int pos = 1;
+			for (Joueur j : finalJoueurs) {
+				// BONUX ! handle ex aeqo
+				j.setFinalPosition(pos);
+				// TODO: save si joueur enregistré
+				pos++;
+			}
+			IO.trace("Ordre d'arrivé: " + finalJoueurs.toString());
+
+		}
+
 		broadcastJoueurs("GOODBYE/");
-		// suppress game object/
-		IO.trace("Avant joueur close!!");
-		joueurs.close(); 
+		joueurs.close();
+
 		timer.shutdown();
 		IO.trace("Fini de Joueur!!");
 
@@ -247,7 +276,7 @@ public class GameManager extends Thread {
 		// Si bonne suggestion
 		if (tourCourrant.guess(mot)) {
 			IO.trace("Guess réussi de " + j + " : " + mot);
-
+			j.addMotTrouvé();
 			tourCourrant.setHasFound(j);
 
 			broadcastJoueurs(Protocol.newWordFound(j));
@@ -269,6 +298,7 @@ public class GameManager extends Thread {
 
 		} else {
 			broadcastJoueurs(Protocol.newGuess(j, mot));
+			j.addFalseSuggestion();
 			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 
@@ -317,6 +347,8 @@ public class GameManager extends Thread {
 
 	}
 
+	// TODO: handle exit: gerer arret partit si tous le monde gone. (laisse
+	// tomber calcul scores)
 	public void handleDessinateurExit() {
 
 		if (wordFound.get()) {

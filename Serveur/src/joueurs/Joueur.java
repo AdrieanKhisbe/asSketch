@@ -5,11 +5,11 @@ import java.io.IOException;
 import tools.IO;
 import core.Connexion;
 
+/// SEE syncrhonized ??
 public class Joueur {
 
 	private final String username;
-	private Integer score; 
-	// TODO : scoreTotal
+	public Resultat currentResult;
 
 	// There?? Regroup in connexion object?
 	private final Connexion connexion;
@@ -21,10 +21,9 @@ public class Joueur {
 	public Joueur(Connexion client, String login) throws IOException {
 		connexion = client;
 		username = login;
-		score = 0; // BONUX: refine when recreating client.
+		currentResult = new Resultat();
 
 		roleCourrant = Role.indéterminé;
-
 	}
 
 	public String toString() {
@@ -76,12 +75,30 @@ public class Joueur {
 	}
 
 	public Integer getScore() {
-		return score;
+		return currentResult.score;
 	}
 
 	public void addScore(Integer score) {
-		this.score += score;
+		currentResult.addScore(score);
 	}
+	
+	public void setFinalPosition(Integer pos){
+		currentResult.setPosition(pos);
+	}
+	
+	
+	public void addMotTrouvé(){
+		currentResult.addMotTrouvé();
+	}
+	
+	public void addFalseSuggestion(){
+		currentResult.addFalseSuggestion();
+	}
+	
+	public int compareResult(Joueur j){
+		return this.currentResult.compareTo(j.currentResult);
+	}
+	
 	
 	
 	

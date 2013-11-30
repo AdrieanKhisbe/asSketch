@@ -70,8 +70,6 @@ public class Round {
 	public synchronized Ligne addLigne(Integer x1, Integer y1, Integer x2,
 			Integer y2) {
 		return sketch.addLine(x1, y1, x2, y2, currentSize, currentColor);
-
-		// SEE DOUBT not good place?
 	}
 
 	public synchronized String getDessinCommands() {

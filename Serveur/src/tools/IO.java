@@ -17,7 +17,7 @@ public class IO {
 	static private BufferedWriter logwriter = null;
 	static private boolean printTime = true; //TODO
 	static private boolean printThread = true;
-	static private boolean debugMode = true;
+	static private boolean debugMode = false;
 	
 	// Timing
 	static private Calendar cal = Calendar.getInstance();
@@ -68,6 +68,14 @@ public class IO {
 	
 	public static void turnOffPrintTime (){
 		printTime = false;
+	}
+	
+	public static void turnOnDebugMode (){
+		debugMode = true;
+	}
+	
+	public static void turnOffDebugMode (){
+		debugMode = false;
 	}
 	
 	// TODO Overload (+ chaine println?)

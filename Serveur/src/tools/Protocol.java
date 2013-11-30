@@ -1,11 +1,11 @@
 package tools;
 
-// MAYBE : move to tools?
+// MAYBE : is tool the good place?
 import graphiques.Ligne;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import joueurs.Joueur;
@@ -142,11 +142,11 @@ public class Protocol {
 	// si j null, pas de vainqueurs donc Looooser
 	// MAYBE: update avec nouveau protocole
 	public static String newEndRound(Joueur j, String mot) {
-		return "END_ROND/" + ((j != null) ? j.getUsername() : "LOSERS") + "/"
+		return "END_ROUND/" + ((j != null) ? j.getUsername() : "LOSERS") + "/"
 				+ mot + "/";
 	}
 
-	public static String newScoreRound(ArrayList<Joueur> joueurs) { // PARAM
+	public static String newScoreRound(List<Joueur> joueurs) { // PARAM
 		// TODO
 		StringBuffer sb = new StringBuffer("SCORE_ROUND/");
 		for (Joueur j : joueurs) {
@@ -156,7 +156,7 @@ public class Protocol {
 		return sb.toString();
 	}
 
-	public static String newScoreGame(ArrayList<Joueur> joueurs) {
+	public static String newScoreGame(List<Joueur> joueurs) {
 		StringBuffer sb = new StringBuffer("SCORE_GAME/");
 		// BONUX: score by score....
 		for (Joueur j : joueurs) {

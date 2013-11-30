@@ -22,8 +22,10 @@ public class ASSketchServer {
 		mainArguments = arguments;
 		options.parse(mainArguments);
 
-		if (options.debug)
+		if (options.debug){
 			System.out.println(options);
+			IO.turnOnDebugMode();
+		} 
 
 		System.out.println("Lancement du serveur AssScketch"); 
 		Server asServer = new Server(options);
