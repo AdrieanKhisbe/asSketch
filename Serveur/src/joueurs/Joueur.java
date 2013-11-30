@@ -1,21 +1,24 @@
 package joueurs;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Comparator;
 
 import tools.IO;
 import core.Connexion;
 
 /// SEE syncrhonized ??
-public class Joueur {
+public class Joueur implements Serializable {
 
-	protected  final String username;
+	private static final long serialVersionUID = -7046469152632576540L;
+
+	protected final String username;
 	public Resultat currentResult;
 
 	// There?? Regroup in connexion object?
-	protected Connexion connexion;
+	protected transient Connexion connexion;
 
-	protected  Role roleCourrant;
+	protected transient Role roleCourrant; // CHECK
 
 	// TODO: autres variables à créer!
 
@@ -82,27 +85,25 @@ public class Joueur {
 	public void addScore(Integer score) {
 		currentResult.addScore(score);
 	}
-	
-	public void setFinalPosition(Integer pos){
+
+	public void setFinalPosition(Integer pos) {
 		currentResult.setPosition(pos);
 	}
-	
-	
-	public void addMotTrouvé(){
+
+	public void addMotTrouvé() {
 		currentResult.addMotTrouvé();
 	}
-	
-	public void addFalseSuggestion(){
+
+	public void addFalseSuggestion() {
 		currentResult.addFalseSuggestion();
 	}
-	
+
 	// Comparators
-	
-	
-	public int compareResult(Joueur j){
+
+	public int compareResult(Joueur j) {
 		return this.currentResult.compareTo(j.currentResult);
 	}
-	
+
 	/**
 	 * Comparateur entre joueurs
 	 */
@@ -112,8 +113,5 @@ public class Joueur {
 			return o1.compareResult(o2);
 		} // TODO to joueur comparateur
 	};
-	
-	
-	
 
 }

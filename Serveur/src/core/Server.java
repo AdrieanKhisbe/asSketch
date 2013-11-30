@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import joueurs.Comptes;
 import joueurs.Joueur;
 import joueurs.JoueurEnregistre;
 import joueurs.ListeJoueur;
@@ -48,7 +49,7 @@ public class Server extends Thread {
 	private GameManager gm;
 
 	// EXT Spectateur
-	protected TreeMap<String, JoueurEnregistre> comptesJoueurs; //HERE
+	protected Comptes comptesJoueurs; // HERE
 	protected ListeJoueur joueurs;
 	protected ArrayList<Connexion> spectateurs;
 
@@ -73,12 +74,18 @@ public class Server extends Thread {
 
 			// OBJECTS
 			options = opt;
-			dico = new Dictionnaire(opt.dico);
+			dico = new Dictionnaire(opt.dicoFile);
 			actionMode = opt.actionMode;
 			nbMax = opt.nbJoueurs;
 			joueurs = new ListeJoueur(nbMax);
 			spectateurs = new ArrayList<>();
-			this.comptesJoueurs = comptes;
+
+			try {
+				this.comptesJoueurs = Comptes.deserialize(opt.comptesFile);
+			} catch (IOException e) {
+				IO.trace("Problème avec fichier de comptes, commence avec fichier vierge");
+				this.comptesJoueurs = new Comptes();
+			}
 
 			port = opt.port;
 			sockServ = new ServerSocket(port);
@@ -95,8 +102,8 @@ public class Server extends Thread {
 			}
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<JoueurHandler>();
-			
-			if(actionMode){
+
+			if (actionMode) {
 				IO.trace("Mode Action Script mis en place!");
 			}
 
@@ -109,10 +116,11 @@ public class Server extends Thread {
 		}
 
 	} // End of Constructeur
-	public Server(final Options opt)
-	{
-		this(opt, new TreeMap<String, JoueurEnregistre> ()) ;
+
+	public Server(final Options opt) {
+		this(opt, new TreeMap<String, JoueurEnregistre>());
 	}
+
 	/** Getters */
 
 	GameManager getGameManager() {
@@ -198,7 +206,7 @@ public class Server extends Thread {
 	 */
 
 	public void run() {
-
+		
 		cs.setDaemon(true);
 		cs.start();
 		for (ConnexionHandler chi : ch) {
@@ -208,25 +216,32 @@ public class Server extends Thread {
 		}
 		IO.trace("Lancement des threads gérants les connexions entrantes");
 
-		synchronized (gameOn) {
-			try {
-				gameOn.wait();
-				gameOn.set(true);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				IO.trace("Erreur précédent le lancement de la partie");
+		// HERE
+		do {
+
+			synchronized (gameOn) {
+				try {
+					gameOn.wait();
+					gameOn.set(true);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					IO.trace("Erreur précédent le lancement de la partie");
+				}
 			}
-		}
-		IO.trace("Active game Manager");
-		gm.start();
+			IO.trace("Active game Manager");
+			gm.start();
 
-		try {
-			gm.join();
+			try {
+				gm.join();
 
-		} catch (InterruptedException e) {
-			IO.trace("Arret inattendu du serveur");
-		}
+			} catch (InterruptedException e) {
+				IO.trace("Arret inattendu du serveur");
+			}
+			
+			// HERE: restore environnemnt pour nouvelle partie! 
+			// probablement pas la meilleur organisation
+		} while (options.daemon);
 
 	}
 
@@ -249,14 +264,14 @@ public class Server extends Thread {
 
 					// Traitement spécifique Actionscript
 					// TEMPORARY (possible leak)
-					if(actionMode){
-					PrintWriter outchan = new PrintWriter(
-							client.getOutputStream(), true);
+					if (actionMode) {
+						PrintWriter outchan = new PrintWriter(
+								client.getOutputStream(), true);
 
-					outchan.print(ACTION_POLICY_STRING);
-					// Flash handling
-					IO.traceDebug("Putain de policy envoyé automatiquement....");
-					outchan.flush();
+						outchan.print(ACTION_POLICY_STRING);
+						// Flash handling
+						IO.traceDebug("Putain de policy envoyé automatiquement....");
+						outchan.flush();
 					}
 
 					IO.trace("Nouvelle connexion incoming mise en attente.");
@@ -336,7 +351,8 @@ public class Server extends Thread {
 							// TODO: handle raw deconnection
 
 							// Handling of ActionsScript ask
-							if (actionMode && command.contains("policy-file-request")) {
+							if (actionMode
+									&& command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
 								outchan.print(ACTION_POLICY_STRING);
 
@@ -381,9 +397,9 @@ public class Server extends Thread {
 						String[] tokens = Protocol.parseCommand(command,
 								Role.nonconnecté);
 
-							switch(tokens[0]){
-							case "CONNECT":
-							
+						switch (tokens[0]) {
+						case "CONNECT":
+
 							synchronized (joueurs) {
 								if (!joueurs.isLocked()) {
 
@@ -402,12 +418,14 @@ public class Server extends Thread {
 											inchan, outchan);
 									Joueur jou = new Joueur(con, joueurName);
 
+									// TODO FACTorize HERE
 									addGamerListener(jou);
 
 									IO.traceDebug("Envoi confirmation connexion");
 
-									// confirm me
+									// confirm me HERE
 									jou.send(Protocol.newConnected(jou));
+
 									// previens joueur courant autres connecté
 									for (Joueur j : joueurs.getJoueurs()) {
 										jou.send(Protocol.newConnected(j));
@@ -432,15 +450,50 @@ public class Server extends Thread {
 								}
 							}
 							break;
-							
-							
-							
-							case "REGISTER":
-							case "LOGIN":
-							case "SPECTATOR":
-								IO.trace("Not yet implemented");
-								closeConnexion("NOt_yet_implemented");
-							
+
+						case "REGISTER":
+							// token 1: user, token2 : mdp
+							JoueurEnregistre newJoueur;
+
+							synchronized (comptesJoueurs) {
+
+								if (!comptesJoueurs.isFreeUsername(tokens[1])) {
+									IO.trace("Tentative de creation compte pour nom déjà existant");
+									closeConnexion(Protocol.newAccessDenied());
+									break;
+								}
+
+								newJoueur = new JoueurEnregistre(new Connexion(
+										client, inchan, outchan), tokens[1],
+										tokens[2]);
+
+								// facto!!
+
+							}
+							break;
+
+						case "LOGIN":
+							JoueurEnregistre j = comptesJoueurs
+									.getJoueur(tokens[1]);
+							if (j == null) {
+								IO.trace("Tentative de login compte non existant");
+								closeConnexion(Protocol.newAccessDenied());
+								break;
+							}
+							if (!j.checkPassword(tokens[2])) {
+								IO.trace("Tentative de login avec mot de passe invalide");
+								closeConnexion(Protocol.newAccessDenied());
+								break;
+							}
+
+							// FACTO!!!!
+							// TODO HERE
+							break;
+
+						case "SPECTATOR":
+							IO.trace("Not yet implemented");
+							closeConnexion("NOt_yet_implemented");
+
 						}
 
 						// BONUX: spectateur

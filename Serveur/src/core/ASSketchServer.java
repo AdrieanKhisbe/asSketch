@@ -37,6 +37,8 @@ public class ASSketchServer {
 
 	/**
 	 * Options De asSketch
+	 * TODO Add more!!!
+	 * HERE: singleton mode!!
      */
 	public static class Options {
 		// Nota: visibilité default pour les options initialisant le serveur
@@ -49,12 +51,19 @@ public class ASSketchServer {
 		Integer port = 2013;
 
 		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
-		String dico = "dicotest"; // Dico test
+		String dicoFile = "dicotest"; // Dico test
 		// TODO: location to handle!! (mis à la racine pour l'instant)
 
+		@Parameter(names = "--comptes" , description = "Le fichier des comptes")
+		String comptesFile = "comptes.ser"; 
+		// TODO: location to handle!! (mis à la racine pour l'instant)
+		
 		@Parameter(names = { "timeout", "--timeout" }, description = "Délai après découverte d'un mot")
-		private Integer timeout = 2013;
+		private Integer timeout = 2013; //HERE : to adapt, and use!!
 
+		@Parameter(names = { "-d", "--daemon" }, description = "Serveur enchaine les parties (non oneshot)")
+		boolean daemon = false;
+		
 		@Parameter(names = { "d", "debug", "--debug" }, description = "Mode debug", hidden = true)
 		boolean debug = false;
 
@@ -81,7 +90,7 @@ public class ASSketchServer {
 			sb.append("Options:");
 			sb.append("\nmax " + nbJoueurs);
 			sb.append("\nport " + port);
-			sb.append("\ndico " + dico);
+			sb.append("\ndico " + dicoFile);
 			return sb.toString();
 		}
 	}

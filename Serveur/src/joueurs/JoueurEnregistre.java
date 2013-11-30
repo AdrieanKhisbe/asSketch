@@ -1,12 +1,16 @@
 package joueurs;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import core.Connexion;
 
-public class JoueurEnregistre extends Joueur {
+public class JoueurEnregistre extends Joueur implements Serializable {
 
+	private static final long serialVersionUID = 6884148533126977784L;
+	
+	
 	private String password;
 	private ArrayList<Resultat> scores;
 
