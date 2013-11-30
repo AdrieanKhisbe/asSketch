@@ -33,7 +33,7 @@ public class Comptes implements Serializable {
 	}
 
 	public synchronized boolean isFreeUsername(String name) {
-		return comptes.containsKey(name);
+		return ! comptes.containsKey(name);
 	}
 
 	public void serialize(String filepath) throws IOException {
@@ -67,4 +67,19 @@ public class Comptes implements Serializable {
 		return (Comptes) tmp;
 	}
 
+	@Override
+	public synchronized String toString(){
+		if(comptes.isEmpty()){
+			return "Aucun Compte!";
+		}
+		StringBuffer sb = new StringBuffer();
+		sb.append("Liste des comptes:\n");
+		for (String joueur : comptes.keySet())
+			sb.append(joueur).append(", ");
+		sb.append("et bientot plus! :) ");
+		
+		return sb.toString();
+		
+	}
+	
 }

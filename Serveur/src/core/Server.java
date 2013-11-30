@@ -404,6 +404,9 @@ public class Server extends Thread {
 										throw new IllegalCommandException(
 												"Existing Login");
 									}
+									// HERE : adapt, prendre aussi login
+									// existant . trouver appen au symbole à
+									// faire
 
 									// NOTE: à partir de ce stade là, en théorie
 									// tout est bon, donc on créer l'objet
@@ -412,31 +415,7 @@ public class Server extends Thread {
 											inchan, outchan);
 									Joueur jou = new Joueur(con, joueurName);
 
-									// TODO FACTorize HERE
-									addGamerListener(jou);
-
-									IO.traceDebug("Envoi confirmation connexion");
-
-									// confirm me HERE
-									jou.send(Protocol.newConnected(jou));
-
-									// previens joueur courant autres connecté
-									for (Joueur j : joueurs.getJoueurs()) {
-										jou.send(Protocol.newConnected(j));
-									}
-
-									// averti connexion autres joueurs
-									broadcastJoueursExcept(
-											Protocol.newConnected(jou), jou);
-
-									joueurs.addJoueur(jou);
-
-									// Lance le jeu si tout le monde est là
-									if (joueurs.isReady()) {
-										synchronized (gameOn) {
-											gameOn.notify();
-										}
-									}
+									setUpNewJoueur(jou);
 
 								} else {
 									IO.trace("Connexion Refusée, jeu plein");
@@ -455,33 +434,37 @@ public class Server extends Thread {
 									IO.trace("Tentative de creation compte pour nom déjà existant");
 									closeConnexion(Protocol.newAccessDenied());
 									break;
+									// TODO doit aussi checker si joueur utilise
+									// pas déjà ce nom!
 								}
 
 								newJoueur = new JoueurEnregistre(new Connexion(
 										client, inchan, outchan), tokens[1],
 										tokens[2]);
 
-								// facto!!
+								comptesJoueurs.addCompte(newJoueur);
 
 							}
+							setUpNewJoueur(newJoueur);
+
 							break;
 
 						case "LOGIN":
-							JoueurEnregistre j = comptesJoueurs
+							JoueurEnregistre joueurLog = comptesJoueurs
 									.getJoueur(tokens[1]);
-							if (j == null) {
+							if (joueurLog == null) {
 								IO.trace("Tentative de login compte non existant");
 								closeConnexion(Protocol.newAccessDenied());
 								break;
 							}
-							if (!j.checkPassword(tokens[2])) {
+							if (!joueurLog.checkPassword(tokens[2])) {
 								IO.trace("Tentative de login avec mot de passe invalide");
 								closeConnexion(Protocol.newAccessDenied());
 								break;
 							}
+							//HERE!! checker si pas déjà connnecté!!!
 
-							// FACTO!!!!
-							// TODO HERE
+							setUpNewJoueur(joueurLog);
 							break;
 
 						case "SPECTATOR":
@@ -520,8 +503,6 @@ public class Server extends Thread {
 
 		}
 
-		// TODO: del REFACTOR
-		// Q? Throws or Try
 		public void closeConnexion(String message) throws IOException {
 			outchan.println(message);
 			closeConnexion();
@@ -532,6 +513,34 @@ public class Server extends Thread {
 			inchan.close();
 			outchan.close();
 			client.close();
+		}
+
+		public void setUpNewJoueur(Joueur jou) {
+			IO.trace("Nouveau Joueur Connecté: " + jou.getUsername());
+
+			addGamerListener(jou);
+
+			// Confirme la connexion
+			IO.traceDebug("Envoi confirmation connexion");
+			jou.send(Protocol.newWelcomed(jou));
+
+			// Informe des autres joueurs
+			for (Joueur j : joueurs.getJoueurs()) {
+				jou.send(Protocol.newConnected(j));
+			}
+
+			// Averti les Autres joueurs du nouveau Joueur
+			broadcastJoueursExcept(Protocol.newConnected(jou), jou);
+
+			// Ajoute le joueur à la lisre des joueurs
+			joueurs.addJoueur(jou);
+
+			// Lance le jeu si tout le monde est là
+			if (joueurs.isReady()) {
+				synchronized (gameOn) {
+					gameOn.notify();
+				}
+			}
 		}
 
 	} // end of ConnexionHandler

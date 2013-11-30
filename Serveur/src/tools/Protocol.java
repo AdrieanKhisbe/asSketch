@@ -121,7 +121,10 @@ public class Protocol {
 	public static String newConnected(Joueur j) {
 		return "CONNECTED/" + j.getUsername() + "/";
 	}
-
+	public static String newWelcomed(Joueur j) {
+		return "WELCOME/" + j.getUsername() + "/";
+	}
+	
 	public static String newRoundDesinateur(String mot) {
 		return "NEW_ROUND/dessinateur/" + mot + "/";
 	}
@@ -217,6 +220,8 @@ public class Protocol {
 		System.out.println(Protocol.parseCommand("CONNECT/AA\\/ABC",
 				Role.nonconnecté)[1]);
 	}
+
+	
 
 }
 
