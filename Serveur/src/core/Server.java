@@ -12,7 +12,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import joueurs.Comptes;
@@ -22,7 +21,6 @@ import joueurs.ListeJoueur;
 import joueurs.Role;
 import tools.IO;
 import tools.Protocol;
-import core.ASSketchServer.Options;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.WrongArityCommandException;
@@ -30,8 +28,6 @@ import core.exceptions.WrongArityCommandException;
 public class Server extends Thread {
 
 	// BONUX: see finals?
-
-	private Options options; // KEEP? TODO HERE singleton!!
 	private Integer port;
 	protected Integer nbMax;
 	protected Dictionnaire dico;
@@ -67,27 +63,28 @@ public class Server extends Thread {
 	 * @param opt
 	 *            les options crées avec JCommander
 	 */
-	public Server(final Options opt, TreeMap<String, JoueurEnregistre> comptes) {
+	public Server() {
 
 		this.setName("Server");
 		try {
 
 			// OBJECTS
-			options = opt;
-			dico = new Dictionnaire(opt.dicoFile);
-			actionMode = opt.actionMode;
-			nbMax = opt.nbJoueurs;
+			dico = new Dictionnaire(ASSketchServer.options.dicoFile);
+			actionMode = ASSketchServer.options.actionMode;
+			nbMax = ASSketchServer.options.nbJoueurs;
 			joueurs = new ListeJoueur(nbMax);
 			spectateurs = new ArrayList<>();
 
 			try {
-				this.comptesJoueurs = Comptes.deserialize(opt.comptesFile);
+				this.comptesJoueurs = Comptes
+						.deserialize(ASSketchServer.options.comptesFile);
+				IO.traceDebug(comptesJoueurs.toString());
 			} catch (IOException e) {
 				IO.trace("Problème avec fichier de comptes, commence avec fichier vierge");
 				this.comptesJoueurs = new Comptes();
 			}
 
-			port = opt.port;
+			port = ASSketchServer.options.port;
 			sockServ = new ServerSocket(port);
 
 			waitingSockets = new LinkedList<Socket>();
@@ -116,10 +113,6 @@ public class Server extends Thread {
 		}
 
 	} // End of Constructeur
-
-	public Server(final Options opt) {
-		this(opt, new TreeMap<String, JoueurEnregistre>());
-	}
 
 	/** Getters */
 
@@ -206,7 +199,7 @@ public class Server extends Thread {
 	 */
 
 	public void run() {
-		
+
 		cs.setDaemon(true);
 		cs.start();
 		for (ConnexionHandler chi : ch) {
@@ -238,10 +231,10 @@ public class Server extends Thread {
 			} catch (InterruptedException e) {
 				IO.trace("Arret inattendu du serveur");
 			}
-			
-			// HERE: restore environnemnt pour nouvelle partie! 
+
+			// HERE: restore environnemnt pour nouvelle partie!
 			// probablement pas la meilleur organisation
-		} while (options.daemon);
+		} while (ASSketchServer.options.daemon);
 
 	}
 
@@ -306,7 +299,8 @@ public class Server extends Thread {
 			this(-1);
 		}
 
-		// TODO: changer: blockant sur la socket traitée en cours!!
+		// blockant sur la socket traitée en cours, readtimeout pour controuner
+		// problème
 		// REFACTOR!!!
 		public void run() {
 

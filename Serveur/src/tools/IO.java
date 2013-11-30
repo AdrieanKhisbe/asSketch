@@ -88,7 +88,7 @@ public class IO {
 		{	
 			StringBuffer sb = new StringBuffer();
 			if(printTime){
-				sb.append("[").append(sdf.format(cal.getTime())).append("]");
+				sb.append("[").append(sdf.format(Calendar.getInstance().getTime())).append("]");
 			}
 			if(printThread){
 				sb.append("{").append(Thread.currentThread().getName()).append("}  ");

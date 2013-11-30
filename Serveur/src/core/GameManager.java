@@ -6,7 +6,6 @@ import graphiques.Ligne;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,15 +20,6 @@ import tools.IO;
 import tools.Protocol;
 
 public class GameManager extends Thread {
-	// TODO BONUX, DP: singleton config!!
-	private static final int TROUND = 180; // en secondes
-	private static final int TFOUND = 30;
-	// directement l'objet au constructeur
-	private static final int TPAUSE = 5;
-	private static final int NBCHEATWARN = 3; // pass to options!!
-	
-
-	// BONUX Singleton pattern?
 
 	private Server server;
 
@@ -71,7 +61,7 @@ public class GameManager extends Thread {
 						wordFound.wait();
 					}
 					IO.trace("Début timer motTrouvé de Xs");
-					TimeUnit.SECONDS.sleep(TFOUND);
+					TimeUnit.SECONDS.sleep(ASSketchServer.options.tfound);
 
 					IO.trace("Temps écoulé");
 					synchronized (endRound) {
@@ -87,7 +77,7 @@ public class GameManager extends Thread {
 			public void run() {
 				try {
 					IO.trace("Début timer tour de Xs");
-					TimeUnit.SECONDS.sleep(TROUND);
+					TimeUnit.SECONDS.sleep(ASSketchServer.options.tround);
 					IO.trace("Temps écoulé");
 					synchronized (endRound) {
 						endRound.notify();
@@ -129,7 +119,7 @@ public class GameManager extends Thread {
 
 				// Pause entre parties
 				try {
-					TimeUnit.SECONDS.sleep(TPAUSE);
+					TimeUnit.SECONDS.sleep(ASSketchServer.options.tpause);
 				} catch (InterruptedException e) {
 					IO.traceDebug("Jeu interrompu (ne devrait pas avoir lieu)");
 				}
@@ -288,7 +278,8 @@ public class GameManager extends Thread {
 					wordFound.notify();
 				}
 
-				broadcastJoueurs(Protocol.newWordFoundTimeout(TFOUND));
+				broadcastJoueurs(Protocol
+						.newWordFoundTimeout(ASSketchServer.options.tfound));
 			}
 
 		} else {
@@ -328,7 +319,7 @@ public class GameManager extends Thread {
 		if (tourCourrant.addCheatWarn(j)) {
 			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
 			broadcastJoueurs(Protocol.newWarned(j));
-			if (tourCourrant.getNbWarn() >= NBCHEATWARN) {
+			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
 				IO.trace("Trop c'est trop, on arrete de jouer");
 				synchronized (endRound) {
 					endRound.notify();
