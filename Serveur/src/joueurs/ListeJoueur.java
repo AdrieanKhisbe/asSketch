@@ -2,22 +2,25 @@ package joueurs;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import tools.IO;
 
 // TODO: améliorer: durabilité. moyen de préserver joueurs plus connectés
 
 public class ListeJoueur {
-
+	
 	// private ArrayList<Joueur> joueursConnexion; + joueur Partie?
 	private ArrayList<Joueur> joueurs; // still connected
 	private boolean locked;
 	private final Integer nbMax;
 	private Joueur[] ordreJoueurs;
-
-	// liste figée des joueurs (on les gardes, mais c'est pas dans elle qu'on
+	// liste figée des joueurs (onles gardes, mais c'est pas dans elle qu'on
 	// écrit
 
+	
+	
+	
 	// MAYBE Scores? here?
 
 	public synchronized void addJoueur(Joueur j) {
@@ -100,5 +103,6 @@ public class ListeJoueur {
 		joueurs.clear(); /// adapt.
 
 	}
+	
 
 }

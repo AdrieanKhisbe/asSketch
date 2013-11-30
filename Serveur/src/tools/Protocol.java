@@ -34,7 +34,9 @@ public class Protocol {
 	static { // Génère la liste des commandes
 		// CONNECT & EXIT
 		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté, 1));
-
+		gameCommand.put("SPECTATOR", new CommandParameter(Role.nonconnecté, 0));
+		gameCommand.put("REGISTER", new CommandParameter(Role.nonconnecté, 2));
+		gameCommand.put("LOGIN", new CommandParameter(Role.nonconnecté, 2));
 		gameCommand.put("EXIT", new CommandParameter(Role.indéterminé, 1));
 
 		// SUGGESTION
@@ -42,6 +44,7 @@ public class Protocol {
 
 		gameCommand.put("WARN", new CommandParameter(Role.chercheur, 1));
 		gameCommand.put("SKIP", new CommandParameter(Role.dessinateur, 1));
+		
 
 		// DESSIN
 
@@ -186,11 +189,15 @@ public class Protocol {
 		return "SKIPED/" + j.getUsername() + "/"; // SEE: redondant
 	}
 
+	//TODO adapt new cheat
 	public static String newWarned(Joueur j) {
 		return "WARNED/" + j.getUsername() + "/";
 	}
 
-	// TODO invalid command
+	public static String newAccessDenied(){
+		return "ACCESSDENIED/";
+	}
+	
 	public static String newInvalidCommand(InvalidCommandException e) {
 		return "INVALID_COMMAND/" + e.getMessage().replace(" ", "_") + "/";
 	}

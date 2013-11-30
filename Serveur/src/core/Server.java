@@ -12,9 +12,11 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import joueurs.Joueur;
+import joueurs.JoueurEnregistre;
 import joueurs.ListeJoueur;
 import joueurs.Role;
 import tools.IO;
@@ -28,7 +30,7 @@ public class Server extends Thread {
 
 	// BONUX: see finals?
 
-	private Options options; // KEEP?
+	private Options options; // KEEP? TODO HERE singleton!!
 	private Integer port;
 	protected Integer nbMax;
 	protected Dictionnaire dico;
@@ -46,7 +48,9 @@ public class Server extends Thread {
 	private GameManager gm;
 
 	// EXT Spectateur
+	protected TreeMap<String, JoueurEnregistre> comptesJoueurs; //HERE
 	protected ListeJoueur joueurs;
+	protected ArrayList<Connexion> spectateurs;
 
 	// Autres
 	private boolean actionMode;
@@ -62,7 +66,7 @@ public class Server extends Thread {
 	 * @param opt
 	 *            les options crées avec JCommander
 	 */
-	public Server(final Options opt) {
+	public Server(final Options opt, TreeMap<String, JoueurEnregistre> comptes) {
 
 		this.setName("Server");
 		try {
@@ -73,6 +77,8 @@ public class Server extends Thread {
 			actionMode = opt.actionMode;
 			nbMax = opt.nbJoueurs;
 			joueurs = new ListeJoueur(nbMax);
+			spectateurs = new ArrayList<>();
+			this.comptesJoueurs = comptes;
 
 			port = opt.port;
 			sockServ = new ServerSocket(port);
@@ -103,7 +109,10 @@ public class Server extends Thread {
 		}
 
 	} // End of Constructeur
-
+	public Server(final Options opt)
+	{
+		this(opt, new TreeMap<String, JoueurEnregistre> ()) ;
+	}
 	/** Getters */
 
 	GameManager getGameManager() {
@@ -155,14 +164,12 @@ public class Server extends Thread {
 		// @Override
 		// public void run() {
 		synchronized (joueurs) {
-			// LOCK??
-
 			// SEE: not performant?
 			if (joueurs.isEmpty()) {
 				return;
 			}
 
-			IO.trace("Liste joueurs: " + joueurs.toString());
+			IO.traceDebug("Liste joueurs broadcasté: " + joueurs.toString());
 			for (Joueur j : joueurs.getJoueurs()) {
 				if (!j.equals(deaf))
 					j.send(message);
@@ -374,7 +381,9 @@ public class Server extends Thread {
 						String[] tokens = Protocol.parseCommand(command,
 								Role.nonconnecté);
 
-						if (tokens[0].equals("CONNECT")) {
+							switch(tokens[0]){
+							case "CONNECT":
+							
 							synchronized (joueurs) {
 								if (!joueurs.isLocked()) {
 
@@ -422,6 +431,16 @@ public class Server extends Thread {
 									closeConnexion("GAME_FULL");
 								}
 							}
+							break;
+							
+							
+							
+							case "REGISTER":
+							case "LOGIN":
+							case "SPECTATOR":
+								IO.trace("Not yet implemented");
+								closeConnexion("NOt_yet_implemented");
+							
 						}
 
 						// BONUX: spectateur

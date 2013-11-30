@@ -1,6 +1,7 @@
 package joueurs;
 
 import java.io.IOException;
+import java.util.Comparator;
 
 import tools.IO;
 import core.Connexion;
@@ -8,13 +9,13 @@ import core.Connexion;
 /// SEE syncrhonized ??
 public class Joueur {
 
-	private final String username;
+	protected  final String username;
 	public Resultat currentResult;
 
 	// There?? Regroup in connexion object?
-	private final Connexion connexion;
+	protected Connexion connexion;
 
-	private Role roleCourrant;
+	protected  Role roleCourrant;
 
 	// TODO: autres variables à créer!
 
@@ -95,11 +96,22 @@ public class Joueur {
 		currentResult.addFalseSuggestion();
 	}
 	
+	// Comparators
+	
+	
 	public int compareResult(Joueur j){
 		return this.currentResult.compareTo(j.currentResult);
 	}
 	
-	
+	/**
+	 * Comparateur entre joueurs
+	 */
+	public static Comparator<Joueur> joueurComparateur = new Comparator<Joueur>() {
+		@Override
+		public int compare(Joueur o1, Joueur o2) {
+			return o1.compareResult(o2);
+		} // TODO to joueur comparateur
+	};
 	
 	
 	

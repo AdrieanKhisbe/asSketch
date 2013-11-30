@@ -21,13 +21,13 @@ import tools.IO;
 import tools.Protocol;
 
 public class GameManager extends Thread {
-	// BONUX, DP: singleton config!!
+	// TODO BONUX, DP: singleton config!!
 	private static final int TROUND = 180; // en secondes
 	private static final int TFOUND = 30;
 	// directement l'objet au constructeur
 	private static final int TPAUSE = 5;
-	private static final int NBCHEATWARN = 3;
-	// fusionné avec partie
+	private static final int NBCHEATWARN = 3; // pass to options!!
+	
 
 	// BONUX Singleton pattern?
 
@@ -146,12 +146,7 @@ public class GameManager extends Thread {
 		synchronized (joueurs) {
 			List<Joueur> finalJoueurs = joueurs.getJoueurs();
 			// tri liste
-			Collections.sort(finalJoueurs, new Comparator<Joueur>() {
-				@Override
-				public int compare(Joueur o1, Joueur o2) {
-					return o1.compareResult(o2);
-				} // TODO to joueur comparateur
-			});
+			Collections.sort(finalJoueurs, Joueur.joueurComparateur);
 			broadcastJoueurs(Protocol.newScoreGame(finalJoueurs));
 			// Mise à jour "position"
 			int pos = 1;
@@ -329,7 +324,7 @@ public class GameManager extends Thread {
 	}
 
 	void notifyCheat(Joueur j) {
-
+		// HERE TODO: sémantique du cheat totalement changée, à adapter!
 		if (tourCourrant.addCheatWarn(j)) {
 			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
 			broadcastJoueurs(Protocol.newWarned(j));

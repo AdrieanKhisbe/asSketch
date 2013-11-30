@@ -63,10 +63,11 @@ public class JoueurHandler extends Thread {
 						break; // non atteint
 
 					case "SKIP":
-						// TODO; cf exit du dessinateur
+						// HERE TODO; cf exit du dessinateur
+						// vérifier trouvur
 						break;
 
-					case "WARN":
+					case "CHEAT":
 						gm.notifyCheat(gamer);
 						break;
 
