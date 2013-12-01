@@ -14,11 +14,9 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 	private String password;
 	private ArrayList<Resultat> scores;
 
-	// HERE: attention gérer connexion!!!!!!! how?? set connexion?
 	public JoueurEnregistre(Connexion client, String login, String mdp)
 			throws IOException {
 		super(client, login);
-		// TODO Auto-generated constructor stub
 		this.password = mdp;
 		this.scores = new ArrayList<>();
 	}

@@ -23,7 +23,6 @@ import tools.IO;
 import tools.Protocol;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
-import core.exceptions.WrongArityCommandException;
 
 public class Server extends Thread {
 
@@ -44,8 +43,7 @@ public class Server extends Thread {
 	private AtomicBoolean gameOn;
 	private GameManager gm;
 
-	// EXT Spectateur
-	protected Comptes comptesJoueurs; // HERE
+	protected Comptes comptesJoueurs; 
 	protected ListeJoueur joueurs;
 	protected ArrayList<Connexion> spectateurs;
 
@@ -497,8 +495,8 @@ public class Server extends Thread {
 							Connexion specCo = new Connexion(client, inchan,
 									outchan);
 							// inchan useless...
-
-							// catch Back
+							specCo.send("WELCOME/");
+							// send catch Back
 							specCo.send(gm.getRecap());
 							spectateurs.add(specCo);
 

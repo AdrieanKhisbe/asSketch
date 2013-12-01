@@ -35,7 +35,7 @@ public class ASSketchServer {
 	}
 
 	/**
-	 * Options De asSketch TODO Add more!!! HERE: singleton mode!!
+	 * Options De asSketch 
 	 */
 	public static class Options {
 		// Nota: visibilité default pour les options initialisant le serveur

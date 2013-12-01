@@ -62,7 +62,7 @@ public class JoueurHandler extends Thread {
 						manageExit(true);
 						break; // non atteint
 
-					case "SKIP":
+					case "PASS":
 						// HERE TODO; cf exit du dessinateur
 						// vérifier trouvur
 						break;

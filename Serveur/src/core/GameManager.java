@@ -131,7 +131,6 @@ public class GameManager extends Thread {
 
 		}
 		// Handle score game
-		// HERE
 		// ordonne list par Result
 		synchronized (joueurs) {
 			List<Joueur> finalJoueurs = joueurs.getJoueurs();
@@ -146,6 +145,7 @@ public class GameManager extends Thread {
 				// TODO: save si joueur enregistré
 				pos++;
 			}
+			//CHECK !!
 			IO.trace("Ordre d'arrivé: " + finalJoueurs.toString());
 
 		}

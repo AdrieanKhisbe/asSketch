@@ -13,8 +13,6 @@ import joueurs.Role;
 
 public class Round {
 
-	// HERE we change status?
-
 	final Joueur dessinateur;
 	final ArrayList<Joueur> chercheurs;
 	final ArrayList<Joueur> trouveurs; 
