@@ -24,7 +24,7 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 	}
 
 	public boolean checkPassword(String mdp) {
-		return mdp == password;
+		return mdp.equals(password);
 	}
 
 	// TODO toString

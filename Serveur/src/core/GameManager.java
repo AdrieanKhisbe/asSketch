@@ -349,4 +349,34 @@ public class GameManager extends Thread {
 		}
 
 	}
+
+	/**
+	 * Génère un résumé pour les spectateur arrivant en cours de route
+	 * 
+	 * @return
+	 */
+	public String getRecap() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("WELCOME/\n");
+
+		// Informe des autres joueurs
+		for (Joueur j : joueurs.getJoueurs()) {
+			sb.append(Protocol.newConnected(j)).append("\n");
+		}
+
+		if (tourCourrant != null) {
+			// Envoi le score
+			sb.append(Protocol.newScoreRound(joueurs.getJoueurs()))
+					.append("\n");
+			// averti du dessinateur?
+
+			sb.append(Protocol.newRoundChercheur(tourCourrant.getDessinateur()))
+					.append("\n");
+			sb.append(tourCourrant.getDessinCommands());
+
+			// TODO: recup Guess and talk
+		}
+
+		return sb.toString();
+	}
 }

@@ -50,7 +50,6 @@ public class Server extends Thread {
 	protected ArrayList<Connexion> spectateurs;
 
 	// Autres
-	private boolean actionMode;
 	private final static String ACTION_POLICY_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 			+ "<cross-domain-policy>"
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" />"
@@ -70,7 +69,6 @@ public class Server extends Thread {
 
 			// OBJECTS
 			dico = new Dictionnaire(ASSketchServer.options.dicoFile);
-			actionMode = ASSketchServer.options.actionMode;
 			nbMax = ASSketchServer.options.nbJoueurs;
 			joueurs = new ListeJoueur(nbMax);
 			spectateurs = new ArrayList<>();
@@ -93,14 +91,14 @@ public class Server extends Thread {
 
 			// THREADS.
 			cs = new ConnexionStacker();
-			ch = new ConnexionHandler[2]; // PARAM
+			ch = new ConnexionHandler[2]; // BONUX PARAM
 			for (int i = 0; i < ch.length; i++) {
 				ch[i] = new ConnexionHandler(i);
 			}
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<JoueurHandler>();
 
-			if (actionMode) {
+			if (ASSketchServer.options.actionMode) {
 				IO.trace("Mode Action Script mis en place!");
 			}
 
@@ -157,15 +155,14 @@ public class Server extends Thread {
 	}
 
 	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
-		// SEE callable pour avoir retour d'erreur?
 
-		// NOTE: Temps, disable le thread run
-
+		// SEE: Disable Thread submit. (non deterministic)
 		// Runnable messenger = new Runnable() {
 		// @Override
 		// public void run() {
+
 		synchronized (joueurs) {
-			// SEE: not performant?
+			// SEE: test if performant or not??
 			if (joueurs.isEmpty()) {
 				return;
 			}
@@ -176,7 +173,24 @@ public class Server extends Thread {
 					j.send(message);
 			}
 		}
+		// MAYBE; spec option?
+		// Envoi au spectateurs
+		synchronized (spectateurs) {
+
+			for (Connexion s : spectateurs) {
+				try {
+					s.send(message);
+				} catch (IOException e) {
+					IO.trace("Spectateur déconnecté");
+					spectateurs.remove(s);
+
+				}
+			}
+
+		}
+
 		IO.trace("Message \"" + message + "\" broadcasté ");
+
 		// }
 		// };
 		// workers.submit(messenger);
@@ -236,6 +250,15 @@ public class Server extends Thread {
 			// probablement pas la meilleur organisation
 		} while (ASSketchServer.options.daemon);
 
+		// sauvegarde des comptes
+		// TODO: après chaque ajout
+		try {
+			comptesJoueurs.serialize(ASSketchServer.options.comptesFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			IO.trace("Problème à sauvegarde des comptes");
+		}
+
 	}
 
 	/**
@@ -257,7 +280,7 @@ public class Server extends Thread {
 
 					// Traitement spécifique Actionscript
 					// TEMPORARY (possible leak)
-					if (actionMode) {
+					if (ASSketchServer.options.actionMode) {
 						PrintWriter outchan = new PrintWriter(
 								client.getOutputStream(), true);
 
@@ -345,7 +368,7 @@ public class Server extends Thread {
 							// TODO: handle raw deconnection
 
 							// Handling of ActionsScript ask
-							if (actionMode
+							if (ASSketchServer.options.actionMode
 									&& command.contains("policy-file-request")) {
 								IO.traceDebug("Et un actionscript qui se pointe");
 								outchan.print(ACTION_POLICY_STRING);
@@ -462,25 +485,31 @@ public class Server extends Thread {
 								closeConnexion(Protocol.newAccessDenied());
 								break;
 							}
-							//HERE!! checker si pas déjà connnecté!!!
+							// HERE!! checker si pas déjà connnecté!!!
 
+							// met à jour la connexion:
+							joueurLog.setConnexion(new Connexion(client, inchan, outchan));
+							
 							setUpNewJoueur(joueurLog);
 							break;
 
 						case "SPECTATOR":
-							IO.trace("Not yet implemented");
-							closeConnexion("NOt_yet_implemented");
+							Connexion specCo = new Connexion(client, inchan,
+									outchan);
+							// inchan useless...
+
+							// catch Back
+							specCo.send(gm.getRecap());
+							spectateurs.add(specCo);
+
+							break;
 
 						}
 
-						// BONUX: spectateur
-					} catch (WrongArityCommandException e) {
+					} catch (InvalidCommandException e) {
 						// Utilise close connexion, puisque ne communique pas
 						// via objet connexion
-						closeConnexion("NEXT/TIME/GIVE/ME/A/NAME/");
-					} catch (InvalidCommandException e) {
-
-						closeConnexion("GOODBYE/BOLOS/");
+						closeConnexion(Protocol.newAccessDenied());
 						IO.traceDebug("Kick out Bolos");
 					}
 
@@ -488,7 +517,7 @@ public class Server extends Thread {
 
 				} catch (SocketException se) {
 					IO.trace("Socket deconnectée avant connexion joueur");
-					// TODO close connection??
+					// TODO close connection?? . maybe not up to date
 				} catch (NullPointerException e) {
 					// TODO ?? rajoute
 					IO.traceDebug("Déconnexion barbabre (null)");
@@ -503,6 +532,12 @@ public class Server extends Thread {
 
 		}
 
+		/**
+		 * Méthode pour factoriser le fermeture connexion avec envoi de message
+		 * 
+		 * @param message
+		 * @throws IOException
+		 */
 		public void closeConnexion(String message) throws IOException {
 			outchan.println(message);
 			closeConnexion();

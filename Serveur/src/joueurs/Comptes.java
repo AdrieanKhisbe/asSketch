@@ -35,10 +35,14 @@ public class Comptes implements Serializable {
 	public synchronized boolean isFreeUsername(String name) {
 		return ! comptes.containsKey(name);
 	}
+	
 
 	public void serialize(String filepath) throws IOException {
 		File f = new File(filepath);
-		f.delete();
+		
+		//TODO: see comment écraser fichier
+		if(f.exists())
+			f.delete();	
 
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 		oos.writeObject(this);
@@ -46,7 +50,7 @@ public class Comptes implements Serializable {
 		IO.trace("Comptes on été sérialisés dans le fichier "+filepath);
 
 	}
-
+	
 	public static Comptes deserialize(String filepath) throws IOException {
 
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(

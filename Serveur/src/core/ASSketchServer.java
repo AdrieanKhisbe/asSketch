@@ -70,14 +70,14 @@ public class ASSketchServer {
 		@Parameter(names = { "-d", "--daemon" }, description = "Serveur enchaine les parties (non oneshot)")
 		boolean daemon = false;
 
+		@Parameter(names = { "-a", "--actionscript" }, help = true, hidden = true)
+		boolean actionMode;
+
 		@Parameter(names = { "d", "debug", "--debug" }, description = "Mode debug", hidden = true)
 		boolean debug = false;
 
 		@Parameter(names = { "-h", "--help" }, help = true, hidden = true)
 		private boolean help;
-
-		@Parameter(names = { "-a", "--actionscript" }, help = true, hidden = true)
-		boolean actionMode;
 
 		public void parse(String[] arguments) {
 			JCommander jcp = new JCommander(this, arguments);

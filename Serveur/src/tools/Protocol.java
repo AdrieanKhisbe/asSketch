@@ -27,11 +27,12 @@ public class Protocol {
 	// TODO BONUX: check typage.....
 
 	/**
-	 * Hashmap contenant les COmmande valide, leur arité, et Etat associé.
+	 * Hashmap contenant les Commandes valides, leur arité, et Etat associé.
 	 */
 	private static final HashMap<String, CommandParameter> gameCommand = new HashMap<>();
 
-	static { // Génère la liste des commandes
+	 // Génère la liste des commandes
+	static {
 		// CONNECT & EXIT
 		gameCommand.put("CONNECT", new CommandParameter(Role.nonconnecté, 1));
 		gameCommand.put("SPECTATOR", new CommandParameter(Role.nonconnecté, 0));
@@ -100,12 +101,16 @@ public class Protocol {
 					+ "; was " + nbArgs);
 
 		// check "légalité" commande
-		if (cp.equals(Role.indéterminé)) {
+		if (cp.role == Role.indéterminé) {
 			// Dans ce cas, c'est Okay.
-		} else if (!roleCourant.equals(cp.role)) {
+			IO.traceDebug("PC: Tout le monde peut le faire");
+		} else if (!(roleCourant == cp.role)) {
+			IO.traceDebug("PC: Commande non autorisée");
 			throw new IllegalCommandException("command " + tokens[0]
 					+ " not available for " + roleCourant);
 		}
+		// note: using == on enum, prefered to equal: faster, safer run/compile-time
+		// was previously hiding a stupid error
 
 		return tokens;
 

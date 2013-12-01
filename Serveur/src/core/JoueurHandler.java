@@ -114,7 +114,9 @@ public class JoueurHandler extends Thread {
 						gm.broadcastJoueursExcept(
 								Protocol.newListen(gamer, parsedCommand[1]),
 								gamer);
-						// SEE ? broadcast up to game manager?
+						// SEE ? broadcast up to game manager?$
+				
+						// BONUX : here, sauvegarder les messages. ajouter méthode game manager
 						break;
 
 					default:
