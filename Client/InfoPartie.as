@@ -22,6 +22,7 @@
 			this.x=500;
 			this.y=600;
 			this.cacheMot();
+			waitOther();
 		}
 		
 		public function startT():void{
@@ -34,7 +35,12 @@
 			this.start=true;
 		}
 		
-		public function vainqueur(pseudo:String){
+		public function waitOther():void{
+			this.vain.text = "En attente d'autres joueurs";
+			this.vain.visible = true;
+		}
+		
+		public function vainqueur(pseudo:String):void{
 			this.vain.text = "Vainqueur round : "+pseudo;
 			this.vain.visible = true;
 		}
@@ -48,11 +54,6 @@
 		public function setCurrentD(user:String):void{
 			this.currentD = user;
 			this.des.text = currentD;
-		}
-		
-		public function setProchainD(user:String):void{
-			this.prochainD = user;
-			this.pro.text = this.prochainD;
 		}
 		
 		public function setMin(m:uint):void{

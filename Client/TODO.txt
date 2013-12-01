@@ -3,14 +3,14 @@ Boite d'errreur:
 -Inscription
 -Spectateur
 -Inscrit
-(serveur offline , room complete , d�ja connect� , pseudo d�ja utilis�)
+(serveur offline , room complete , dÈja connectÈ , pseudo dÈja utilisÈ)
 
-Am�liorer le parse du protocol( envoie et reception , '/' dans les message ou pseudo)
+AmÈliorer le parse du protocol( envoie et reception , '/' dans les message ou pseudo)
 
-Am�liorer les else if en fonction de celui qui va etre appeler le plus de fois
+AmÈliorer les else if en fonction de celui qui va etre appeler le plus de fois
 
 
-
+Fin de partie -> kick tout le monde de la room ne pas éteindre le serveur
 
 
 
@@ -18,8 +18,6 @@ Ajout protocol :
 ERROR/x
 (S->C) Le serveur envois un erreur au client
 
-NEW_ROUND/user/mot/
-pour que tu les clients connaisse qui dessine mot=0 si le client n'est pas dessinateur
 
 Ajout d'un protocol poru projain joueur ?
 
@@ -29,3 +27,35 @@ Tu m'envois un timeout en seconde et je chnage l'affichage du temps restant
 
 DELETE/
 C->S efface le dessin en cours
+
+spamm serveur?
+Si el dessinateur ne dessine rien au boue de 30 sec -> new dessinateur
+
+
+"EXIT/" + escape(pseudo)
+WELCOME/user/(S->C) Signifie au joueur qui a demandé la connexion que celle-ci est acceptée sous le nom "user"
+PASS(C->S) le dessinateur décide d’arrêter de dessiner en envoyant la commande PASS au serveur;cette commande produit un effet seulement si aucun joueur n’a déjà trouvé  le mot caché,sinon le round s’arrêtera à la fin du temps limite. Personne ne gagne de points à ce tour.
+
+CHEAT/user/(C->S) un client (sauf le dessinateur) trouve que le dessinateur ne respecte pas l’esprit du jeuet l’indique au serveur; si au moins n joueurs trouvent qu’un dessinateur n’est pas correct,ce dernier est alors sorti du jeu et  personne ne gagne des points à ce tour même si le motavait été trouvé. Seul le dessinateur peut être sanctionné durant son tour.
+
+REGISTER/n/p/ se connecte sous le nom n et réserve ce nom pour de futures connexions, en le protégeant parle mot de passe p. Si l’utilisateur existe déjà dans la base, le client reçoit une commande ACCESSDENIED et laconnexion est terminée.
+
+LOGIN/n/p/ se connecte sous le nom n, qui doit être enregistré dans la base d’utilisateurs et dont le mot depasse doit être p. Si l’utilisateur n’existe pas où si le mot de passe ne correspond pas, le client reçoit unecommande ACCESSDENIED et la connexion est terminée.
+
+On rajoute une commande de connexion SPECTATOR. Un spectateur n’intervient pas dans la partie mais peut voir toutes les actions de tous les joueurs. Le serveur utilise pour cela le jeu de commandes suivantes :Si un spectateur arrive encours de partie, le serveur doit lui renvoyer à ce moment toutes les commandes qu’ils aurait reçues s’il était arrivé au tout début afin de rattraper son retard.  TALK/texte/. Le serveur transmet alors à tous les clients la commande LISTEN suivie du nom du joueur puis du message : LISTEN/joueur/texte/.
+
+
+./client -port p -user name
+
+ligne carré cercle
+protocolClear
+scroll text
+
+position x y containeur , module
+
+instantation modulable des options
+
+utilisé appendText
+
+messageBox « a vou de dessiner » ?
+

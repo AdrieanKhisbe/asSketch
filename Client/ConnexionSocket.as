@@ -65,7 +65,7 @@
 			else if (tabData[0] == "LINE")
 			{
 				//LINE/x1/y1/x2/y2/r/g/b/s/
-				InterfaceSock.drawL(tabData[1],tabData[2],tabData[3],tabData[4]);//,tabData[5],tabData[6],tabData[7],tabData[8]);
+				InterfaceSock.drawL(tabData[1],tabData[2],tabData[3],tabData[4],tabData[5],tabData[6],tabData[7],tabData[8]);
 			}
 			else if (tabData[0] == "ERROR")
 			{

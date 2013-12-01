@@ -10,22 +10,21 @@
 	public class Fenetre extends Sprite{
 		public var scene:MovieClip=InterfaceSock.scene;  
 		public var iRC:IRC; //Fenetre de Dialogues
-		public var reponse:Reponse; //Fenetre de Dialogues
+		public var reponse:Reponse; //Fenetre des Réponses
 		public var lesCo:LesCo; // Fenetre des connecté
-		public var info:InfoPartie;
+		public var info:InfoPartie; 
 		public var dessin:Dessin;
+		public var options:Options;
+		public var messBox:MessageBox;
 		public var currentUser:User;
 		public var buffClient:User;
 		public var tabClients:Array = new Array(); //Tableau des Clients
 		
 		
 		public function Fenetre() {
-			this.afficherThis();
-			this.instanceDialBoxs();
-			this.instanceLesCo();
-			this.instanceInfoP();
-			this.instanceDessin();
+			instanceFenetre();
 			this.addNew(InterfaceSock.pseudo);
+			messBox = new MessageBox(this,'Ceci est un test de analfpba kt courte','Mon titre');
 		}
 		
 		//Cree LE client 
@@ -50,6 +49,15 @@
 			tabClients.splice(i,1);
 		}
 		
+		public function instanceFenetre():void{
+			this.afficherThis();
+			this.instanceDialBoxs();
+			this.instanceLesCo();
+			this.instanceInfoP();
+			this.instanceDessin();
+			this.instanceOptions();
+		}
+		
 		//Instanciation et affichage de la fenetre des connecté
 		public function instanceLesCo(){
 			lesCo = new LesCo(this);
@@ -66,6 +74,12 @@
 		public function instanceInfoP(){
 			info = new InfoPartie(this);
 			info.afficherThis();
+		}
+		
+		//Instanciation et affichage de la fenetre des pptions
+		public function instanceOptions(){
+			options = new Options(this,960,0);
+			options.afficherThis();
 		}
 		
 		//Instanciation et affichage de la fenetre de dialogue

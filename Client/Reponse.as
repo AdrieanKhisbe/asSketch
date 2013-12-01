@@ -51,17 +51,29 @@
 		
 		//Envois au serveur le message du client
 		public function sendT(evt:MouseEvent){
-			
-				InterfaceSock.motClient(fond.IPT.text);
-				fond.IPT.text = "";
+			//Si le client n'est pas desinateur
+			if(!fenetre.currentUser.getDes()){
+				if (fond.IPT.text != ""){
+					InterfaceSock.motClient(fond.IPT.text);
+					fond.IPT.text = "";
+				}
+			}else{
+				errDess();
+			}
 			
 		}
 		
 		//Envois au serveur le message du client
 		public function sendTT(evt:KeyboardEvent){
+			//Si le client n'est pas desinateur
 			if (fond.IPT.text != "" && evt.keyCode == 13){
-				InterfaceSock.motClient(fond.IPT.text);
-				fond.IPT.text = "";
+				if(!fenetre.currentUser.getDes()){
+					InterfaceSock.motClient(fond.IPT.text);
+					fond.IPT.text = "";
+				}
+				else{
+				errDess();
+				}
 			}
 		}
 		
@@ -89,6 +101,12 @@
 				fond.gotoAndPlay(2);
 				reduit=true;
 			}
+		}
+		
+		//Si le dessinateur essait d'envoyer la réponse
+		public function errDess():void{
+			fond.IPT.text = "";
+			addT("***** Erreur , vous etes dessinateur , vous ne pouvez pas envoyer d'aide !");
 		}
 
 

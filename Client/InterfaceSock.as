@@ -1,6 +1,7 @@
 ﻿package  {
 	import flash.display.MovieClip;
 	import flash.utils.*;
+	import flash.external.ExternalInterface;
 	
 	
 	
@@ -19,7 +20,6 @@
 		
 		
 		//Fonctions  client -> Serveur
-		//OK
 		public static function connexionGuest(pseudoo:String)
 		{
 			pseudo=pseudoo;
@@ -30,14 +30,13 @@
 		{
 			scene.connexion.sendText("EXIT/" + escape(pseudo));
 		}
-		//OK
 		public static function motClient(mot:String)
 		{
 			scene.connexion.sendText("GUESS/" + escape(mot));
 		}
-		public static function changeCouleur(r:int ,g:int ,b:int)
+		public static function changeCouleur(hex:Number)
 		{
-			scene.connexion.sendText("SET_COLOR/" + r +"/"+ g +"/"+ b);
+			scene.connexion.sendText("SET_COLOR/" + ((hex & 0xFF0000) >> 16) +"/"+ ((hex & 0x00FF00) >> 8) +"/"+ (hex & 0x0000FF));
 		}
 		public static function tailleTrait(s:int)
 		{
@@ -70,16 +69,22 @@
 			
 		}
 		public static function role(user:String,mot:String){
+			//On lance le timer
+			scene.mainFenetre.info.startT();
+			scene.mainFenetre.dessin.deleteStageE();
+			//Client est un chercheur
 			if(user == "chercheur"){
-				scene.mainFenetre.info.startT();
-				scene.mainFenetre.info.setCurrentD(mot);
-				scene.mainFenetre.info.cacheMot();
-				
-			}else{
-				scene.mainFenetre.info.startT();
-				scene.mainFenetre.currentUser.setDes();
-				scene.mainFenetre.info.setCurrentD(pseudo);
-				scene.mainFenetre.info.setMot(mot);
+				scene.mainFenetre.dessin.isDessinateur(false);//On désactive les interaction avec les dessins s'il était dessinateur
+				scene.mainFenetre.info.setCurrentD(mot); //On indique au client qui dessine
+				scene.mainFenetre.info.cacheMot(); //Si le joueur était dessinateur on cache son mot
+				scene.mainFenetre.currentUser.setNDes(); //Si le joueur était dessinateur , on change son status
+			}
+			//Client est un dessinateur
+			else{
+				scene.mainFenetre.dessin.isDessinateur(true);//On active les interaction de dessins
+				scene.mainFenetre.currentUser.setDes(); //On passe le status du joueur en dessinateur
+				scene.mainFenetre.info.setCurrentD(pseudo); //On indique au client qui est le dessinateur(lui)
+				scene.mainFenetre.info.setMot(mot); //On indique au client quel moi il doit faire deviner
 			}
 		}
 		public static function reponseC(mot:String,user:String){
@@ -117,11 +122,22 @@
 			}
 		}
 		
-		static function drawL(x1:int,x2:int,y1:int,y2:int){
+		static function drawL(x1:int,y1:int,x2:int,y2:int,red:int,green:int,blue:int,s:int){
+			var intVal:uint = red << 16 | green << 8 | blue;
+			var hexVal = '0x'+ intVal.toString(16);
+			scene.mainFenetre.dessin.changeSeting(s,hexVal);
 			scene.mainFenetre.dessin.dessinExt(x1,y1,x2,y2);
 		}
 		
 		
+
+		static function log(message:String):void{
+			trace (message);
+			if (ExternalInterface.available){
+				ExternalInterface.call('console.log', message);
+			}
+		}
+
 	}
 	
 }
