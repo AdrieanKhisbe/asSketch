@@ -1,4 +1,4 @@
-package joueurs;
+package game.joueurs;
 
 import java.io.IOException;
 import java.io.Serializable;

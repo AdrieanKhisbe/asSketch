@@ -1,21 +1,20 @@
 package game;
 
-import graphiques.Couleur;
-import graphiques.Dessin;
-import graphiques.Ligne;
+import game.graphiques.Couleur;
+import game.graphiques.Dessin;
+import game.graphiques.Ligne;
+import game.joueurs.Joueur;
+import game.joueurs.Role;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import joueurs.Joueur;
-import joueurs.Role;
-
 public class Round {
 
 	final Joueur dessinateur;
 	final ArrayList<Joueur> chercheurs;
-	final ArrayList<Joueur> trouveurs; 
+	final ArrayList<Joueur> trouveurs;
 	Set<Joueur> cheatWarningList;
 
 	final Dessin sketch;
@@ -96,6 +95,12 @@ public class Round {
 
 	public synchronized Integer getNbWarn() {
 		return cheatWarningList.size();
+	}
+
+	public synchronized void clearDrawing() {
+
+		sketch.clear();
+
 	}
 
 	// TODO: end turn: FIGE, et set la raison victoire

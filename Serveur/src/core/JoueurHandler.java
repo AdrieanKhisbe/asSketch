@@ -1,9 +1,10 @@
 package core;
 
+import game.joueurs.Joueur;
+import game.joueurs.Role;
+
 import java.io.IOException;
 
-import joueurs.Joueur;
-import joueurs.Role;
 import tools.IO;
 import tools.Protocol;
 import core.exceptions.IllegalCommandException;
@@ -109,13 +110,15 @@ public class JoueurHandler extends Thread {
 									"Les arguments doivent être des nombres");
 						}
 						break;
+						
+					case "CLEAR":
+						gm.clearDrawing();
+						break;
 
 					case "TALK":
-						gm.broadcastJoueursExcept(
-								Protocol.newListen(gamer, parsedCommand[1]),
-								gamer);
-						// SEE ? broadcast up to game manager?$
-				
+						gm.broadcastJoueurs(
+								Protocol.newListen(gamer, parsedCommand[1]));
+						// SEE ? broadcast method up to game manager? (with archive procedure
 						// BONUX : here, sauvegarder les messages. ajouter méthode game manager
 						break;
 

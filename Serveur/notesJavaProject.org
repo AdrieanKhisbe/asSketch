@@ -84,6 +84,8 @@ http://stackoverflow.com/questions/5965767/performance-of-stringtokenizer-class-
         br.close();
     }
 #+END_SRC
+
+
 ** Scanner
 http://docs.oracle.com/javase/1.5.0/docs/api/java/util/Scanner.html
 
@@ -140,6 +142,17 @@ http://stackoverflow.com/questions/2530043/any-way-to-auto-generate-all-javadoc-
 
 http://jautodoc.sourceforge.net/
 JAutodoc is an Eclipse Plugin for automatically adding Javadoc and file headers to your source code
+
+** Encoding
+Option in strem constructor
+#+BEGIN_SRC java
+inchan = new BufferedReader(new InputStreamReader(
+client.getInputStream(), Charset.forName("UTF-8")
+.newDecoder()));
+outchan = new PrintWriter(new OutputStreamWriter(
+client.getOutputStream(), Charset.forName("UTF-8")
+.newEncoder())
+#+END_SRC
 
 * Idées
 

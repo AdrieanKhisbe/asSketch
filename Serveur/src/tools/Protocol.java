@@ -1,15 +1,15 @@
 package tools;
 
 // MAYBE : is tool the good place?
-import graphiques.Ligne;
+import game.graphiques.Ligne;
+import game.joueurs.Joueur;
+import game.joueurs.Role;
 
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import joueurs.Joueur;
-import joueurs.Role;
 import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
@@ -52,7 +52,8 @@ public class Protocol {
 		gameCommand.put("SET_COLOR", new CommandParameter(Role.dessinateur, 3));
 		gameCommand.put("SET_SIZE", new CommandParameter(Role.dessinateur, 1));
 		gameCommand.put("SET_LINE", new CommandParameter(Role.dessinateur, 4));
-
+		gameCommand.put("CLEAR", new CommandParameter(Role.dessinateur, 0));
+		
 		// TALK
 		gameCommand.put("TALK", new CommandParameter(Role.indéterminé, 1));
 		// considère que tous peuvent parler. meme si cheat possible
@@ -180,6 +181,11 @@ public class Protocol {
 	public static String newLigne(Ligne l) {
 		// REFACTOR?
 		return l.toCommand();
+	}
+
+	public static String newCleared() {
+		// May this prevent us from Stephan White spam!
+		return "CLEARED/";
 	}
 
 	public static String newLigne(Integer x1, Integer y1, Integer x2,

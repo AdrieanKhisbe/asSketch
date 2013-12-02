@@ -1,4 +1,4 @@
-package graphiques;
+package game.graphiques;
 
 import java.util.LinkedList;
 
@@ -34,6 +34,10 @@ public class Dessin {
 	public String getLastCommand() {
 		return tracés.peekLast().toCommand();
 
+	}
+
+	public void clear() {
+		tracés.clear();
 	}
 
 }

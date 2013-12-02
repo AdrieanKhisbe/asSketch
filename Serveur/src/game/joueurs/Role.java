@@ -1,4 +1,4 @@
-package joueurs;
+package game.joueurs;
 
 public enum Role {
 	chercheur, trouveur, dessinateur

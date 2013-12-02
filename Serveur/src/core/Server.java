@@ -1,24 +1,27 @@
 package core;
 
 import game.Dictionnaire;
+import game.joueurs.Comptes;
+import game.joueurs.Joueur;
+import game.joueurs.JoueurEnregistre;
+import game.joueurs.ListeJoueur;
+import game.joueurs.Role;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import joueurs.Comptes;
-import joueurs.Joueur;
-import joueurs.JoueurEnregistre;
-import joueurs.ListeJoueur;
-import joueurs.Role;
 import tools.IO;
 import tools.Protocol;
 import core.exceptions.IllegalCommandException;
@@ -43,7 +46,7 @@ public class Server extends Thread {
 	private AtomicBoolean gameOn;
 	private GameManager gm;
 
-	protected Comptes comptesJoueurs; 
+	protected Comptes comptesJoueurs;
 	protected ListeJoueur joueurs;
 	protected ArrayList<Connexion> spectateurs;
 
@@ -348,8 +351,13 @@ public class Server extends Thread {
 				try {
 
 					inchan = new BufferedReader(new InputStreamReader(
-							client.getInputStream()));
-					outchan = new PrintWriter(client.getOutputStream(), true);
+							client.getInputStream(), Charset.forName("UTF-8")
+									.newDecoder()));
+					outchan = new PrintWriter(new OutputStreamWriter(
+							client.getOutputStream(), Charset.forName("UTF-8")
+									.newEncoder())
+
+					, true);
 					// nota :autoflush
 
 					// Met un timeout à la lecture sur la socket
@@ -486,8 +494,9 @@ public class Server extends Thread {
 							// HERE!! checker si pas déjà connnecté!!!
 
 							// met à jour la connexion:
-							joueurLog.setConnexion(new Connexion(client, inchan, outchan));
-							
+							joueurLog.setConnexion(new Connexion(client,
+									inchan, outchan));
+
 							setUpNewJoueur(joueurLog);
 							break;
 

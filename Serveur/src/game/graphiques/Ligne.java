@@ -1,4 +1,4 @@
-package graphiques;
+package game.graphiques;
 
 import tools.IO;
 

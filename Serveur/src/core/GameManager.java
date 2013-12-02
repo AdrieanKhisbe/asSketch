@@ -2,7 +2,10 @@ package core;
 
 import game.Dictionnaire;
 import game.Round;
-import graphiques.Ligne;
+import game.graphiques.Ligne;
+import game.joueurs.Joueur;
+import game.joueurs.ListeJoueur;
+import game.joueurs.Role;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,9 +16,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import joueurs.Joueur;
-import joueurs.ListeJoueur;
-import joueurs.Role;
 import tools.IO;
 import tools.Protocol;
 
@@ -378,5 +378,12 @@ public class GameManager extends Thread {
 		}
 
 		return sb.toString();
+	}
+
+	public void clearDrawing() {
+		tourCourrant.clearDrawing();
+		broadcastJoueurs(Protocol.newCleared());
+		IO.trace("Le dessin viens d'être effacé par le dessinateur courant");
+		
 	}
 }
