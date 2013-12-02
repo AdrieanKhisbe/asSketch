@@ -5,10 +5,10 @@
 	
 	
 	public class MessageBox extends MovieClip {
-		var fenetre:Fenetre;
+		var containeur:MovieClip;
 		
-		public function MessageBox(fenetre:Fenetre,corps:String,titre:String) {
-			this.fenetre = fenetre;
+		public function MessageBox(containeur:MovieClip,corps:String,titre:String) {
+			this.containeur = containeur;
 			this.x = 365;
 			this.y = 325;
 			this.titre.text = titre;
@@ -24,12 +24,12 @@
 			this.ok.y += add;
 			this.y -= add/2;
 			
-			fenetre.addChild(this);
+			containeur.addChild(this);
 			ok.addEventListener(MouseEvent.CLICK,close);
 		}
 		
 		public function close(e:MouseEvent){
-			fenetre.removeChild(this);
+			containeur.removeChild(this);
 			ok.removeEventListener(MouseEvent.CLICK,close);                                                   
 		}
 		

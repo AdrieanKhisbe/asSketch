@@ -16,7 +16,7 @@
 			this.fenetre=f;
 			this.x=x;
 			this.y=y;
-			menu = new MenuOption(this);
+			menu = new MenuOption(fenetre);
 		}
 		
 		public function afficherThis(){
@@ -30,15 +30,10 @@
 		}
 		
 		public function openMenu(e:MouseEvent){
-			if(isOpen){
-				menu.effacerThis();
-				isOpen=false;
-			}
-			else{
-				isOpen=true;
 				menu.afficherThis();
-			}
+			
 		}
+		
 	}
 	
 }

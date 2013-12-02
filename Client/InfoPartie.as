@@ -3,6 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.utils.Timer;
 	import flash.events.TimerEvent;
+	import flash.events.MouseEvent;
 	
 	
 	public class InfoPartie extends MovieClip {
@@ -23,6 +24,7 @@
 			this.y=600;
 			this.cacheMot();
 			waitOther();
+			this.pass.visible = false;
 		}
 		
 		public function startT():void{
@@ -69,6 +71,7 @@
 			this.mot.text = motD;
 			this.mot.visible = true;
 			this.text.visible = true;
+			this.pass.visible = true;
 		}
 		
 		public function cacheMot(){
@@ -78,13 +81,21 @@
 		
 		public function afficherThis(){
 			fenetre.addChild(this);
+			pass.addEventListener(MouseEvent.CLICK,passe);
 		}
 		
 		public function effacerThis(){
 			fenetre.removeChild(this);
+			pass.removeEventListener(MouseEvent.CLICK,passe);
 		}
 		
+		public function getCurrentD():String{
+			return this.currentD;
+		}
 		
+		public function passe(e:MouseEvent){
+			InterfaceSock.pass();
+		}
 		public function InitTimer(ev:TimerEvent):void 
 		{
 			var timeLeft:uint = total-myTimer.currentCount

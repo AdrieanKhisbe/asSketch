@@ -52,7 +52,7 @@
 		//Envois au serveur le message du client
 		public function sendT(evt:MouseEvent){
 			if (fond.IPT.text != "" ){
-				//fenetre.scene.connexion.sendText("MESS="+fond.IPT.text);
+				InterfaceSock.iRCClient(fond.IPT.text);
 				fond.IPT.text="";
 			}
 		}
@@ -60,7 +60,7 @@
 		//Envois au serveur le message du client
 		public function sendTT(evt:KeyboardEvent){
 			if (fond.IPT.text != "" && evt.keyCode == 13){
-				//fenetre.scene.connexion.sendText("MESS="+fond.IPT.text);
+				InterfaceSock.iRCClient(fond.IPT.text);
 				fond.IPT.text="";
 			}
 		}

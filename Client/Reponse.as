@@ -52,7 +52,7 @@
 		//Envois au serveur le message du client
 		public function sendT(evt:MouseEvent){
 			//Si le client n'est pas desinateur
-			if(!fenetre.currentUser.getDes()){
+			if(!fenetre.currentUser.getDes() && !fenetre.currentUser.getSpec()){
 				if (fond.IPT.text != ""){
 					InterfaceSock.motClient(fond.IPT.text);
 					fond.IPT.text = "";
@@ -67,7 +67,7 @@
 		public function sendTT(evt:KeyboardEvent){
 			//Si le client n'est pas desinateur
 			if (fond.IPT.text != "" && evt.keyCode == 13){
-				if(!fenetre.currentUser.getDes()){
+				if(!fenetre.currentUser.getDes() && !fenetre.currentUser.getSpec()){
 					InterfaceSock.motClient(fond.IPT.text);
 					fond.IPT.text = "";
 				}
@@ -106,7 +106,7 @@
 		//Si le dessinateur essait d'envoyer la réponse
 		public function errDess():void{
 			fond.IPT.text = "";
-			addT("***** Erreur , vous etes dessinateur , vous ne pouvez pas envoyer d'aide !");
+			addT("***** Erreur , vous n'avez pas le droit d'écrire ici !");
 		}
 
 

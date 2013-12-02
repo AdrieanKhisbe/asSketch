@@ -1,6 +1,7 @@
 ﻿package  {	import flash.display.MovieClip;	/*Class User	*/	public class User extends MovieClip{		private var pseudo:String;
 		private var points:int = 0;
-		private var dessinateur:Boolean = false;				public function User(pseudo:String) {			this.pseudo=pseudo;		}
+		private var dessinateur:Boolean = false;
+		private var isSpec:Boolean = false;				public function User(pseudo:String) {			this.pseudo=pseudo;		}
 		
 		public function getPseudo():String {
 			return pseudo;
@@ -24,4 +25,12 @@
 		
 		public function getDes():Boolean{
 			return this.dessinateur;
+		}
+		
+		public function setSpec(bool:Boolean):void{
+			isSpec = bool;
+		}
+		
+		public function getSpec():Boolean{
+			return isSpec;
 		}	}	}

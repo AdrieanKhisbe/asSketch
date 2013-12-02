@@ -76,6 +76,7 @@
 			{
 				pseudo = mInscrit.pseudo.text;
 				mdp = mInscrit.mdp.text;
+				InterfaceSock.coInscrit(pseudo,mdp);
 				this.effacerThis();
 			}
 			/*
@@ -94,6 +95,7 @@
 			{
 				pseudo = mInscrit.pseudo.text;
 				mdp = mInscrit.mdp.text;
+				InterfaceSock.coInscrit(pseudo,mdp);
 				this.effacerThis();
 			}
 			/*
@@ -112,6 +114,7 @@
 			{
 				pseudo = mInscription.pseudo.text;
 				mdp = mInscription.mdp.text;
+				InterfaceSock.inscription(pseudo,mdp);
 				this.effacerThis();
 			}
 			/*
@@ -130,6 +133,7 @@
 			{
 				pseudo = mInscription.pseudo.text;
 				mdp = mInscription.mdp.text;
+				InterfaceSock.inscription(pseudo,mdp);
 				this.effacerThis();
 			}
 			/*
@@ -164,8 +168,8 @@
 		}
 		public function clickSpec(e:MouseEvent):void
 		{
-			this.iMenu.visible = false;
-			this.retour.visible = true;
+			InterfaceSock.spectateur();
+			this.effacerThis();
 		}
 		public function clickInscrip(e:MouseEvent):void
 		{

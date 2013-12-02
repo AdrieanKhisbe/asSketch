@@ -7,7 +7,7 @@
 	/*Class Fenetre
 		Class Contener qui contient toute les classes graphic et qui gere l'affichage principal des sous fenetres
 	*/
-	public class Fenetre extends Sprite{
+	public class Fenetre extends MovieClip{
 		public var scene:MovieClip=InterfaceSock.scene;  
 		public var iRC:IRC; //Fenetre de Dialogues
 		public var reponse:Reponse; //Fenetre des Réponses
@@ -23,8 +23,6 @@
 		
 		public function Fenetre() {
 			instanceFenetre();
-			this.addNew(InterfaceSock.pseudo);
-			messBox = new MessageBox(this,'Ceci est un test de analfpba kt courte','Mon titre');
 		}
 		
 		//Cree LE client 

@@ -40,6 +40,11 @@
 				//GUESSED/mot/user/
 				InterfaceSock.reponseC(tabData[1],tabData[2]);
 			}
+			else if (tabData[0] == "WELCOME")
+			{
+				//WELCOME/user/
+				InterfaceSock.welcome(tabData[1]);
+			}
 			else if (tabData[0] == "WORD_FOUND")
 			{
 				//WORD_FOUND/joueur/
@@ -67,9 +72,14 @@
 				//LINE/x1/y1/x2/y2/r/g/b/s/
 				InterfaceSock.drawL(tabData[1],tabData[2],tabData[3],tabData[4],tabData[5],tabData[6],tabData[7],tabData[8]);
 			}
-			else if (tabData[0] == "ERROR")
+			else if (tabData[0] == "ACCESSDENIED")
 			{
-				//ERROR/x
+				InterfaceSock.erreurCo();
+			}
+			else if (tabData[0] == "LISTEN")
+			{
+				//LISTEN/joueur/texte/
+				InterfaceSock.iRCRecu(tabData[1],tabData[2]);
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{

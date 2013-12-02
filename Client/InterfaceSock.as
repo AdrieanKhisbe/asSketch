@@ -22,13 +22,13 @@
 		//Fonctions  client -> Serveur
 		public static function connexionGuest(pseudoo:String)
 		{
-			pseudo=pseudoo;
-			scene.connexion.sendText("CONNECT/" + escape(pseudo));
-			scene.gotoAndPlay(2);
+			scene.connexion.sendText("CONNECT/" + escape(pseudoo));
 		}
-		public static function deconnexionGuest(pseudo:String)
+		public static function deconnexionGuest()
 		{
 			scene.connexion.sendText("EXIT/" + escape(pseudo));
+			scene.mainFenetre.effacerThis();
+			scene.gotoAndPlay(1);
 		}
 		public static function motClient(mot:String)
 		{
@@ -58,10 +58,54 @@
 			}
 		}
 		
+		public static function report(){
+			scene.connexion.sendText("CHEAT/" + scene.mainFenetre.info.getCurrentD());
+		}
+		
+		public static function pass(){
+			scene.connexion.sendText("PASS/");
+		}
+		
+		public static function inscription(user:String,pass:String){
+			scene.connexion.sendText("REGISTER/" + user +"/"+ pass );
+		}
+		
+		public static function coInscrit(user:String,pass:String){
+			scene.connexion.sendText("LOGIN/" + user +"/"+ pass );
+		}
+		
+		public static function spectateur(){
+			scene.connexion.sendText("SPECTATOR");
+			pseudo = "spec";
+			
+		}
+		
+		public static function iRCClient(text:String)
+		{
+			scene.connexion.sendText("TALK/" + escape(text));
+		}
+		
+		
+		
+		
+		
+		
 		//Fonction Serveur->Client
 		
 		public static function clientCo(user:String){
 			scene.mainFenetre.addPre(user);
+		}
+		public static function welcome(user:String){
+			if(pseudo != "spec"){
+				pseudo=user;
+				scene.gotoAndPlay(2);
+				scene.mainFenetre.addNew(pseudo);
+				scene.mainFenetre.addPre(pseudo);
+			}else{
+				scene.gotoAndPlay(2);
+				scene.mainFenetre.addNew(pseudo);
+				scene.mainFenetre.currentUser.setSpec(true);
+			}
 		}
 		
 		public static function clientDeco(user:String){
@@ -110,6 +154,7 @@
 		public static function finiR(user:String,mot:String){
 			scene.mainFenetre.info.stopT();
 			scene.mainFenetre.info.setMot(mot);
+			scene.mainFenetre.info.pass.visible=false;
 			scene.mainFenetre.info.vainqueur(user);
 		}
 		
@@ -136,6 +181,14 @@
 			if (ExternalInterface.available){
 				ExternalInterface.call('console.log', message);
 			}
+		}
+		
+		static function erreurCo():void{
+			var mess:MessageBox = new MessageBox(scene,"Erreur a définir plutard","erreur");
+		}
+		
+		public static function iRCRecu(user:String,text:String){
+			scene.mainFenetre.iRC.addT(user +" : "+ text);
 		}
 
 	}
