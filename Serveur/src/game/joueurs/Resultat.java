@@ -8,6 +8,7 @@ public class Resultat implements Comparable<Resultat>, Serializable {
 
 	public Integer score, nbMotsTrouvés, nbFalseSuggestions;
 	public Integer position; // BONUX change?
+	public Boolean hasCheat;
 
 	public Resultat(int score, int nbMotsTrouvés, int nbSuggestions,
 			int position) {
@@ -15,6 +16,7 @@ public class Resultat implements Comparable<Resultat>, Serializable {
 		this.nbMotsTrouvés = nbMotsTrouvés;
 		this.nbFalseSuggestions = nbSuggestions;
 		this.position = position;
+		hasCheat =false;
 	}
 
 	public Resultat() {
@@ -48,4 +50,8 @@ public class Resultat implements Comparable<Resultat>, Serializable {
 		return score.compareTo(o.score);
 	}
 
+	public void malusCheat(Integer penalty) {
+		hasCheat = true;
+		score -= penalty;
+	}
 }

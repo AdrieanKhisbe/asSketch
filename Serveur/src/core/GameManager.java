@@ -320,18 +320,22 @@ public class GameManager extends Thread {
 	}
 
 	void notifyCheat(Joueur j) {
-		// HERE TODO: sémantique du cheat totalement changée, à adapter!
 		if (tourCourrant.addCheatWarn(j)) {
 			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
 			broadcastJoueurs(Protocol.newWarned(j));
 			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
 				IO.trace("Trop c'est trop, on arrete de jouer");
 				synchronized (endRound) {
-					
 					// HERE: changer sémantique
+					// exclu le joueur. (how? on lui envoi quoi.) 
+					// va rester sur notre sémantique: en rajoutant malus point
+					j.malusCheat(ASSketchServer.options.cheatPenalty);
+					// TODO: message cheat confirmed au joueurs
+					
 					endRound.notify();
 				}
-
+				
+	
 			} else {
 				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
 				// MAYBE: balance mot protocole

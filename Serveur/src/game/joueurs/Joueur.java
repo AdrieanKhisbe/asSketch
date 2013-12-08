@@ -114,4 +114,8 @@ public class Joueur implements Serializable {
 		} // TODO to joueur comparateur
 	};
 
+	public void malusCheat(Integer penalty) {
+		currentResult.malusCheat(penalty);
+	}
+
 }

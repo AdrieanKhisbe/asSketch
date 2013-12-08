@@ -64,8 +64,11 @@ public class ASSketchServer {
 		@Parameter(names = { "timepause", "--timepause" }, description = "Temps de pause entre parties")
 		Integer tpause = 5;
 
-		@Parameter(names = { "nbwarn", "--nbwarn" }, description = "Nb warn to exlude a player")
+		@Parameter(names = { "nbwarn", "--nbwarn" }, description = "Nb pour mettre malus joueur")
 		Integer nbCheatWarn = 3;
+		
+		@Parameter(names = { "cheatPenalty", "--cheatPenalty" }, description = "Point de malus")
+		Integer cheatPenalty = 10;
 
 		@Parameter(names = { "-d", "--daemon" }, description = "Serveur enchaine les parties (non oneshot)")
 		boolean daemon = false;

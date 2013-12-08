@@ -1,0 +1,41 @@
+#+TITLE: Rapport iSketch Project
+#+AUTHOR: Adrien Becchis, Stéphane Ferreira
+
+
+* Intro
+
+* Guide utilisation
+
+* Conception Serveur
+
+** Intro
+
+** Architecture
+
+reverse to Do!
+
+** autres
+
+Automate.
+Parseur
+Loggeur
+
+** Problèmes rencontrés
+
+
+* Conception Client
+
+* Extensions & Modif protocole.
+
+Lister motivation:
+contraintes rencontrée, modification induites.
+
+
+Fonction clear.
+
+Room (si jamais on le fait.)
+
+
+
+CHEAT: n'exclu pas le joueur. Malus de point: -10
+éviter dérives.... (et manquait mot dans le protocole)
