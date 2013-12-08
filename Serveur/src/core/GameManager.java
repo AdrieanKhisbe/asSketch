@@ -327,6 +327,8 @@ public class GameManager extends Thread {
 			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
 				IO.trace("Trop c'est trop, on arrete de jouer");
 				synchronized (endRound) {
+					
+					// HERE: changer sémantique
 					endRound.notify();
 				}
 

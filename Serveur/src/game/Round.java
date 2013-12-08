@@ -28,10 +28,8 @@ public class Round {
 
 	public Round(Joueur dessinateur, ArrayList<Joueur> chercheurs, String mot) {
 
-		// this.gm=gm;
 		this.dessinateur = dessinateur;
 		this.chercheurs = chercheurs;
-		// this.wordFound = wordFound;
 		this.mot = mot;
 		this.trouveurs = new ArrayList<>();
 		this.suggestions =  new ArrayList<>();

@@ -10,7 +10,6 @@ import game.joueurs.Role;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -24,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import tools.IO;
 import tools.Protocol;
-import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 
 public class Server extends Thread {
@@ -429,13 +427,11 @@ public class Server extends Thread {
 									String joueurName = tokens[1];
 
 									// Check Login
-									if (!joueurs.isLoginDuplicate(joueurName)) {
-										throw new IllegalCommandException(
-												"Existing Login");
+									if (!joueurs.isLoginDuplicate(joueurName) || !comptesJoueurs.isFreeUsername(joueurName) )
+									{
+										joueurName = joueurName + "(bis)";// idéalement compteur
+										// TODO improved symbol
 									}
-									// HERE : adapt, prendre aussi login
-									// existant . trouver appen au symbole à
-									// faire
 
 									// NOTE: à partir de ce stade là, en théorie
 									// tout est bon, donc on créer l'objet

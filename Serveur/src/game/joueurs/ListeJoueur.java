@@ -2,7 +2,6 @@ package game.joueurs;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import tools.IO;
 
@@ -18,8 +17,6 @@ public class ListeJoueur {
 	// liste figée des joueurs (onles gardes, mais c'est pas dans elle qu'on
 	// écrit
 
-	
-	
 	
 	// MAYBE Scores? here?
 
