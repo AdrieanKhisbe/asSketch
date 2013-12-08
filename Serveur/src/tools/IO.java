@@ -20,7 +20,6 @@ public class IO {
 	static private boolean debugMode = false;
 	
 	// Timing
-	static private Calendar cal = Calendar.getInstance();
 	static private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
 	public static void setLogFile(String file) {
@@ -50,10 +49,7 @@ public class IO {
 
 	}
 	
-	public static Calendar getCal(){
-		return cal;
-	}
-	
+
 	public static void turnOnPrintThread (){
 		printThread = true;
 	}

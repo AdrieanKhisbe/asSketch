@@ -142,6 +142,9 @@ public class Protocol {
 	public static String newGuess(Joueur j, String mot) {
 		return "GUESSED/" + j.getUsername() + "/" + mot + "/";
 	}
+	public static String newGuess(String j, String mot) {
+		return "GUESSED/" + j + "/" + mot + "/";
+	}
 
 	public static String newWordFound(Joueur j) {
 		return "WORD_FOUND/" + j.getUsername() + "/";

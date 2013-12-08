@@ -1,8 +1,7 @@
 package game.graphiques;
 
+import java.util.Calendar;
 import java.util.Date;
-
-import tools.IO;
 
 public abstract class Forme {
 
@@ -11,7 +10,7 @@ public abstract class Forme {
 	Couleur couleur;
 
 	public Forme(Integer taille, Couleur couleur) {
-		this.dateAjout = IO.getCal().getTime();
+		this.dateAjout = Calendar.getInstance().getTime();
 		this.taille = taille;
 		this.couleur = couleur;
 	}

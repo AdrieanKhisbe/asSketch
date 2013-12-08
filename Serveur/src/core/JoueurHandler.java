@@ -110,16 +110,13 @@ public class JoueurHandler extends Thread {
 									"Les arguments doivent être des nombres");
 						}
 						break;
-						
+
 					case "CLEAR":
 						gm.clearDrawing();
 						break;
 
 					case "TALK":
-						gm.broadcastJoueurs(
-								Protocol.newListen(gamer, parsedCommand[1]));
-						// SEE ? broadcast method up to game manager? (with archive procedure
-						// BONUX : here, sauvegarder les messages. ajouter méthode game manager
+						gm.sendTchat(gamer, parsedCommand[1]);
 						break;
 
 					default:
@@ -134,6 +131,7 @@ public class JoueurHandler extends Thread {
 					// cachées (comme toutes les IOExceptions)
 					// il faut tester si readline renvoit pas null
 					// on préférera utiliser une exception
+					e.printStackTrace();
 					IO.trace("Connexion coupéeee");
 					manageExit(false);
 

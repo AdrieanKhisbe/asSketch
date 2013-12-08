@@ -2,6 +2,7 @@ package core;
 
 import game.Dictionnaire;
 import game.Round;
+import game.Tchat;
 import game.graphiques.Ligne;
 import game.joueurs.Joueur;
 import game.joueurs.ListeJoueur;
@@ -35,6 +36,8 @@ public class GameManager extends Thread {
 	private final Runnable timerGame;
 	private final Runnable timerFound;
 
+	private final ArrayList<Tchat> messages;
+
 	// Cheat Warning
 
 	// Rounds
@@ -48,6 +51,7 @@ public class GameManager extends Thread {
 		this.rounds = new ArrayList<>();
 		this.tourCourrant = null;
 		this.dico = dico;
+		this.messages = new ArrayList<>();
 
 		this.timer = Executors.newFixedThreadPool(2);
 		this.wordFound = new AtomicBoolean(false); // used as sync var
@@ -145,7 +149,7 @@ public class GameManager extends Thread {
 				// TODO: save si joueur enregistré
 				pos++;
 			}
-			//CHECK !!
+			// CHECK !!
 			IO.trace("Ordre d'arrivé: " + finalJoueurs.toString());
 
 		}
@@ -254,7 +258,7 @@ public class GameManager extends Thread {
 	// /////////////////////
 	// Méthodes ou les game Joueur Handler envoient message!
 	// TODO: syncrhonized to change. (so delete synchronize block) Voir
-
+	// HERE URGENT, syncrhonize??
 	void tryGuess(Joueur j, String mot) {
 		// CHECK in game statut
 
@@ -285,6 +289,7 @@ public class GameManager extends Thread {
 		} else {
 			broadcastJoueurs(Protocol.newGuess(j, mot));
 			j.addFalseSuggestion();
+			tourCourrant.addFalseGuess(j,mot);
 			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 
@@ -372,11 +377,18 @@ public class GameManager extends Thread {
 
 			sb.append(Protocol.newRoundChercheur(tourCourrant.getDessinateur()))
 					.append("\n");
-			sb.append(tourCourrant.getDessinCommands());
+			sb.append(tourCourrant.getDessinCommands()).append("\n");
+			// Liste suggestion tour courrant
+			sb.append(tourCourrant.getSuggestionCommand()); //backlash inclu
+			
 
-			// TODO: recup Guess and talk
 		}
 
+		// ajoute messages
+		for (Tchat m : messages)
+			sb.append(m.toCommand()).append("\n");
+		
+		
 		return sb.toString();
 	}
 
@@ -384,6 +396,13 @@ public class GameManager extends Thread {
 		tourCourrant.clearDrawing();
 		broadcastJoueurs(Protocol.newCleared());
 		IO.trace("Le dessin viens d'être effacé par le dessinateur courant");
-		
+
+	}
+
+	public void sendTchat(Joueur auteur, String message) {
+		Tchat tmp = new Tchat(message, auteur);
+		messages.add(tmp);
+		this.broadcastJoueurs(tmp.toCommand());
+
 	}
 }

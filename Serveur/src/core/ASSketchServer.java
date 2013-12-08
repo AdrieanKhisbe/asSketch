@@ -56,10 +56,10 @@ public class ASSketchServer {
 
 		// Timing options
 		@Parameter(names = { "timeout", "--timeout" }, description = "Délai après découverte d'un mot")
-		Integer tfound = 180;
+		Integer tfound = 30;
 
 		@Parameter(names = { "timeround", "--timeround" }, description = "Durée Max partie")
-		Integer tround = 30;
+		Integer tround = 180;
 
 		@Parameter(names = { "timepause", "--timepause" }, description = "Temps de pause entre parties")
 		Integer tpause = 5;

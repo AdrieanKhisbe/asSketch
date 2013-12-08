@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import tools.Protocol;
+
 public class Round {
 
 	final Joueur dessinateur;
 	final ArrayList<Joueur> chercheurs;
 	final ArrayList<Joueur> trouveurs;
 	Set<Joueur> cheatWarningList;
+	ArrayList<Guess> suggestions;
 
 	final Dessin sketch;
 	final String mot; // copy
@@ -30,9 +33,10 @@ public class Round {
 		this.chercheurs = chercheurs;
 		// this.wordFound = wordFound;
 		this.mot = mot;
-		trouveurs = new ArrayList<>();
+		this.trouveurs = new ArrayList<>();
+		this.suggestions =  new ArrayList<>();
 		this.cheatWarningList = new HashSet<>();
-		sketch = new Dessin();
+		this.sketch = new Dessin();
 
 		// Valeur défaulrs
 		currentColor = new Couleur(); // black
@@ -77,6 +81,10 @@ public class Round {
 		return trouveurs;
 	}
 
+	/**
+	 * Suggestions
+	 * 
+	 */
 	public synchronized void setHasFound(Joueur j) {
 		// CHECK + sync
 		trouveurs.add(j);
@@ -88,6 +96,26 @@ public class Round {
 	public synchronized boolean guess(String essai) {
 		return mot.toLowerCase().equals(essai.toLowerCase());
 	}
+
+	public synchronized void addFalseGuess(Joueur j, String mot) {
+		suggestions.add(new Guess(mot, j.getUsername()));
+	}
+
+	public Object getSuggestionCommand() {
+		if (suggestions.isEmpty())
+			return "";
+
+		StringBuffer sb = new StringBuffer();
+		for (Guess g : suggestions) {
+			sb.append(Protocol.newGuess(g.guesserName, g.falseGuessed));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Cheat!!
+	 */
 
 	public synchronized boolean addCheatWarn(Joueur j) {
 		return cheatWarningList.add(j);
@@ -104,5 +132,18 @@ public class Round {
 	}
 
 	// TODO: end turn: FIGE, et set la raison victoire
+
+	class Guess {
+		public String falseGuessed;
+		public String guesserName;
+
+		// note: pour éviter garder référence sur joueur
+
+		public Guess(String falseGuessed, String guesserName) {
+			this.falseGuessed = falseGuessed;
+			this.guesserName = guesserName;
+		}
+
+	}
 
 }
