@@ -131,7 +131,8 @@ public class JoueurHandler extends Thread {
 					// cachées (comme toutes les IOExceptions)
 					// il faut tester si readline renvoit pas null
 					// on préférera utiliser une exception
-					e.printStackTrace();
+					
+					// DIS e.printStackTrace();
 					IO.trace("Connexion coupéeee");
 					manageExit(false);
 

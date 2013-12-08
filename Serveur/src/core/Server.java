@@ -38,15 +38,16 @@ public class Server extends Thread {
 	protected LinkedList<Socket> waitingSockets;
 	private ConnexionStacker cs;
 	private ConnexionHandler ch[];
+	private StatServer statisticServer;
 	private ArrayList<JoueurHandler> gamerListeners;
 	// BONUX: descendre au niveau du game handler quand mise en place rooms
 
 	private AtomicBoolean gameOn;
 	private GameManager gm;
 
-	protected Comptes comptesJoueurs;
-	protected ListeJoueur joueurs;
-	protected ArrayList<Connexion> spectateurs;
+	private Comptes comptesJoueurs;
+	private ListeJoueur joueurs;
+	private ArrayList<Connexion> spectateurs;
 
 	// Autres
 	private final static String ACTION_POLICY_STRING = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -96,6 +97,10 @@ public class Server extends Thread {
 			}
 			gm = new GameManager(this, joueurs, dico);
 			gamerListeners = new ArrayList<JoueurHandler>();
+
+			// TODO essayer de le relancer? recatch, tenté de relancer
+			statisticServer = new StatServer(comptesJoueurs,
+					ASSketchServer.options.portStats);
 
 			if (ASSketchServer.options.actionMode) {
 				IO.trace("Mode Action Script mis en place!");
@@ -221,6 +226,11 @@ public class Server extends Thread {
 			chi.start();
 		}
 		IO.trace("Lancement des threads gérants les connexions entrantes");
+
+		
+		// CHECK error. si mal initialisé
+		statisticServer.start();
+		IO.trace("Lancement Server de Statique");
 
 		// HERE
 		do {
@@ -427,9 +437,11 @@ public class Server extends Thread {
 									String joueurName = tokens[1];
 
 									// Check Login
-									if (!joueurs.isLoginDuplicate(joueurName) || !comptesJoueurs.isFreeUsername(joueurName) )
-									{
-										joueurName = joueurName + "(bis)";// idéalement compteur
+									if (!joueurs.isLoginDuplicate(joueurName)
+											|| !comptesJoueurs
+													.isFreeUsername(joueurName)) {
+										joueurName = joueurName + "(bis)";
+										// idéalement compteur (symbol générateur)
 										// TODO improved symbol
 									}
 

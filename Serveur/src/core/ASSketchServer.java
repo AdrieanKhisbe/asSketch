@@ -45,6 +45,9 @@ public class ASSketchServer {
 
 		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")
 		Integer port = 2013;
+		
+		@Parameter(names = { "portstats", "--portstats" }, description = "Port à utiliser pour le serveur de stats")
+		Integer portStats =  2092;
 
 		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
 		String dicoFile = "dicotest"; // Dico test
