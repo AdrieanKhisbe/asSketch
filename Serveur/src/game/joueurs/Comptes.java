@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
 import java.util.TreeMap;
 
 import tools.IO;
@@ -30,6 +32,9 @@ public class Comptes implements Serializable {
 
 	public synchronized JoueurEnregistre getJoueur(String username) {
 		return comptes.get(username);
+	}
+	public synchronized Collection<JoueurEnregistre> getJoueurs() {
+		return comptes.values();
 	}
 
 	public synchronized boolean isFreeUsername(String name) {

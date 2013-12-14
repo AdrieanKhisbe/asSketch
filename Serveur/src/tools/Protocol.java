@@ -2,6 +2,7 @@ package tools;
 
 // MAYBE : is tool the good place?
 import game.graphiques.Ligne;
+import game.graphiques.Spline;
 import game.joueurs.Joueur;
 import game.joueurs.Role;
 
@@ -52,6 +53,7 @@ public class Protocol {
 		gameCommand.put("SET_COLOR", new CommandParameter(Role.dessinateur, 3));
 		gameCommand.put("SET_SIZE", new CommandParameter(Role.dessinateur, 1));
 		gameCommand.put("SET_LINE", new CommandParameter(Role.dessinateur, 4));
+		gameCommand.put("SET_COURBE", new CommandParameter(Role.dessinateur, 8));
 		gameCommand.put("CLEAR", new CommandParameter(Role.dessinateur, 0));
 		
 		// TALK
@@ -185,18 +187,24 @@ public class Protocol {
 		// REFACTOR?
 		return l.toCommand();
 	}
-
-	public static String newCleared() {
-		// May this prevent us from Stephan White spam!
-		return "CLEARED/";
-	}
-
+	
 	public static String newLigne(Integer x1, Integer y1, Integer x2,
 			Integer y2, Integer currentSize, Color currentColor) {
 		// REFACTOR?
 		return "LINE/" + x1 + "/" + y1 + "/" + x2 + "/" + y2 + "/"
 				+ currentSize + "/" + currentColor;
 	}
+
+	public static String newCourbe(Spline s) {
+		return s.toCommand();
+	}
+
+	public static String newCleared() {
+		// May this prevent us from Stephan White spam!
+		return "CLEARED/";
+	}
+
+
 
 	public static String newExited(Joueur j) {
 		return "EXITED/" + j.getUsername() + "/";

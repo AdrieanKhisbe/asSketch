@@ -4,6 +4,7 @@ import game.Dictionnaire;
 import game.Round;
 import game.Tchat;
 import game.graphiques.Ligne;
+import game.graphiques.Spline;
 import game.joueurs.Joueur;
 import game.joueurs.ListeJoueur;
 import game.joueurs.Role;
@@ -93,6 +94,10 @@ public class GameManager extends Thread {
 		};
 	}
 
+	/**
+	 * Fonction principale du Game Manager.
+	 * Gère le début de parti, l'ensemble des round puis la fin de partie.
+	 */
 	public void run() {
 
 		IO.trace("Démarrage Game Manager");
@@ -162,6 +167,12 @@ public class GameManager extends Thread {
 
 	}
 
+	/**
+	 * Fonction de gestion d'un tour unique.
+	 * 
+	 * @param dessinateur
+	 *            le joueur qui sera le dessinateur lors du tour présent
+	 */
 	private void manageRound(Joueur dessinateur) {
 		String mot = dico.getWord();
 		// set roles
@@ -246,11 +257,23 @@ public class GameManager extends Thread {
 
 	// Transmetteur
 	// CHECK; still usefull? (ramener ptetre ceux du niveau serveur?
+	/**
+	 * Diffuse un message à l'ensemble des joueurs
+	 * 
+	 * @param message
+	 */
 	public void broadcastJoueurs(final String message) {
 		server.broadcastJoueurs(message);
 		// leger surcout, mais bon, pas duplication code
 	}
 
+	/**
+	 * Diffuse un message à l'ensemble des joueurs à l'exception d'un
+	 * 
+	 * @param message
+	 * @param deaf
+	 *            le sourd
+	 */
 	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
 		server.broadcastJoueursExcept(message, deaf);
 	}
@@ -259,6 +282,142 @@ public class GameManager extends Thread {
 	// Méthodes ou les game Joueur Handler envoient message!
 	// TODO: syncrhonized to change. (so delete synchronize block) Voir
 	// HERE URGENT, syncrhonize??
+	/**
+	 * Gère l'ajout d'une ligne
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 */
+	void addLigne(Integer x1, Integer y1,
+	// SEE: surchage communication, traite ptetre pas au bon niveau. (mais à
+	// vouloir séparer donnée de envoi message)
+			Integer x2, Integer y2) {
+
+		Joueur d = tourCourrant.getDessinateur();
+
+		Ligne l = tourCourrant.addLigne(x1, y1, x2, y2);
+		broadcastJoueursExcept(Protocol.newLigne(l), d);
+		IO.trace("Ligne ajoutée par " + d + ":" + l);
+	}
+
+	/**
+	 * Gère l'ajout d'une courbe
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param x3
+	 * @param y3
+	 * @param x4
+	 * @param y4
+	 */
+	public void addCourbe(Integer x1, Integer y1, Integer x2, Integer y2,
+			Integer x3, Integer y3, Integer x4, Integer y4) {
+		Joueur d = tourCourrant.getDessinateur();
+
+		Spline s = tourCourrant.addCourbe(x1, y1, x2, y2, x3, y3, x4, y4);
+		broadcastJoueursExcept(Protocol.newCourbe(s), d);
+		IO.trace("Courbe ajoutée par " + d + ":" + s);
+
+	}
+
+	/**
+	 * Traite le changement de taille du dessinateur
+	 * 
+	 * @param taille
+	 *            épaisseur du trait
+	 */
+	void setSize(Integer taille) {
+		tourCourrant.setCurrentSize(taille);
+		IO.trace("Taille dessin fixée à " + taille);
+	}
+
+	/**
+	 * Traite le changement de couleur du dessinateur
+	 * 
+	 * @param r
+	 *            rouge
+	 * @param g
+	 *            vert
+	 * @param b
+	 *            blue
+	 */
+	void setColor(Integer r, Integer g, Integer b) {
+		tourCourrant.setCurrentColor(r, g, b);
+		IO.trace("Taille dessin fixée à " + r + "/" + g + "/" + b + "/");
+	}
+
+	/**
+	 * Gère la remise à jour du dessin
+	 */
+	public void clearDrawing() {
+		tourCourrant.clearDrawing();
+		broadcastJoueurs(Protocol.newCleared());
+		IO.trace("Le dessin viens d'être effacé par le dessinateur courant");
+
+	}
+
+	// //// Partie
+
+	/**
+	 * Traite un avertissement de la part du joueur spécifié en paramètre
+	 * 
+	 * @param j
+	 */
+	void notifyCheat(Joueur j) {
+		if (tourCourrant.addCheatWarn(j)) {
+			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
+			broadcastJoueurs(Protocol.newWarned(j));
+			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
+				IO.trace("Trop c'est trop, on arrete de jouer");
+				synchronized (endRound) {
+					// HERE: changer sémantique
+					// exclu le joueur. (how? on lui envoi quoi.)
+					// va rester sur notre sémantique: en rajoutant malus point
+					j.malusCheat(ASSketchServer.options.cheatPenalty);
+					// TODO: message cheat confirmed au joueurs
+
+					endRound.notify();
+				}
+
+			} else {
+				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
+				// MAYBE: balance mot protocole
+			}
+		}
+
+	}
+
+	/**
+	 * Gère le départ du dessinateur en cours de jeu
+	 */
+	public void handleDessinateurExit() {
+
+		if (wordFound.get()) {
+			IO.trace("Mot trouvé, le jeu continue donc");
+		} else {
+			synchronized (endRound) {
+				endRound.notify();
+			}
+			IO.trace("Le dessinateur étant parti sans que personne ait trouvé: interrompt round");
+			// TODO message ?
+
+		}
+		// TODO: handle exit: gerer arret partit si tous le monde gone. (laisse
+		// tomber calcul scores)
+	}
+
+	/**
+	 * Traite la suggestion du joueur j et agis en conséquence
+	 * 
+	 * @param j
+	 *            le joueur qui propose
+	 * @param mot
+	 *            mot proposé
+	 */
 	void tryGuess(Joueur j, String mot) {
 		// CHECK in game statut
 
@@ -289,7 +448,7 @@ public class GameManager extends Thread {
 		} else {
 			broadcastJoueurs(Protocol.newGuess(j, mot));
 			j.addFalseSuggestion();
-			tourCourrant.addFalseGuess(j,mot);
+			tourCourrant.addFalseGuess(j, mot);
 			IO.trace("Guess infructuex de " + j + " : '" + mot + "'");
 		}
 
@@ -297,69 +456,7 @@ public class GameManager extends Thread {
 
 	}
 
-	void addLigne(Integer x1, Integer y1,
-	// SEE: surchage communication, traite ptetre pas au bon niveau. (mais à
-	// vouloir séparer donnée de envoi message)
-			Integer x2, Integer y2) {
-
-		Joueur d = tourCourrant.getDessinateur();
-
-		Ligne l = tourCourrant.addLigne(x1, y1, x2, y2);
-		broadcastJoueursExcept(Protocol.newLigne(l), d);
-		IO.trace("Ligne ajoutée par " + d + ":" + l);
-	}
-
-	void setSize(Integer taille) {
-		tourCourrant.setCurrentSize(taille);
-		IO.trace("Taille dessin fixée à " + taille);
-	}
-
-	void setColor(Integer r, Integer g, Integer b) {
-		tourCourrant.setCurrentColor(r, g, b);
-		IO.trace("Taille dessin fixée à " + r + "/" + g + "/" + b + "/");
-	}
-
-	void notifyCheat(Joueur j) {
-		if (tourCourrant.addCheatWarn(j)) {
-			IO.trace("Joueur " + j + " viens de prévenir d'un cheat");
-			broadcastJoueurs(Protocol.newWarned(j));
-			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
-				IO.trace("Trop c'est trop, on arrete de jouer");
-				synchronized (endRound) {
-					// HERE: changer sémantique
-					// exclu le joueur. (how? on lui envoi quoi.) 
-					// va rester sur notre sémantique: en rajoutant malus point
-					j.malusCheat(ASSketchServer.options.cheatPenalty);
-					// TODO: message cheat confirmed au joueurs
-					
-					endRound.notify();
-				}
-				
-	
-			} else {
-				IO.trace("Joueur " + j + " avait déjà prévenu d'un cheat");
-				// MAYBE: balance mot protocole
-			}
-		}
-
-	}
-
-	// TODO: handle exit: gerer arret partit si tous le monde gone. (laisse
-	// tomber calcul scores)
-	public void handleDessinateurExit() {
-
-		if (wordFound.get()) {
-			IO.trace("Mot trouvé, le jeu continue donc");
-		} else {
-			synchronized (endRound) {
-				endRound.notify();
-			}
-			IO.trace("Le dessinateur étant parti sans que personne ait trouvé: interrompt round");
-			// TODO message ?
-
-		}
-
-	}
+	// /// Tchat and spectateur
 
 	/**
 	 * Génère un résumé pour les spectateur arrivant en cours de route
@@ -385,30 +482,28 @@ public class GameManager extends Thread {
 					.append("\n");
 			sb.append(tourCourrant.getDessinCommands()).append("\n");
 			// Liste suggestion tour courrant
-			sb.append(tourCourrant.getSuggestionCommand()); //backlash inclu
-			
+			sb.append(tourCourrant.getSuggestionCommand()); // backlash inclu
 
 		}
 
 		// ajoute messages
 		for (Tchat m : messages)
 			sb.append(m.toCommand()).append("\n");
-		
-		
+
 		return sb.toString();
 	}
 
-	public void clearDrawing() {
-		tourCourrant.clearDrawing();
-		broadcastJoueurs(Protocol.newCleared());
-		IO.trace("Le dessin viens d'être effacé par le dessinateur courant");
-
-	}
-
+	/**
+	 * Enregistre et diffuse un message du tchat
+	 * 
+	 * @param auteur
+	 * @param message
+	 */
 	public void sendTchat(Joueur auteur, String message) {
 		Tchat tmp = new Tchat(message, auteur);
 		messages.add(tmp);
 		this.broadcastJoueurs(tmp.toCommand());
 
 	}
+
 }

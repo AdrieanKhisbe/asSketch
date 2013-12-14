@@ -2,6 +2,7 @@ package game.graphiques;
 
 import tools.IO;
 
+
 public class Ligne extends Forme {
 
 	final Integer x1;
@@ -18,12 +19,18 @@ public class Ligne extends Forme {
 		this.y2 = y2;
 	}
 
+	/**
+	 * Génère commande protocole décrivant la ligne
+	 */
 	@Override
 	public String toCommand() {
 		return "LINE/" + x1 + "/" + y1 + "/" + x2 + "/" + y2 + "/" + couleur.r
 				+ "/" + couleur.g + "/" + couleur.b + "/" + taille + "";
 	}
 
+	/**
+	 * Description textuelle de la ligne
+	 */
 	@Override
 	public String toString() {
 

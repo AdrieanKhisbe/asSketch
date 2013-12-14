@@ -1,6 +1,7 @@
 package core;
 
 import game.joueurs.Comptes;
+import game.joueurs.JoueurEnregistre;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,6 +22,10 @@ public class StatServer extends Thread {
 	private Integer nbStatsSucces;
 	private Integer nbStatsWrongRequest;
 	private Integer nbStatsDisconnect; // exception
+
+	// Entetes
+	private static final String HEADER = ""; //TODO
+	private static final String FOOTER = "";
 
 	// throw pour
 	public StatServer(Comptes c, int port) throws IOException {
@@ -47,7 +52,7 @@ public class StatServer extends Thread {
 
 			try {
 				Socket client = statSock.accept();
-			//	client.setSoTimeout(1000); // PARAM
+				// client.setSoTimeout(1000); // PARAM
 
 				BufferedReader isr = new BufferedReader(new InputStreamReader(
 						client.getInputStream()));
@@ -85,8 +90,26 @@ public class StatServer extends Thread {
 	}
 
 	private String constructPage() {
-		// TODO: look how to create template (haml ou autre??)
-		return "TO BE BUILT\n";
+		// BONUX: look how to create template (haml ou autre??)
+
+		StringBuilder sb = new StringBuilder(HEADER);
+		
+		
+		for (JoueurEnregistre j : comptesJoueurs.getJoueurs() ){
+			//TODO: sort sort?
+			
+			sb.append("<tr><td>").append(j.getUsername()).append("</td>");
+			sb.append("<td>").append(j.nbPartiesJouees()).append("</td>");
+			sb.append("<td>").append(j.nbVictoires()).append("</td>");
+			sb.append("<td>").append(j.nbMoyenVictoire()).append("</td>");			sb.append("<td>").append(j.scoreMoyen()).append("</td>");
+			sb.append("<td>").append(j.scoreTotal()).append("</td>");
+			
+			sb.append("</td></tr>\n");
+		}
+
+		sb.append(FOOTER);
+		return sb.toString();
+
 	}
 
 }

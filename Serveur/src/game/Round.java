@@ -3,6 +3,7 @@ package game;
 import game.graphiques.Couleur;
 import game.graphiques.Dessin;
 import game.graphiques.Ligne;
+import game.graphiques.Spline;
 import game.joueurs.Joueur;
 import game.joueurs.Role;
 
@@ -71,10 +72,23 @@ public class Round {
 		return sketch.addLine(x1, y1, x2, y2, currentSize, currentColor);
 	}
 
+	public synchronized Spline addCourbe(Integer x1, Integer y1, Integer x2, Integer y2,
+			Integer x3, Integer y3, Integer x4, Integer y4) {
+		
+		return sketch.addSpline(x1, y1, x2, y2,x3,y3,x4,y4, currentSize, currentColor); 
+	}
+	
 	public synchronized String getDessinCommands() {
 		return sketch.toCommand();
 	}
 
+	public synchronized void clearDrawing() {
+		sketch.clear();
+	}
+	
+	///// Partie
+	
+	
 	public synchronized ArrayList<Joueur> getTrouveurs() {
 		return trouveurs;
 	}
@@ -123,11 +137,7 @@ public class Round {
 		return cheatWarningList.size();
 	}
 
-	public synchronized void clearDrawing() {
-
-		sketch.clear();
-
-	}
+	
 
 	// TODO: end turn: FIGE, et set la raison victoire
 
@@ -143,5 +153,7 @@ public class Round {
 		}
 
 	}
+
+	
 
 }

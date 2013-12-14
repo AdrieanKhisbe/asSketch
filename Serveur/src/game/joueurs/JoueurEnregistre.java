@@ -9,8 +9,7 @@ import core.Connexion;
 public class JoueurEnregistre extends Joueur implements Serializable {
 
 	private static final long serialVersionUID = 6884148533126977784L;
-	
-	
+
 	private String password;
 	private ArrayList<Resultat> scores;
 
@@ -21,12 +20,21 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 		this.scores = new ArrayList<>();
 	}
 
+	/**
+	 * Vérifie si password communiqué corresponda à celui du joueur
+	 * @param mdp
+	 * @return Vrai si ok
+	 */
 	public boolean checkPassword(String mdp) {
 		return mdp.equals(password);
 	}
 
 	// TODO toString
 
+	/**
+	 * Nombre de victoires du joueurs
+	 * @return
+	 */
 	public int nbVictoires() {
 		int tot = 0;
 		for (Resultat r : scores) {
@@ -36,6 +44,19 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 		return tot;
 	}
 
+	
+	/**
+	 * Nombre departies Jouées du joueurs
+	 * @return
+	 */
+	public int nbPartiesJouees() {
+		return this.scores.size();
+	}
+
+	/**
+	 * Nombre moyen de victoire du joueur
+	 * @return
+	 */
 	public double nbMoyenVictoire() {
 		double nbPartie = scores.size();
 		return nbPartie == 0 ? 0 : nbVictoires() / nbPartie;
@@ -55,6 +76,10 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 		return tot;
 	}
 
+	/**
+	 * Score Moyen du joueur
+	 * @return
+	 */
 	public double scoreMoyen() {
 		double nbPartie = scores.size();
 		return nbPartie == 0 ? 0 : scoreTotal() / nbPartie;
@@ -69,6 +94,10 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 
 	}
 
+	/**
+	 * Change la connexion du joueur.
+	 * @param c
+	 */
 	public void setConnexion(Connexion c) {
 		this.connexion = c;
 	}

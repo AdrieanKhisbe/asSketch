@@ -65,7 +65,7 @@ public class JoueurHandler extends Thread {
 
 					case "PASS":
 						// HERE TODO; cf exit du dessinateur
-						// vérifier trouvur
+						// vérifier trouveur
 						break;
 
 					case "CHEAT":
@@ -89,6 +89,24 @@ public class JoueurHandler extends Thread {
 
 						// 404
 						break;
+						
+					case "SET_COURBE":
+						try {
+							gm.addCourbe(Integer.parseInt(parsedCommand[1]),
+									Integer.parseInt(parsedCommand[2]),
+									Integer.parseInt(parsedCommand[3]),
+									Integer.parseInt(parsedCommand[4]),
+									Integer.parseInt(parsedCommand[5]),
+									Integer.parseInt(parsedCommand[6]),
+									Integer.parseInt(parsedCommand[7]),
+									Integer.parseInt(parsedCommand[8]));
+						} catch (NumberFormatException e) {
+							throw new InvalidCommandException(
+									"Les arguments doivent être des nombres");
+						}
+
+						// 404
+						break;	
 
 					case "SET_SIZE":
 
