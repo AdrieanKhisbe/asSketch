@@ -24,10 +24,23 @@ public class StatServer extends Thread {
 	private Integer nbStatsDisconnect; // exception
 
 	// Entetes
-	private static final String HEADER = ""; //TODO
-	private static final String FOOTER = "";
-
-	// throw pour
+	private static final String HEADER = "<!DOCTYPE html>\n"
+			+ "<html>\n"
+			+ "  <head>\n"
+			+ "    <meta charset=\"UTF-8\">\n"
+			+ "    <title>Statistiques AsSketch/title>\n"
+			+ "  <!-- TODO Smaal css  -->\n"
+			+ // TODO
+			"  </head>\n"
+			+ "  <body>\n"
+			+ "<h1> Statistiques Des joueurs de AssKecth</h1>\n"
+			+ "<table>\n"
+			+ "<tr><th>Joueur</th><th>Nb Parties Jouées</th><th>Nb victoires</th><th>Nb Victoires Moyennes</th><th>Score Moyen</th><th>Score Total</th><tr>\n";
+	private static final String FOOTER = "</table>\n</body>\n</html>";
+	// Beeeurk, dégeullase
+	
+	
+	//  SEE throw pour
 	public StatServer(Comptes c, int port) throws IOException {
 
 		// thread Config
@@ -93,17 +106,17 @@ public class StatServer extends Thread {
 		// BONUX: look how to create template (haml ou autre??)
 
 		StringBuilder sb = new StringBuilder(HEADER);
-		
-		
-		for (JoueurEnregistre j : comptesJoueurs.getJoueurs() ){
-			//TODO: sort sort?
-			
+
+		for (JoueurEnregistre j : comptesJoueurs.getJoueurs()) {
+			// TODO: sort sort?
+
 			sb.append("<tr><td>").append(j.getUsername()).append("</td>");
 			sb.append("<td>").append(j.nbPartiesJouees()).append("</td>");
 			sb.append("<td>").append(j.nbVictoires()).append("</td>");
-			sb.append("<td>").append(j.nbMoyenVictoire()).append("</td>");			sb.append("<td>").append(j.scoreMoyen()).append("</td>");
+			sb.append("<td>").append(j.nbMoyenVictoire()).append("</td>");
+			sb.append("<td>").append(j.scoreMoyen()).append("</td>");
 			sb.append("<td>").append(j.scoreTotal()).append("</td>");
-			
+
 			sb.append("</td></tr>\n");
 		}
 
