@@ -1,14 +1,23 @@
 #+TITLE: Rapport iSketch Project
 #+AUTHOR: Adrien Becchis, Stéphane Ferreira
-§TODO options
+#+LANGUAGE:  fr
+#+OPTIONS:   H:3 num:t toc:t \n:t @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+STARTUP: latexpreview
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LaTeX_HEADER: \usepackage[margin=0.75in]{geometry}
+#+LATEX_HEADER: \usepackage[utf8x]{inputenc}
+
+\newpage
 
 * Intro
-
+Ce présent rapport viens décrire le projet de Client Serveur iSketch, réalisé au cours de ce semestre du cours de Programmation Concurrente Réactive et Répartie.
 * Guide utilisation
 
 ** Lancement serveur
 
-§TODO
+§TODO:GET OPTIOnS
 
 La liste des options possibles du serveur est consultable en invoquant le programme avec l'option -h, qui affichera l'usage.
 
@@ -21,23 +30,73 @@ Le joueur se laissera ensuite naturelle guider par l'interface au design standar
 §Todo:screenshot!!
 
 * Conception Serveur
-
+/par Adrien/
 ** Intro
 
+Choix langage.
+
+
+Une des raisons principales était aussi de pratiquer le Java sur projet conséquent, vu que j'avais qu'une expérience assez limitée avec celui-ci.
+
 ** Architecture
+Rien ne vaut un petit diagramme des classes pour décrire.
+# order
 
-§reverse to Do!
+Les extensions avaient été prises en compte lors de la conception de l'architecture globale du serveur pour permettre de les mettre en place sans tout chambouler.
 
-** TODO autres
+§TODO
 
-Automate.
-Parseur
-Loggeur
+Une fois le squelette mis en place les fonctionnalités de bases, puis avancées ont été petit à petit incorporées, testées et debuguées.
+
+
+*** COMMENT vrac
+En gros.
+Principe. thread/objet
+
+Les différents objet
+
+La javadoc est consultable dans le dossier doc.
+
+
+** TODO Autres
+Voici quelques points dont je pense qu'il est utilise de préciser l'intention et le fonctionnement
+
+*** Lanceur, JCommander
+
+# mis en place en premier pour pouvoir tester le programme le plus vite possible
+
+
+*** Protocole Parseur
+# vérifie commande, centralise, plus command factory.
+
+
+*** Loggeur
+# debuggage.
+# log enrichi par rapport à sysout.
+# moins verbeux. Centralise. affiche thread
+
+
+*** Automate
+Après avoir longuement réfléchis sur comment pouvoir
+# GERER LES CLIENS
+
+JoueurHandler se voit assigner un joueur unique donc il a la charge. Il Écoute en permance ce que le joueur va lui dire, et
+# ROLE!!!
+
+
+L'état du joueur,
 
 ** Problèmes rencontrés
 
+Le plus dur a été de bien organiser le programme, d'affecter les responsabilité, et de sépar.
+
+Le débugage en isolation a été bien plus facile que pour le client, avec l'utilisation de telnet, bien qu'en pratique assez fastidieux et répétitif.
+L'idéal aurait été d'utiliser le framework de test.
+
+Choisir le bon niveau de synchronisation sur les objets.
 
 * Conception Client
+/par Stéphane/
 # TODO Stéééééééphaaaaaannne
 
 * Extensions & Modif protocole.
@@ -48,19 +107,19 @@ Quelques ajouts au protocole de base on été effectués afin de rajouter de nou
 - CLEAR C->S :: Le dessinateur spécifie au client qu'il veut e
 - CLEARED S->C :: Le serveur indique aux chercheurs que le dessin a été effacé
 
-Une autre modification au protocole est une modification des règles de triches. (d'ailleurs plus proche des premières version du sujet). si le dessinateur s'avère être coupable de triche, il ne sera désormais plus exclu du jeu comme précédemment, mais affligé d'un malus.
+Une autre modification au protocole est une modification des règles de triches. (d'ailleurs plus proche des premières version du sujet).
+Si le dessinateur s'avère être coupable de triche, il ne sera désormais plus exclu du jeu comme précédemment, mais affligé d'un malus. (10 point par défault.). Ceci permet not §HERE
 
+** Room Multiples.
+
+La possibilité pour le serveur de gérer à la fois un certain nombre de parties simultanément a été envisagé mais n'a pas été réalisée, faute de temps notamment.
+
+Cependant les modifications à apporter sont assez mineures:
+La =ListeJoueurs=, et les =joueurHandlers= pourraient passer directement dans le gameManager, et le serveur aurait plusieurs =gameManager= à la place d'un seul actuellement.
+Le serveur remplissant une session/room jusqu'à ce que celle-ci soit pleine, lancant le gameManager avant de passer sur une autre session, dans la limite des places disponibles.
+
+Le protocole devra par contre être modifié et étendus, pour permettre notamment au spectateur de choisir la room à observer, au client de savoir dans quel room il est (et éventuellement demander d'en changer avant que la partie ait commencer)
 
 ** COMMENT What
 Lister motivation:
 contraintes rencontrée, modification induites.
-
-
-Fonction clear.
-
-Room (si jamais on le fait.)
-
-
-
-CHEAT: n'exclu pas le joueur. Malus de point: -10
-éviter dérives.... (et manquait mot dans le protocole)
