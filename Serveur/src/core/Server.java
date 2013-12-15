@@ -289,29 +289,11 @@ public class Server extends Thread {
 		statisticServer.start();
 		IO.trace("Lancement Server de Statique");
 
-		// HERE multiple games!
-		do {
-			IO.trace("Serveur lance une nouvelle partie, en attente de joueurs");
-			synchronized (gameOn) {
-				try {
-					gameOn.wait();
-					gameOn.set(true);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					IO.trace("Erreur précédent le lancement de la partie");
-				}
-			}
-			IO.trace("Active game Manager");
-			gm.start();
+		// Lance partie
+		handleGame();
 
-			try {
-				gm.join();
-
-			} catch (InterruptedException e) {
-				IO.trace("Arret inattendu du serveur");
-			}
-
+		// BONUX: multiple room en parralèle avec plusieurs GM.
+		while (ASSketchServer.options.daemon) {
 			// restore environnement pour nouvelle partie!
 			// probablement pas la meilleur organisation
 			// TODO Check
@@ -321,17 +303,52 @@ public class Server extends Thread {
 			joueurs = new ListeJoueur(nbMax);
 			gm = new GameManager(this, joueurs, dico);
 
-		} while (ASSketchServer.options.daemon);
+			// Relance la partie
+			handleGame();
+		}
 
-		// sauvegarde des comptes
-		// TODO: après chaque ajout
+	}
+
+	/**
+	 * Fonction de gestion de partie (factorisation powaa)
+	 */
+	public void handleGame() {
+		IO.trace("Serveur lance une nouvelle partie, en attente de joueurs");
+		synchronized (gameOn) {
+			try {
+				gameOn.wait();
+				gameOn.set(true);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				IO.trace("Erreur précédent le lancement de la partie");
+			}
+		}
+
+		IO.trace("Active game Manager");
+		gm.start();
+
+		// Attente de la fin du jeu.
 		try {
+			gm.join();
+			gameOn.set(false);
+		} catch (InterruptedException e) {
+			IO.trace("Arret inattendu du serveur");
+		}
+	}
+
+	/**
+	 * Lance une sauvegarde des comptes joueurs.
+	 */
+	public void sauvegardeComptes() {
+		try {
+			IO.traceDebug("Sauvegarde des comptes");
 			comptesJoueurs.serialize(ASSketchServer.options.comptesFile);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			IO.trace("Problème à sauvegarde des comptes");
 		}
-
 	}
 
 	/**
@@ -395,8 +412,8 @@ public class Server extends Thread {
 			this(-1);
 		}
 
-		// blockant sur la socket traitée en cours, readtimeout pour controuner
-		// problème
+		// blockant sur la socket traitée en cours,
+		// readtimeout pour contourner problème
 		// REFACTOR!!!
 		public void run() {
 
@@ -427,14 +444,11 @@ public class Server extends Thread {
 									.newDecoder()));
 					outchan = new PrintWriter(new OutputStreamWriter(
 							client.getOutputStream(), Charset.forName("UTF-8")
-									.newEncoder())
-
-					, true);
-					// nota :autoflush
+									.newEncoder()), true); // nota :autoflush
 
 					// Met un timeout à la lecture sur la socket
-					client.setSoTimeout(4000); // BONUX: temps augmente au fur
-												// et à mesure
+					client.setSoTimeout(4000);
+					// BONUX: temps augmente au fur et à mesure
 
 					// Lecture commande
 					String command = null;
@@ -445,6 +459,7 @@ public class Server extends Thread {
 							IO.traceDebug(command);
 							// TODO: handle raw deconnection
 
+							// Code spécifique pour le client actionscript
 							// Handling of ActionsScript ask
 							if (ASSketchServer.options.actionMode
 									&& command.contains("policy-file-request")) {
@@ -493,6 +508,7 @@ public class Server extends Thread {
 								Role.nonconnecté);
 
 						switch (tokens[0]) {
+						// Demande de connection
 						case "CONNECT":
 
 							synchronized (joueurs) {
@@ -526,6 +542,7 @@ public class Server extends Thread {
 							}
 							break;
 
+						// Demande d'enregistrement
 						case "REGISTER":
 							// token 1: user, token2 : mdp
 							JoueurEnregistre newJoueur;
@@ -548,9 +565,11 @@ public class Server extends Thread {
 
 							}
 							setUpNewJoueur(newJoueur);
+							sauvegardeComptes();
 
 							break;
 
+						// Demande de login à compte enregistré
 						case "LOGIN":
 							JoueurEnregistre joueurLog = comptesJoueurs
 									.getJoueur(tokens[1]);
@@ -579,6 +598,7 @@ public class Server extends Thread {
 							setUpNewJoueur(joueurLog);
 							break;
 
+						// Demande de "Spectatage"
 						case "SPECTATOR":
 							Connexion specCo = new Connexion(client, inchan,
 									outchan);
@@ -590,6 +610,11 @@ public class Server extends Thread {
 
 							break;
 
+						// Pour Toute autre commande protocole valide, mais non
+						// acceptable now.
+						default:
+							throw new InvalidCommandException(
+									"C'est pas le moment de demander ceci");
 						}
 
 					} catch (InvalidCommandException e) {

@@ -18,7 +18,7 @@ public class Joueur implements Serializable {
 	private static final long serialVersionUID = -7046469152632576540L;
 
 	protected final String username;
-	public Resultat currentResult;
+	public transient Resultat currentResult; //CHECK
 
 	// on ne conserve pas la connexion, ni le role courrant
 	protected transient Connexion connexion;

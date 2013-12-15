@@ -124,14 +124,13 @@ public class GameManager extends Thread {
 
 			if (joueurs.getJoueurs().size() <= 1) {
 				IO.trace("Plus qu'un seul joueur en lice, on arrete");
+				// TODO: à faire aussi in game (handle exit général)
 				break;
 			}
 
 			if (joueurs.checkStillConnected(dessinateur)) {
 				IO.trace("Nouveau Round n°" + i + ", dessinateur "
 						+ dessinateur);
-
-				// TODO: check s'il reste au moins plus d'un joueur en lice!
 
 				manageRound(dessinateur);
 				i++;

@@ -1,10 +1,24 @@
 #+TITLE: Rapport iSketch Project
 #+AUTHOR: Adrien Becchis, Stéphane Ferreira
-
+§TODO options
 
 * Intro
 
 * Guide utilisation
+
+** Lancement serveur
+
+§TODO
+
+La liste des options possibles du serveur est consultable en invoquant le programme avec l'option -h, qui affichera l'usage.
+
+à noté que pour tourner avec le client flash conçu, le serveur devra être lancé en mode actionScript avec l'option =-a=
+
+** Lancement du client.
+Il s'agit juste de lancer la page Html dans un navigateur disposant une d'un player flash.
+Le joueur se laissera ensuite naturelle guider par l'interface au design standard.
+
+§Todo:screenshot!!
 
 * Conception Serveur
 
@@ -12,9 +26,9 @@
 
 ** Architecture
 
-reverse to Do!
+§reverse to Do!
 
-** autres
+** TODO autres
 
 Automate.
 Parseur
@@ -24,9 +38,20 @@ Loggeur
 
 
 * Conception Client
+# TODO Stéééééééphaaaaaannne
 
 * Extensions & Modif protocole.
 
+** Ajout au protocoles
+
+Quelques ajouts au protocole de base on été effectués afin de rajouter de nouvelles fonctionnalités
+- CLEAR C->S :: Le dessinateur spécifie au client qu'il veut e
+- CLEARED S->C :: Le serveur indique aux chercheurs que le dessin a été effacé
+
+Une autre modification au protocole est une modification des règles de triches. (d'ailleurs plus proche des premières version du sujet). si le dessinateur s'avère être coupable de triche, il ne sera désormais plus exclu du jeu comme précédemment, mais affligé d'un malus.
+
+
+** COMMENT What
 Lister motivation:
 contraintes rencontrée, modification induites.
 
