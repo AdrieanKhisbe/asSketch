@@ -6,6 +6,11 @@ import java.util.ArrayList;
 
 import core.Connexion;
 
+/**
+ *  Classe Joueur enregistré qui étend Joueur en rajoutant mot de passe, et histoirique/resultats
+ * @author adriean
+ *
+ */
 public class JoueurEnregistre extends Joueur implements Serializable {
 
 	private static final long serialVersionUID = 6884148533126977784L;
@@ -28,8 +33,6 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 	public boolean checkPassword(String mdp) {
 		return mdp.equals(password);
 	}
-
-	// TODO toString
 
 	/**
 	 * Nombre de victoires du joueurs

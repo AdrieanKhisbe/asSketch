@@ -6,6 +6,7 @@ import game.Tchat;
 import game.graphiques.Ligne;
 import game.graphiques.Spline;
 import game.joueurs.Joueur;
+import game.joueurs.JoueurEnregistre;
 import game.joueurs.ListeJoueur;
 import game.joueurs.Role;
 
@@ -21,6 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import tools.IO;
 import tools.Protocol;
 
+/**
+ * Classe (Thread) qui gère une partie.
+ * 
+ * @author adriean
+ * 
+ */
 public class GameManager extends Thread {
 
 	private Server server;
@@ -31,7 +38,7 @@ public class GameManager extends Thread {
 	// Timer
 	private final ExecutorService timer;
 	private final Object endRound;
-	// HERE : switch to atomic (utilisé quand partie annulée)
+	// HERE : switch to atomicBoolean (utilisé quand partie annulée)
 	// ou enum Etat dans round avec statut fin partie
 	private final AtomicBoolean wordFound;
 	private final Runnable timerGame;
@@ -95,8 +102,8 @@ public class GameManager extends Thread {
 	}
 
 	/**
-	 * Fonction principale du Game Manager.
-	 * Gère le début de parti, l'ensemble des round puis la fin de partie.
+	 * Fonction principale du Game Manager. Gère le début de parti, l'ensemble
+	 * des round puis la fin de partie.
 	 */
 	public void run() {
 
@@ -153,6 +160,10 @@ public class GameManager extends Thread {
 				j.setFinalPosition(pos);
 				// TODO: save si joueur enregistré
 				pos++;
+				
+				// Sauvegarde les résultats
+				if(j instanceof JoueurEnregistre)
+					((JoueurEnregistre) j).saveResult();
 			}
 			// CHECK !!
 			IO.trace("Ordre d'arrivé: " + finalJoueurs.toString());
@@ -180,10 +191,11 @@ public class GameManager extends Thread {
 		for (Joueur j : joueurs.getJoueurs()) {
 			if (j.equals(dessinateur)) {
 				j.setRoleCourrant(Role.dessinateur);
-				chercheurs.add(j);
-
-			} else
+				
+			} else {
 				j.setRoleCourrant(Role.chercheur);
+				chercheurs.add(j);
+			}
 		}
 
 		// Crée nouveau objet tour.
@@ -280,8 +292,7 @@ public class GameManager extends Thread {
 
 	// /////////////////////
 	// Méthodes ou les game Joueur Handler envoient message!
-	// TODO: syncrhonized to change. (so delete synchronize block) Voir
-	// HERE URGENT, syncrhonize??
+	// HERE URGENT, synchronize or not?
 	/**
 	 * Gère l'ajout d'une ligne
 	 * 
@@ -374,7 +385,7 @@ public class GameManager extends Thread {
 			if (tourCourrant.getNbWarn() >= ASSketchServer.options.nbCheatWarn) {
 				IO.trace("Trop c'est trop, on arrete de jouer");
 				synchronized (endRound) {
-					// HERE: changer sémantique
+					// sémantique différente que l'énoncé
 					// exclu le joueur. (how? on lui envoi quoi.)
 					// va rester sur notre sémantique: en rajoutant malus point
 					j.malusCheat(ASSketchServer.options.cheatPenalty);

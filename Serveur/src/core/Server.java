@@ -25,6 +25,12 @@ import tools.IO;
 import tools.Protocol;
 import core.exceptions.InvalidCommandException;
 
+/**
+ * Le serveur (thread), classe principale
+ * 
+ * @author adriean
+ * 
+ */
 public class Server extends Thread {
 
 	// BONUX: see finals?
@@ -122,42 +128,86 @@ public class Server extends Thread {
 		return gm;
 	}
 
-	/** Socket Handling */
-
+	/**
+	 * déterminer si un jeu est en train de tourner
+	 * 
+	 * @return vrai si trourne
+	 */
 	public synchronized boolean isInGame() {
 		return gameOn.get();
 	}
 
+	/** Socket Handling */
+
+	/**
+	 * Ajoute une nouvelles socket à la liste d'attente
+	 * 
+	 * @param s
+	 *            la socket à ajouter.
+	 */
 	public synchronized void addWaitingSocket(Socket s) {
 		waitingSockets.add(s);
 	}
 
+	/**
+	 * Détermine si connnexion en attente
+	 * 
+	 * @return vrai si en attente
+	 */
 	synchronized boolean waitingConnexion() {
 		return (waitingSockets.size() != 0);
 	}
 
+	/**
+	 * Retourne une socket en attente
+	 * 
+	 * @return la premiere socket qui attend
+	 */
 	public synchronized Socket takeWaitingSocket() {
 		return waitingSockets.pollFirst();
 	}
 
 	/** Joueurs Handling */
+
+	/**
+	 * ajoute un joueur à la liste des joueurs
+	 * 
+	 * @param j
+	 *            le joueur
+	 */
 	public synchronized void addJoueur(Joueur j) {
 		joueurs.addJoueur(j);
 	}
 
-	// KEEP?
+	/**
+	 * Supprime le joueur de la liste
+	 * 
+	 * @param j
+	 *            le joueur
+	 */
 	public synchronized void removeJoueur(Joueur j) {
 		joueurs.removeJoueur(j);
 	}
 
-	// BONUX EXT Spect
-
-	//
+	/**
+	 * Diffuse un message à tous les joueurs
+	 * 
+	 * @param message
+	 *            le message
+	 */
 	public void broadcastJoueurs(final String message) {
 		broadcastJoueursExcept(message, null);
 		// leger surcout, mais bon, pas duplication code
 	}
 
+	/**
+	 * Diffuse un message à tous les joueurs à l'exception d'un
+	 * 
+	 * @param message
+	 *            le message
+	 * @param deaf
+	 *            le sourd
+	 */
 	public void broadcastJoueursExcept(final String message, final Joueur deaf) {
 
 		// SEE: Disable Thread submit. (non deterministic)
@@ -201,6 +251,11 @@ public class Server extends Thread {
 
 	}
 
+	/**
+	 * Ajoute un thread de gestion des joueurs
+	 * 
+	 * @param j
+	 */
 	private void addGamerListener(Joueur j) {
 		JoueurHandler gl = new JoueurHandler(this, j);
 		synchronized (gamerListeners) {
@@ -216,6 +271,9 @@ public class Server extends Thread {
 	 * 
 	 */
 
+	/**
+	 * Méthode run du serveur, lance les différents threads, etc.
+	 */
 	public void run() {
 
 		cs.setDaemon(true);
@@ -227,12 +285,11 @@ public class Server extends Thread {
 		}
 		IO.trace("Lancement des threads gérants les connexions entrantes");
 
-		
 		// CHECK error. si mal initialisé
 		statisticServer.start();
 		IO.trace("Lancement Server de Statique");
 
-		// HERE
+		// HERE multiple games!
 		do {
 
 			synchronized (gameOn) {
@@ -437,11 +494,12 @@ public class Server extends Thread {
 									String joueurName = tokens[1];
 
 									// Check Login
-									if (!joueurs.isLoginDuplicate(joueurName)
+									if (joueurs.isLoginDuplicate(joueurName)
 											|| !comptesJoueurs
 													.isFreeUsername(joueurName)) {
 										joueurName = joueurName + "(bis)";
-										// idéalement compteur (symbol générateur)
+										// idéalement compteur (symbol
+										// générateur)
 										// TODO improved symbol
 									}
 
@@ -499,7 +557,14 @@ public class Server extends Thread {
 								closeConnexion(Protocol.newAccessDenied());
 								break;
 							}
-							// HERE!! checker si pas déjà connnecté!!!
+							// Joueur déjà connecté
+							if(joueurs.isLoginDuplicate(joueurLog.getUsername())){
+								IO.trace("Utilisateur déjà connecté");
+								closeConnexion(Protocol.newAccessDenied());
+								break;
+							}else{
+								System.err.println("bite");
+							}
 
 							// met à jour la connexion:
 							joueurLog.setConnexion(new Connexion(client,
@@ -565,6 +630,11 @@ public class Server extends Thread {
 			client.close();
 		}
 
+		/**
+		 * Gère la connexion d'un nouveau joueur.
+		 * (et lui envoi toutes les infos nécessaires)
+		 * @param jou
+		 */
 		public void setUpNewJoueur(Joueur jou) {
 			IO.trace("Nouveau Joueur Connecté: " + jou.getUsername());
 

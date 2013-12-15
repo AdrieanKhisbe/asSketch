@@ -7,13 +7,18 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Classe dictionnaire, stockant les différents mot sketchable.
+ * 
+ * @author adriean
+ * 
+ */
 public class Dictionnaire {
 
-	// TODO: Data structure to find.
 	final List<Entry> dico;
 	Random rg;
 
-	// Utiliser un hash pour les utilisation?
+	// BONUX Utiliser un hash pour les utilisation?
 
 	public Dictionnaire(String file) throws FileNotFoundException {
 
@@ -36,7 +41,7 @@ public class Dictionnaire {
 		Entry e = dico.get(index);
 		e.incr();
 		return e.mot;
-		//TODO: maybe go for a suffle, and index?
+		// TODO: maybe go for a suffle, and index?
 	}
 
 	public String toString() {
@@ -50,8 +55,7 @@ public class Dictionnaire {
 	}
 
 	/**
-	 * Classe interne Entrée, TODO voir si pas inutile
-	 * 
+	 * Classe interne Entrée
 	 */
 	class Entry {
 		String mot;

@@ -8,8 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
- * Tools to trace. RENAME Imprime à
- * 
+ * Tools to trace. 
+ * RENAME
  */
 public class IO {
 
@@ -74,7 +74,7 @@ public class IO {
 		debugMode = false;
 	}
 	
-	// TODO Overload (+ chaine println?)
+	// BONUX Overload (+ chaine println?)
 	public static void trace(String message) {
 
 		String result = message;
@@ -94,8 +94,7 @@ public class IO {
 			result = sb.toString();
 		}
 		
-		
-
+	
 		// Affiche sortir standard
 		System.out.println(result);
 		

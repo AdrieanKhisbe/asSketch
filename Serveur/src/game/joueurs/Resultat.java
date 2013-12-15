@@ -2,6 +2,11 @@ package game.joueurs;
 
 import java.io.Serializable;
 
+/**
+ * Classe représentant les résultats d'un round
+ * @author adriean
+ *
+ */
 public class Resultat implements Comparable<Resultat>, Serializable {
 
 	private static final long serialVersionUID = 7082004205548642549L;

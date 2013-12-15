@@ -2,7 +2,12 @@ package game.graphiques;
 
 import tools.IO;
 
-
+/**
+ * Classe représentant les lignes
+ * 
+ * @author adriean
+ * 
+ */
 public class Ligne extends Forme {
 
 	final Integer x1;

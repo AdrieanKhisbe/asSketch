@@ -11,6 +11,12 @@ import core.exceptions.IllegalCommandException;
 import core.exceptions.InvalidCommandException;
 import core.exceptions.UnknownCommandException;
 
+/**
+ * Classe (Thread) qui va gérer un joueur.
+ * 
+ * @author adriean
+ * 
+ */
 public class JoueurHandler extends Thread {
 
 	// BONUX: DP State...
@@ -34,11 +40,17 @@ public class JoueurHandler extends Thread {
 	}
 
 	// / Run Run Run
+	/**
+	 * Méthode Principale: boucle infinie à écouter le client, et agir en
+	 * conséquence (selon le statut du joueur)
+	 * 
+	 */
 	public void run() {
 		try {
 			while (true) {
 				try {
-					// get command
+					// Récupère la commande du client
+					// Thread bloqué ici tant que pas de réponse du client
 					String textCommand = gamer.readCommand();
 
 					// parse
@@ -51,9 +63,11 @@ public class JoueurHandler extends Thread {
 					//
 					// IO.traceDebug(sb.toString());
 
-					// Handle
-
+					
+					
+					// Handle la commande recu.
 					switch (parsedCommand[0]) {
+					
 					case "EXIT":
 						// vérifie que bon joueur,
 						if (!parsedCommand[1].equals(username))
@@ -89,7 +103,7 @@ public class JoueurHandler extends Thread {
 
 						// 404
 						break;
-						
+
 					case "SET_COURBE":
 						try {
 							gm.addCourbe(Integer.parseInt(parsedCommand[1]),
@@ -106,7 +120,7 @@ public class JoueurHandler extends Thread {
 						}
 
 						// 404
-						break;	
+						break;
 
 					case "SET_SIZE":
 
@@ -149,7 +163,7 @@ public class JoueurHandler extends Thread {
 					// cachées (comme toutes les IOExceptions)
 					// il faut tester si readline renvoit pas null
 					// on préférera utiliser une exception
-					
+
 					// DIS e.printStackTrace();
 					IO.trace("Connexion coupéeee");
 					manageExit(false);
@@ -164,20 +178,21 @@ public class JoueurHandler extends Thread {
 					gamer.send(Protocol.newInvalidCommand(e));
 
 				}
-
 			} // end while
 
 		} catch (ExitException e) {
-
-			// MAYBE ou mettre code de gestion directement ici?
+			// MAYBE : mettre code de gestion directement ici?
 
 			// retire le threads des handler.
 			IO.traceDebug("Arret du thread handler courant");
-
 		}
-
 	}
 
+	/**
+	 * Gère la sortie du client
+	 * @param cleanExit (savoir si on peut envoyer un message) 
+	 * @throws ExitException exception qui permettra de sortir de la boucle
+	 */
 	private synchronized void manageExit(boolean cleanExit)
 			throws ExitException {
 		// Si jeux non lancé: if (!server.isInGame()) {NOtused?
@@ -198,11 +213,12 @@ public class JoueurHandler extends Thread {
 				+ " s'arrete suite à la déconnexion de ce dernier");
 		throw new ExitException();
 
-		// SEE Fin de partie??
-
 	}
 
-	// SEE that usefull?
+	/**
+	 * Exception Locale, pour gérer les fin de partir. 
+	 * (sortir boucle de diverses manières)
+	 */
 	class ExitException extends Exception {
 
 		private static final long serialVersionUID = 7237200611853588544L;

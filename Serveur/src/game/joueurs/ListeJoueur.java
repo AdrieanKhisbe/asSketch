@@ -39,9 +39,9 @@ public class ListeJoueur {
 	public synchronized boolean isLoginDuplicate(String login) {
 		for (Joueur j : joueurs) {
 			if (j.getUsername().equals(login))
-				return false;
+				return true;
 		}
-		return true;
+		return false;
 	}
 
 	public synchronized boolean isLocked() {

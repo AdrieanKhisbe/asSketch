@@ -3,6 +3,12 @@ package game.graphiques;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Classe abstraite forme
+ * 
+ * @author adriean
+ * 
+ */
 public abstract class Forme {
 
 	Date dateAjout;
@@ -17,8 +23,7 @@ public abstract class Forme {
 
 	public abstract String toCommand();
 
-     
-    @Override
+	@Override
 	public abstract String toString();
 
 }

@@ -13,6 +13,11 @@ import java.util.Set;
 
 import tools.Protocol;
 
+/**
+ * Classe représentant une Round d'une Partie d'iSketch
+ * @author adriean
+ *
+ */
 public class Round {
 
 	final Joueur dessinateur;
@@ -51,8 +56,12 @@ public class Round {
 		return currentSize;
 	}
 
+	/**
+	 * Détermine si des joueurs n'ont pas encore trouvé
+	 * @return vrai s'il y a encore des chercheurs
+	 */
 	public synchronized boolean stillSearching() {
-		return chercheurs.size() == 0;
+		return chercheurs.size() != 0;
 	}
 
 	public synchronized void setCurrentSize(Integer currentSize) {
@@ -137,10 +146,13 @@ public class Round {
 		return cheatWarningList.size();
 	}
 
-	
+	// BONUX: end turn: FIGE, et set la raison victoire
 
-	// TODO: end turn: FIGE, et set la raison victoire
-
+	/**
+	 * Classe interne Guess pour stocker les suggestions
+	 * @author adriean
+	 *
+	 */
 	class Guess {
 		public String falseGuessed;
 		public String guesserName;

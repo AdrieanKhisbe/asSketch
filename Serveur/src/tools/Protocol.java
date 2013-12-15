@@ -1,6 +1,5 @@
 package tools;
 
-// MAYBE : is tool the good place?
 import game.graphiques.Ligne;
 import game.graphiques.Spline;
 import game.joueurs.Joueur;
@@ -91,8 +90,15 @@ public class Protocol {
 
 		// Découpe
 		String[] tokens = command.split("(?<!\\\\)/");
+		
+//		//Déséchappe les tokens
+//		for(int i=0;i<tokens.length; i++){
+//			tokens[i]= tokens[i].replaceAll(Pattern.quote("\\/"), Pattern.quote("/"));
+//		}
 
-		// TODO: échapement des chaines envoyées devra aussi être fait!
+		// HERE TODO: échapement des chaines envoyées devra aussi être fait!
+		// faire only pour commandes à texte.
+		
 
 		CommandParameter cp = gameCommand.get(tokens[0]);
 		if (cp == null)

@@ -8,11 +8,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Set;
 import java.util.TreeMap;
 
 import tools.IO;
 
+/**
+ * Classe stockant les différents, comptes utilisateur.
+ * 
+ * @author adriean
+ * 
+ */
 public class Comptes implements Serializable {
 
 	private static final long serialVersionUID = -7358347607418941482L;
@@ -24,39 +29,77 @@ public class Comptes implements Serializable {
 		this.comptes = new TreeMap<>();
 	}
 
+	/**
+	 * Ajoute un nouveau compte
+	 * 
+	 * @param j
+	 *            le nouveau joueur Enregistré
+	 */
 	public synchronized void addCompte(JoueurEnregistre j) {
 		// CHECK pas déjà dedans
 
 		comptes.put(j.getUsername(), j);
 	}
 
+	/**
+	 * 
+	 * @param username
+	 * @return
+	 */
 	public synchronized JoueurEnregistre getJoueur(String username) {
 		return comptes.get(username);
 	}
+
+	/**
+	 * Renvoi l'ensemble des comptes enregistré.
+	 * 
+	 * @return
+	 */
 	public synchronized Collection<JoueurEnregistre> getJoueurs() {
 		return comptes.values();
 	}
 
+	/**
+	 * Teste si nom d'utilisateur est libre
+	 * 
+	 * @param name
+	 *            le nom à test
+	 * @return vrai si libre
+	 */
 	public synchronized boolean isFreeUsername(String name) {
-		return ! comptes.containsKey(name);
+		return !comptes.containsKey(name);
 	}
-	
 
-	public void serialize(String filepath) throws IOException {
+	/**
+	 * Sérialise les comptes pour les sauvegarder vers un fichier
+	 * 
+	 * @param filepath
+	 *            chemin vers le fichier
+	 * @throws IOException
+	 */
+	public synchronized void serialize(String filepath) throws IOException {
 		File f = new File(filepath);
-		
-		//TODO: see comment écraser fichier
-		if(f.exists())
-			f.delete();	
+
+		// TODO: see comment écraser fichier
+		if (f.exists())
+			f.delete();
 
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 		oos.writeObject(this);
 		oos.close();
-		IO.trace("Comptes on été sérialisés dans le fichier "+filepath);
+		IO.trace("Comptes on été sérialisés dans le fichier " + filepath);
 
 	}
-	
-	public static Comptes deserialize(String filepath) throws IOException {
+
+	/**
+	 * DeSérialise les comptes depuis fichier
+	 * 
+	 * @param filepath
+	 *            chemin vers le fichier de sauvegarde
+	 * @throws IOException
+	 */
+	public synchronized static Comptes deserialize(String filepath)
+			throws IOException {
 
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
 				filepath));
@@ -76,9 +119,12 @@ public class Comptes implements Serializable {
 		return (Comptes) tmp;
 	}
 
+	/**
+	 * Simple toString
+	 */
 	@Override
-	public synchronized String toString(){
-		if(comptes.isEmpty()){
+	public synchronized String toString() {
+		if (comptes.isEmpty()) {
 			return "Aucun Compte!";
 		}
 		StringBuffer sb = new StringBuffer();
@@ -86,9 +132,9 @@ public class Comptes implements Serializable {
 		for (String joueur : comptes.keySet())
 			sb.append(joueur).append(", ");
 		sb.append("et bientot plus! :) ");
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 }

@@ -2,6 +2,12 @@ package game.graphiques;
 
 import tools.IO;
 
+/**
+ * Classe représentant les courbes
+ * 
+ * @author adriean
+ * 
+ */
 public class Spline extends Forme {
 
 	final Integer x1;

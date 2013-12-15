@@ -7,7 +7,12 @@ import java.util.Comparator;
 import tools.IO;
 import core.Connexion;
 
-/// SEE syncrhonized ??
+// HERE DOC
+/**
+ * Classe Joueur
+ * @author adriean
+ *
+ */
 public class Joueur implements Serializable {
 
 	private static final long serialVersionUID = -7046469152632576540L;
@@ -15,10 +20,9 @@ public class Joueur implements Serializable {
 	protected final String username;
 	public Resultat currentResult;
 
-	// There?? Regroup in connexion object?
+	// on ne conserve pas la connexion, ni le role courrant
 	protected transient Connexion connexion;
-
-	protected transient Role roleCourrant; // CHECK
+	protected transient Role roleCourrant;
 
 	// TODO: autres variables à créer!
 
@@ -50,7 +54,7 @@ public class Joueur implements Serializable {
 	}
 
 	// SEND, READ, and Close
-	public void send(String command) {
+	public  void send(String command) {
 		try {
 			connexion.send(command);
 		} catch (IOException e) {
@@ -61,7 +65,7 @@ public class Joueur implements Serializable {
 
 	// ASK? is getConnexion a good practice?
 
-	public String readCommand() throws IOException {
+	public  String readCommand() throws IOException {
 		return connexion.getCommand();
 	}
 
@@ -77,6 +81,8 @@ public class Joueur implements Serializable {
 			e.printStackTrace();
 		}
 	}
+	
+	// SEE synchronied: ask when realy usefull?
 
 	public Integer getScore() {
 		return currentResult.score;

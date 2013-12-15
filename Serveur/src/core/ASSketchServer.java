@@ -6,7 +6,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 /**
- * Laucher Class. (JCommander Options Handling)
+ * Classe d'initiation (JCommander Options Handling)
  * 
  * @author adriean
  * 
@@ -35,19 +35,19 @@ public class ASSketchServer {
 	}
 
 	/**
-	 * Options De asSketch 
+	 * Options De asSketch
 	 */
 	public static class Options {
 		// Nota: visibilité default pour les options initialisant le serveur
 
-		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joeurs")
-		Integer nbJoueurs = 2; // TODO change once test over.
+		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joueurs")
+		Integer nbJoueurs = 4;
 
 		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")
 		Integer port = 2013;
-		
+
 		@Parameter(names = { "portstats", "--portstats" }, description = "Port à utiliser pour le serveur de stats")
-		Integer portStats =  2092;
+		Integer portStats = 2092;
 
 		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
 		String dicoFile = "dicotest"; // Dico test
@@ -69,7 +69,7 @@ public class ASSketchServer {
 
 		@Parameter(names = { "nbwarn", "--nbwarn" }, description = "Nb pour mettre malus joueur")
 		Integer nbCheatWarn = 3;
-		
+
 		@Parameter(names = { "cheatPenalty", "--cheatPenalty" }, description = "Point de malus")
 		Integer cheatPenalty = 10;
 

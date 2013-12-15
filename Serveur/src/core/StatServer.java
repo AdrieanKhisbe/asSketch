@@ -12,6 +12,12 @@ import java.net.Socket;
 
 import tools.IO;
 
+/**
+ * Thread server de statistiques.
+ * 
+ * @author adriean
+ * 
+ */
 public class StatServer extends Thread {
 
 	private Comptes comptesJoueurs;
@@ -37,10 +43,10 @@ public class StatServer extends Thread {
 			+ "<table>\n"
 			+ "<tr><th>Joueur</th><th>Nb Parties Jouées</th><th>Nb victoires</th><th>Nb Victoires Moyennes</th><th>Score Moyen</th><th>Score Total</th><tr>\n";
 	private static final String FOOTER = "</table>\n</body>\n</html>";
+
 	// Beeeurk, dégeullase
-	
-	
-	//  SEE throw pour
+
+	// SEE throw pour
 	public StatServer(Comptes c, int port) throws IOException {
 
 		// thread Config
