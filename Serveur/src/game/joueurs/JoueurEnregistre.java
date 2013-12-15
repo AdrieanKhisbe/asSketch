@@ -94,7 +94,6 @@ public class JoueurEnregistre extends Joueur implements Serializable {
 	public void saveResult() {
 		scores.add(currentResult);
 		currentResult = new Resultat();
-
 	}
 
 	/**

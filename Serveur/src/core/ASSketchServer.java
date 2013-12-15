@@ -40,16 +40,16 @@ public class ASSketchServer {
 	public static class Options {
 		// Nota: visibilité default pour les options initialisant le serveur
 
-		@Parameter(names = { "max", "--max" }, description = "Nombre maximum de joueurs")
+		@Parameter(names = { "-max", "--max" }, description = "Nombre maximum de joueurs")
 		Integer nbJoueurs = 4;
 
-		@Parameter(names = { "port", "--port" }, description = "Port à utiliser")
+		@Parameter(names = { "-port", "--port" }, description = "Port à utiliser")
 		Integer port = 2013;
 
-		@Parameter(names = { "portstats", "--portstats" }, description = "Port à utiliser pour le serveur de stats")
+		@Parameter(names = { "-portstats", "--portstats" }, description = "Port à utiliser pour le serveur de stats")
 		Integer portStats = 2092;
 
-		@Parameter(names = { "dico", "--dico" }, description = "Les mots à utiliser")
+		@Parameter(names = { "-dico", "--dico" }, description = "Les mots à utiliser")
 		String dicoFile = "dicotest"; // Dico test
 		// TODO: location to handle!! (mis à la racine pour l'instant)
 
@@ -58,28 +58,28 @@ public class ASSketchServer {
 		// TODO: location to handle!! (mis à la racine pour l'instant)
 
 		// Timing options
-		@Parameter(names = { "timeout", "--timeout" }, description = "Délai après découverte d'un mot")
+		@Parameter(names = { "-timeout", "--timeout" }, description = "Délai après découverte d'un mot")
 		Integer tfound = 30;
 
-		@Parameter(names = { "timeround", "--timeround" }, description = "Durée Max partie")
+		@Parameter(names = { "-timeround", "--timeround" }, description = "Durée Max partie")
 		Integer tround = 180;
 
-		@Parameter(names = { "timepause", "--timepause" }, description = "Temps de pause entre parties")
-		Integer tpause = 5;
+		@Parameter(names = { "-timepause", "--timepause" }, description = "Temps de pause entre parties")
+		Integer tpause = 2;
 
-		@Parameter(names = { "nbwarn", "--nbwarn" }, description = "Nb pour mettre malus joueur")
+		@Parameter(names = { "-nbwarn", "--nbwarn" }, description = "Nb pour mettre malus joueur")
 		Integer nbCheatWarn = 3;
 
-		@Parameter(names = { "cheatPenalty", "--cheatPenalty" }, description = "Point de malus")
+		@Parameter(names = { "-cheatPenalty", "--cheatPenalty" }, description = "Point de malus")
 		Integer cheatPenalty = 10;
 
-		@Parameter(names = { "-d", "--daemon" }, description = "Serveur enchaine les parties (non oneshot)")
+		@Parameter(names = { "-D", "--daemon" }, description = "Serveur enchaine les parties (non oneshot)")
 		boolean daemon = false;
 
 		@Parameter(names = { "-a", "--actionscript" }, help = true, hidden = true)
 		boolean actionMode;
 
-		@Parameter(names = { "d", "debug", "--debug" }, description = "Mode debug", hidden = true)
+		@Parameter(names = { "-d", "-debug", "--debug" }, description = "Mode debug", hidden = true)
 		boolean debug = false;
 
 		@Parameter(names = { "-h", "--help" }, help = true, hidden = true)

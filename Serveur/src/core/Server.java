@@ -291,7 +291,7 @@ public class Server extends Thread {
 
 		// HERE multiple games!
 		do {
-
+			IO.trace("Serveur lance une nouvelle partie, en attente de joueurs");
 			synchronized (gameOn) {
 				try {
 					gameOn.wait();
@@ -312,8 +312,15 @@ public class Server extends Thread {
 				IO.trace("Arret inattendu du serveur");
 			}
 
-			// HERE: restore environnemnt pour nouvelle partie!
+			// restore environnement pour nouvelle partie!
 			// probablement pas la meilleur organisation
+			// TODO Check
+			for (JoueurHandler j : gamerListeners)
+				j.interrupt();
+			gamerListeners.clear();
+			joueurs = new ListeJoueur(nbMax);
+			gm = new GameManager(this, joueurs, dico);
+
 		} while (ASSketchServer.options.daemon);
 
 		// sauvegarde des comptes
@@ -558,12 +565,11 @@ public class Server extends Thread {
 								break;
 							}
 							// Joueur déjà connecté
-							if(joueurs.isLoginDuplicate(joueurLog.getUsername())){
+							if (joueurs.isLoginDuplicate(joueurLog
+									.getUsername())) {
 								IO.trace("Utilisateur déjà connecté");
 								closeConnexion(Protocol.newAccessDenied());
 								break;
-							}else{
-								System.err.println("bite");
 							}
 
 							// met à jour la connexion:
@@ -631,8 +637,9 @@ public class Server extends Thread {
 		}
 
 		/**
-		 * Gère la connexion d'un nouveau joueur.
-		 * (et lui envoi toutes les infos nécessaires)
+		 * Gère la connexion d'un nouveau joueur. (et lui envoi toutes les infos
+		 * nécessaires)
+		 * 
 		 * @param jou
 		 */
 		public void setUpNewJoueur(Joueur jou) {

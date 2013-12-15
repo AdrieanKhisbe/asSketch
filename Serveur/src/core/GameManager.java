@@ -19,6 +19,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import core.exceptions.IllegalCommandException;
+
 import tools.IO;
 import tools.Protocol;
 
@@ -43,6 +45,7 @@ public class GameManager extends Thread {
 	private final AtomicBoolean wordFound;
 	private final Runnable timerGame;
 	private final Runnable timerFound;
+	// BONUX: timer inactivité du dessinateur
 
 	private final ArrayList<Tchat> messages;
 
@@ -160,9 +163,9 @@ public class GameManager extends Thread {
 				j.setFinalPosition(pos);
 				// TODO: save si joueur enregistré
 				pos++;
-				
+
 				// Sauvegarde les résultats
-				if(j instanceof JoueurEnregistre)
+				if (j instanceof JoueurEnregistre)
 					((JoueurEnregistre) j).saveResult();
 			}
 			// CHECK !!
@@ -191,7 +194,7 @@ public class GameManager extends Thread {
 		for (Joueur j : joueurs.getJoueurs()) {
 			if (j.equals(dessinateur)) {
 				j.setRoleCourrant(Role.dessinateur);
-				
+
 			} else {
 				j.setRoleCourrant(Role.chercheur);
 				chercheurs.add(j);
@@ -419,6 +422,25 @@ public class GameManager extends Thread {
 		}
 		// TODO: handle exit: gerer arret partit si tous le monde gone. (laisse
 		// tomber calcul scores)
+	}
+
+	/**
+	 * Essaye de faire passer le dessinateur
+	 * Lance exception Commande illégale si mot déjà trouvé
+	 * @throws IllegalCommandException 
+	 */
+	//TODO: protect more...
+	public void tryPass() throws IllegalCommandException {
+		if(wordFound.get()){
+		IO.trace("Pass refusé du dessinateur");	
+			throw new IllegalCommandException("Mot a déjà été trouvé");
+		} else {
+			
+			IO.trace("Dessinateur courrant passe son tour.");
+			synchronized (endRound) {
+				endRound.notify();
+			}
+		}
 	}
 
 	/**

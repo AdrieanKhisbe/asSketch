@@ -47,7 +47,7 @@ public class JoueurHandler extends Thread {
 	 */
 	public void run() {
 		try {
-			while (true) {
+			while (!interrupted()) {
 				try {
 					// Récupère la commande du client
 					// Thread bloqué ici tant que pas de réponse du client
@@ -78,7 +78,8 @@ public class JoueurHandler extends Thread {
 						break; // non atteint
 
 					case "PASS":
-						// HERE TODO; cf exit du dessinateur
+						// HERE TODO; cf exit du dessinateur !!!!!!!
+						gm.tryPass();
 						// vérifier trouveur
 						break;
 
