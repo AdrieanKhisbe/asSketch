@@ -60,9 +60,9 @@ Le serveur est conçu pour tourner avec tout client respectant le protocole, mai
 ** Lancement du client.
 Il s'agit juste de lancer la page Html =Main.html= dans un navigateur disposant une d'un player flash.
 Le joueur se laissera ensuite naturellement guider par l'interface au design standard.
-
-§Todo:screenshot!!
-
+\vspace{10mm}
+#+ATTR_LATEX: :height 5cm :center
+[[file:accueil.png]]
 * Conception Serveur
 /par Adrien/
 ** Intro
@@ -79,9 +79,14 @@ Le Java par sa nature haut niveau, et objet était aussi tout adapté pour nous 
 ** Architecture
 # Rien ne vaut un petit diagramme des classes pour décrire.
 # order
-A défaut de beaux diagramme Uml voici une explication littéraire de l'organisation mise en place pour le serveur.
+A défaut de beaux diagramme Uml voici une brève explication littéraire de l'organisation mise en place pour le serveur.
 
+Le code est réparti dans trois package: =core= (principalement les threads gestionnaires), =game= (les objets métiers graphiques et joueur), et tools pour les outils/fonctions statiques.
+La classe serveur est la classe qui vient tout lier, son thread se charge principalement d'initialiser les données et de lancer les autres threads. Le thread Game Manager va gérer les parties, et les threads JoueurHAndler vont gérer l'intéraction avec les joueurs. à noter qu'à coté un Thread fera officie de serveur de statistiques, et que les thread ConnexionStacker, et Connexion Handler se chargeront de gérer les nouvelles connexion.
+/incomplet/
 
+Du coté des objets métiers, rien de très exotique.
+/incomplet/
 
 Les extensions avaient été prises en compte lors de la conception de l'architecture globale du serveur pour permettre de les mettre en place sans tout chambouler.
 Une fois le squelette mis en place les fonctionnalités de bases, puis avancées ont été petit à petit incorporées, testées et debuguées.
@@ -96,7 +101,7 @@ La javadoc est consultable dans le dossier doc.
 
 
 ** Autres
-Voici quelques points dont je pense qu'il est utilise de préciser l'intention et le fonctionnement:
+Voici quelques points dont je pense qu'il est utilise de préciser l'intention et le fonctionnement (et de mieux comprendre l'architecture du programme):
 
 *** Lanceur, JCommander
 Pour gérer facilement les options, j'ai utilisé la bibliothèque/jar Jcommander. Celle-ci va se charger de parser la ligne de commande, de vérifier les options fournies et de gérer la valeur des options par défault.
@@ -130,6 +135,11 @@ Le thread va donc vérifier si la commande est valide (et si non, informer le cl
 
 
 *** Loggeur
+Afin d'avoir un débugage plus simple, et un meilleur traçage, une classe IO a été mis au point.
+Plutôt que d'utiliser des sysout à tout va, on utilise des =IO.trace=, =IO.traceDebug= ce qui permet de rafiner les messages tracé en un seul endroit. La méthode affiche sur le flux de sorti le thread qui affiche le message, ainsi qu'un time stamp.
+Les messages debug ne sont affichés qu'en mode débug, et il est possible d'activer désactiver l'ajout d'un time stamp.
+La trace peut aussi être enregistrée dans un fichier.
+
 # debuggage.
 # log enrichi par rapport à sysout.
 # moins verbeux. Centralise. affiche thread
@@ -146,9 +156,82 @@ Choisir le bon niveau de synchronisation sur les objets.
 
 L'adaptation du serveur pour tourner avec actionscript a été d'ailleurs assez difficile, et un mode a du etre fais pour gérer ces spécificités: notamment la gestion de la sécurité (il fallait répondre à une connexion sur la socket qui se contentais de demander un fichier policy), et pour une fin de commande particulière avec un =\0=.
 
+\newpage
 * Conception Client
 /par Stéphane/
-§TODO Stéééééééphaaaaaannne
+
+** Initialisation :
+Pour tester le client, il suffit d'ouvrir le fichier « Mail.html »
+Pour ouvrir les sources du clients, une partie des sources sont disponicle dans les fichier.as, l'autre partie dans le Main.fla qui peut êtdonere ouvert avec Adobe Flash CC ( Essais 30 Jours).
+Le fichier Main.swf est le fichier compilé.
+Pour lancer le client sur un autre serveur il faut que dès la connexion du client, le serveur lui envois  un policy file requeste :
+#+BEGIN_SRC java
+  private final static String ACTION_POLICY_STRING = "<?xml version=\"1.0\"
+   encoding=\"UTF-8\"?><cross-domain-policy><allow-access-from domain=\"*\"
+   to-ports=\"*\" secure=\"false\" /><site-control permitted-cross-domain-po
+   licies=\"master-only\" /></cross-domain-policy>\0";
+
+#+END_SRC
+Pour changer le port et l'ip du serveur, il faut ouvrir le fichier Main.fla, allez dans la premeire image d'action du sénario, et changer les 2 variables HostIp et HostPort.
+
+** Fonctionnalités du client:
+Lorsque l'on lance le client, on arrive sur un menu.
+Si la connexion ne s'établie pas au boue de « timeout », un popup nous indique que le connexion avec le serveur est impossible. Un popUp nous indiquera également si nous avons été expulsé par le serveur ou bien si le serveur a planté. (Les fenêtres popUp sont calculé dynamiquement pour etre centré sur la page et avec le bon rapport taille/texte)
+Lorsque l'on clique sur les différents sous menus, on peut soit revenir en arrière en cliquant sur la petite flèche, soit passer à  l'étape suivante en cliquant sur le bouton, ou en appuyant sur la touche entrer.
+Une fois en attente de la partie, nous avons en haut a droite un bouton pour les options, aide qui va faire pop une fenêtre d'aide, signaler le dessinateur en cas de triche actif que si la partie est commencé, et quitter la partie. La fenêtre IRC est également active.
+Une fois la partie commencé, la fenêtre Réponse devient actives. On peut envoyer des message a l'aide du bouton ou de la touche entrer. Le dessinateur ne peux pas parler dans la fenêtre réponse.
+La fenêtre d'information sur la partie est mise à jour en temps réel grâce au serveur.
+Seul le dessinateur peux dessiner dans la fenêtre de dessin.
+Le premier bouton (en haut) sert à effacer le dessin, le second à augmenter la taille du trait (borné), puis remettre la taille du trait par défaut à 5, puis à diminuer la taille du trait(borné), puis changer la forme de la palette, indique la couleur actuel du trait, choisir la couleur.
+
+** Indications sur le code.
+Dans le fichier Main.fla, on trouve l’initialisation du client :
+#+BEGIN_SRC java
+  //Feuille 1 :
+
+  //Mettre la tage du wheig et height de la meme taille que la résolution max
+  import flash.display.StageAlign;
+  import flash.display.StageScaleMode;
+  import flash.display.MovieClip;
+  stage.align = StageAlign.TOP_LEFT;
+
+
+  //adress Ip du serveur
+  var HostIp:String = "localhost";
+  //Port du serveur
+  var HostPort:Number = 2013;
+
+
+  Security.loadPolicyFile("localhost:2013");
+
+  //stage.scaleMode = StageScaleMode.NO_SCALE;
+  trace(HostIp);
+  trace(HostPort);
+  //Instenciation de la connexion socket
+
+  //Instenciation de la page d'accueil
+  var accueil:AccueilPage ;
+  //Enleve le Zoom sur le client
+  var mainFenetre:Fenetre;
+  //Interface Façade
+  var interf:InterfaceSock = new InterfaceSock(this);
+  var connexion:ConnexionSocket = new ConnexionSocket(HostIp,HostPort);
+  accueil = new AccueilPage(HostIp,HostPort);
+  stage.showDefaultContextMenu = false;
+  stop();
+
+  // Feuille 2 :
+  mainFenetre = new Fenetre();
+  stop();
+
+
+#+END_SRC
+La classe ConnexionSocket gère toute les connexions entrante et sortante, la classe  InterfaceSock  regroupe tout les traitement liée au protocole.
+
+La classe Fenetre est un container des autres « modules » (Dessin, InfoPartie, LesCo, IRC, Reponse)
+
+La page d'acceuil est lancé sur le première feuille et la fenêtre, sur la deuxième feuilles.
+
 
 * Extensions & Modif protocole.
 
