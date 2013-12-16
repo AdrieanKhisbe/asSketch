@@ -15,12 +15,12 @@
 		public var reduit:Boolean=false; // indique si la fenetre est déuite ou non 
 		public var buffS:String="";  // buff le String lors de la réduction de fenetre
 			
-		public function Reponse(f:Fenetre){
+		public function Reponse(f:Fenetre,xx:int,yy:int){
 			this.fenetre=f;
 			fond.tf.multiline=true;//Plusieurs ligne dans la fenetre
 			//fond.tf.wordWrap = true;//Met les mots trop long a la ligne
-			this.x=750;
-			this.y=400;
+			this.x=xx;
+			this.y=yy;
 			fond.IPT.maxChars=120; // Nombre Maximum de characteres autorisé
 			//fond.mov.titre.text = titre;
 		}

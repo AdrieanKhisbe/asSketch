@@ -4,18 +4,6 @@
 
 ligne carré cercle
 
-scroll text
 
-position x y containeur , module
 
-instantation modulable des options
 
-utilisé appendText
-
-messageBox « a vou de dessiner » ?
-
-add efface all Fenetre
-
-CHEAT/user/que si la partie est en cour
-
-animation d’attenten welcome

@@ -59,7 +59,9 @@
 		}
 		
 		public static function report(){
-			scene.connexion.sendText("CHEAT/" + scene.mainFenetre.info.getCurrentD());
+			if(scene.mainFenetre.info.getStart()){
+				scene.connexion.sendText("CHEAT/" + scene.mainFenetre.info.getCurrentD());
+			}
 		}
 		
 		public static function pass(){
@@ -131,6 +133,7 @@
 			}
 			//Client est un dessinateur
 			else{
+				new MessageBox(scene ,"A vous de dessiner !!","Information");
 				scene.mainFenetre.dessin.isDessinateur(true);//On active les interaction de dessins
 				scene.mainFenetre.currentUser.setDes(); //On passe le status du joueur en dessinateur
 				scene.mainFenetre.info.setCurrentD(pseudo); //On indique au client qui est le dessinateur(lui)

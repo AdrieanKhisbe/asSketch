@@ -17,8 +17,10 @@
 		var fenetre:Fenetre;
 		var isDess:Boolean = false;
 		
-		public function Dessin(fenetre:Fenetre) {
+		public function Dessin(fenetre:Fenetre,xx:int,yy:int) {
 			this.fenetre=fenetre;
+			this.x = xx;
+			this.y = yy;
 		}
 		
 		public function afficherThis(){

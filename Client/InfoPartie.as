@@ -18,10 +18,10 @@
 		private var total:uint = minutes*60 + secondes;
 		private var myTimer:Timer = new Timer(1000, total);
 		
-		public function InfoPartie(f:Fenetre) {
+		public function InfoPartie(f:Fenetre,xx:int,yy:int) {
 			this.fenetre = f;
-			this.x=500;
-			this.y=600;
+			this.x=xx;
+			this.y=yy;
 			this.cacheMot();
 			waitOther();
 			this.pass.visible = false;
@@ -120,6 +120,10 @@
 			} else {
 				timer_txt.text = uint((timeLeft/60))+" : "+n;
 			}
+		}
+		
+		public function getStart():Boolean{
+			return this.start;
 		}
 		
 	}
