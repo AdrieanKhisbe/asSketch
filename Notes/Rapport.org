@@ -22,9 +22,35 @@ Ce présent rapport viens décrire le projet de Client Serveur iSketch, réalis�
 
 * Guide utilisation
 
-** Lancement serveur
+** Lancement Serveur
 
-§TODO:GET OPTIOnS
+Le serveur est invocable depuis la ligne de commande, en appelant la jar, et en spécifiant les options dont voici la liste:
+#+BEGIN_SRC fundamental
+  Usage: assKetch [options]
+    Options:
+      -cheatPenalty, --cheatPenalty   Point de malus
+                                      Default: 10
+          --comptes                   Le fichier des comptes
+                                      Default: comptes.ser
+      -D, --daemon                    Serveur enchaine les parties (non oneshot)
+                                      Default: false
+      -dico, --dico                   Les mots à utiliser
+                                      Default: dicotest
+      -max, --max                     Nombre maximum de joueurs
+                                      Default: 4
+      -nbwarn, --nbwarn               Nb pour mettre malus joueur
+                                      Default: 3
+      -port, --port                   Port à utiliser
+                                      Default: 2013
+      -portstats, --portstats         Port à utiliser pour le serveur de stats
+                                      Default: 2092
+      -timeout, --timeout             Délai après découverte d'un mot
+                                      Default: 30
+      -timepause, --timepause         Temps de pause entre parties
+                                      Default: 2
+      -timeround, --timeround         Durée Max partie
+                                      Default: 180
+#+END_SRC
 
 La liste des options possibles du serveur est consultable en invoquant le programme avec l'option -h, qui affichera l'usage.
 
@@ -50,8 +76,9 @@ Une des raisons principales était aussi de pratiquer le Java sur projet conséq
 Voici quelques..... §HERE
 
 ** Architecture
-Rien ne vaut un petit diagramme des classes pour décrire.
+# Rien ne vaut un petit diagramme des classes pour décrire.
 # order
+A défaut de beau diagramme Uml
 
 Les extensions avaient été prises en compte lors de la conception de l'architecture globale du serveur pour permettre de les mettre en place sans tout chambouler.
 

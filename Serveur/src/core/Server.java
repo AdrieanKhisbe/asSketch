@@ -107,7 +107,11 @@ public class Server extends Thread {
 			// TODO essayer de le relancer? recatch, tenté de relancer
 			statisticServer = new StatServer(comptesJoueurs,
 					ASSketchServer.options.portStats);
-
+			
+			// mode debug
+			if (ASSketchServer.options.debug)
+				IO.turnOnDebugMode();
+					
 			if (ASSketchServer.options.actionMode) {
 				IO.trace("Mode Action Script mis en place!");
 			}
@@ -641,11 +645,11 @@ public class Server extends Thread {
 				} catch (NullPointerException e) {
 					// TODO ?? rajoute
 					IO.traceDebug("Déconnexion barbabre (null)");
-					e.printStackTrace();
+					// e.printStackTrace();
 				} catch (IOException e) {
 					// TODO ?? rajoute
-					e.printStackTrace();
-
+					// e.printStackTrace();
+					IO.traceDebug("IOexception");
 				}
 
 			}
