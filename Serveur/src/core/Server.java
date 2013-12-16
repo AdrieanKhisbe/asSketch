@@ -517,10 +517,10 @@ public class Server extends Thread {
 									String joueurName = tokens[1];
 
 									// Check Login
-									if (joueurs.isLoginDuplicate(joueurName)
+									while (joueurs.isLoginDuplicate(joueurName)
 											|| !comptesJoueurs
 													.isFreeUsername(joueurName)) {
-										joueurName = joueurName + "(bis)";
+										joueurName = joueurName + "'";
 										// idéalement compteur (symbol
 										// générateur)
 										// TODO improved symbol
@@ -553,8 +553,6 @@ public class Server extends Thread {
 									IO.trace("Tentative de creation compte pour nom déjà existant");
 									closeConnexion(Protocol.newAccessDenied());
 									break;
-									// TODO doit aussi checker si joueur utilise
-									// pas déjà ce nom!
 								}
 
 								newJoueur = new JoueurEnregistre(new Connexion(
@@ -563,39 +561,50 @@ public class Server extends Thread {
 
 								comptesJoueurs.addCompte(newJoueur);
 
+								sauvegardeComptes();
 							}
-							setUpNewJoueur(newJoueur);
-							sauvegardeComptes();
+
+							if (!joueurs.isLocked()) {
+								setUpNewJoueur(newJoueur);
+							} else {
+								IO.trace("Connexion Refusée, jeu plein");
+								closeConnexion("GAME_FULL");
+							}
 
 							break;
 
 						// Demande de login à compte enregistré
 						case "LOGIN":
-							JoueurEnregistre joueurLog = comptesJoueurs
-									.getJoueur(tokens[1]);
-							if (joueurLog == null) {
-								IO.trace("Tentative de login compte non existant");
-								closeConnexion(Protocol.newAccessDenied());
-								break;
-							}
-							if (!joueurLog.checkPassword(tokens[2])) {
-								IO.trace("Tentative de login avec mot de passe invalide");
-								closeConnexion(Protocol.newAccessDenied());
-								break;
-							}
-							// Joueur déjà connecté
-							if (joueurs.isLoginDuplicate(joueurLog
-									.getUsername())) {
-								IO.trace("Utilisateur déjà connecté");
-								closeConnexion(Protocol.newAccessDenied());
-								break;
-							}
+							if (!joueurs.isLocked()) {
+								JoueurEnregistre joueurLog = comptesJoueurs
+										.getJoueur(tokens[1]);
+								if (joueurLog == null) {
+									IO.trace("Tentative de login compte non existant");
+									closeConnexion(Protocol.newAccessDenied());
+									break;
+								}
+								if (!joueurLog.checkPassword(tokens[2])) {
+									IO.trace("Tentative de login avec mot de passe invalide");
+									closeConnexion(Protocol.newAccessDenied());
+									break;
+								}
+								// Joueur déjà connecté
+								if (joueurs.isLoginDuplicate(joueurLog
+										.getUsername())) {
+									IO.trace("Utilisateur déjà connecté");
+									closeConnexion(Protocol.newAccessDenied());
+									break;
+								}
 
-							// met à jour la connexion:
-							joueurLog.setConnexion(new Connexion(client,
-									inchan, outchan));
+								// met à jour la connexion:
+								joueurLog.setConnexion(new Connexion(client,
+										inchan, outchan));
 
-							setUpNewJoueur(joueurLog);
+								setUpNewJoueur(joueurLog);
+							} else {
+								IO.trace("Connexion Refusée, jeu plein");
+								closeConnexion("GAME_FULL");
+							}
 							break;
 
 						// Demande de "Spectatage"

@@ -43,8 +43,8 @@ public class Protocol {
 		// SUGGESTION
 		gameCommand.put("GUESS", new CommandParameter(Role.chercheur, 1));
 
-		gameCommand.put("WARN", new CommandParameter(Role.chercheur, 1));
-		gameCommand.put("PASS", new CommandParameter(Role.dessinateur, 1));
+		gameCommand.put("CHEAT", new CommandParameter(Role.chercheur, 1));
+		gameCommand.put("PASS", new CommandParameter(Role.dessinateur, 0));
 		
 
 		// DESSIN

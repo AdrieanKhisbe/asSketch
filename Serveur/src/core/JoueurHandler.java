@@ -78,9 +78,7 @@ public class JoueurHandler extends Thread {
 						break; // non atteint
 
 					case "PASS":
-						// HERE TODO; cf exit du dessinateur !!!!!!!
 						gm.tryPass();
-						// vérifier trouveur
 						break;
 
 					case "CHEAT":

@@ -97,8 +97,7 @@ public class StatServer extends Thread {
 				isr.close();
 
 			} catch (IOException e) {
-				e.printStackTrace(); // TODO TMP
-				IO.traceDebug("StatsServer: problème connexion");
+				IO.traceDebug("StatsServer: problème connexion/ Relai brisé");
 				// TODO stat fausse requete , à améliorer
 				nbStatsDisconnect++;
 
