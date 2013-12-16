@@ -40,9 +40,9 @@
 		}
 		
 		//Menu et surface de dessin
-		function drawer(SizeX:int , SizeY:int ,alph:Number=.1 ,colors:int=0xFFFFFF ):void {	
+		function drawer(SizeX:int , SizeY:int ,alph:Number=0.1 ,colors:int=0xFFFFFF ):void {	
 		   DRAW={  size:1, fsize:taille, fmax:40, multy:0.5,
-						color:0x000000, zone:new Sprite(), bg:new carre(SizeX,SizeY,colors,alph), graph:new Sprite(), M:new carre(SizeX,SizeY,0x000000),
+						color:0x000000, zone:new Sprite(), bg:new carre(SizeX,SizeY,colors,0.7), graph:new Sprite(), M:new carre(SizeX,SizeY,0x000000),
 						GL:new Sprite(),
 						B:new cbutton('X') ,br1:new cbutton('+'),br2:new cbutton('o'),br3:new cbutton('-'), col:colors, A:alph  };
 		   with(DRAW){
@@ -217,6 +217,7 @@
 		//Efface la surface de dessin (interne)
 		function deleteStage(event:MouseEvent):void {
 			with(DRAW)graph.graphics.clear();
+			InterfaceSock.clearD();
 		}
 		
 		//Efface la surface de dessin (externe)
@@ -233,7 +234,7 @@
 		}
 		//Remet de la taille du crayon par defaut
 		function brushSize(event:MouseEvent):void {
-			with(DRAW){fsize=5; fmax=40; taille =5;};
+			with(DRAW){fsize=5; fmax=40; taille =5;InterfaceSock.tailleTrait(fsize);};
 		}
 		//Diminue de la taille du crayon min 1
 		function brushSizeMin(event:MouseEvent):void {

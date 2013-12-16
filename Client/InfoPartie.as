@@ -31,6 +31,7 @@
 			this.vain.visible=false;
 			minutes = 3;
 			secondes = 0;
+			this.total = minutes*60 + secondes;
 			myTimer.reset();
 			myTimer.start();
 			myTimer.addEventListener("timer", InitTimer);
@@ -53,6 +54,16 @@
 			myTimer.stop();
 		}
 		
+		public function changeT(m:uint,s:uint):void{
+			myTimer.stop();
+			myTimer.reset();
+			myTimer.start();
+			myTimer.addEventListener("timer", InitTimer);
+			this.start=true;
+			this.setMin(m);
+			this.setSec(s);
+		}
+		
 		public function setCurrentD(user:String):void{
 			this.currentD = user;
 			this.des.text = currentD;
@@ -60,10 +71,12 @@
 		
 		public function setMin(m:uint):void{
 			this.minutes= m;
+			this.total = minutes*60 + secondes;;
 		}
 		
 		public function setSec(s:uint):void{
 			this.secondes= s;
+			this.total = minutes*60 + secondes;
 		}
 		
 		public function setMot(mot:String){

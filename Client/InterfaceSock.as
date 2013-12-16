@@ -22,17 +22,17 @@
 		//Fonctions  client -> Serveur
 		public static function connexionGuest(pseudoo:String)
 		{
-			scene.connexion.sendText("CONNECT/" + escape(pseudoo));
+			scene.connexion.sendText("CONNECT/" + pseudoo);
 		}
 		public static function deconnexionGuest()
 		{
-			scene.connexion.sendText("EXIT/" + escape(pseudo));
+			scene.connexion.sendText("EXIT/" + pseudo);
 			scene.mainFenetre.effacerThis();
 			scene.gotoAndPlay(1);
 		}
 		public static function motClient(mot:String)
 		{
-			scene.connexion.sendText("GUESS/" + escape(mot));
+			scene.connexion.sendText("GUESS/" + mot);
 		}
 		public static function changeCouleur(hex:Number)
 		{
@@ -82,7 +82,12 @@
 		
 		public static function iRCClient(text:String)
 		{
-			scene.connexion.sendText("TALK/" + escape(text));
+			scene.connexion.sendText("TALK/" + text);
+		}
+		
+		public static function clearD()
+		{
+			scene.connexion.sendText("CLEAR/");
 		}
 		
 		
@@ -113,6 +118,7 @@
 			
 		}
 		public static function role(user:String,mot:String){
+			scene.mainFenetre.reponse.addT("***** Nouveau round !");
 			//On lance le timer
 			scene.mainFenetre.info.startT();
 			scene.mainFenetre.dessin.deleteStageE();
@@ -138,8 +144,7 @@
 			scene.mainFenetre.reponse.addT("***** " + user +" a trouvé le mot !");
 		}
 		public static function enclancheT(time:String){
-			scene.mainFenetre.info.setMin(0);
-			scene.mainFenetre.info.setSec(uint(time));
+			scene.mainFenetre.info.changeT(0,uint(time));
 		}
 		public static function scoreC(user:String,score:String){
 			for(var i:int; i< scene.mainFenetre.lesCo.pseudo.length ; i++){
@@ -152,6 +157,7 @@
 			
 		}
 		public static function finiR(user:String,mot:String){
+			scene.mainFenetre.reponse.addT("***** Fin du round !");
 			scene.mainFenetre.info.stopT();
 			scene.mainFenetre.info.setMot(mot);
 			scene.mainFenetre.info.pass.visible=false;
@@ -189,6 +195,10 @@
 		
 		public static function iRCRecu(user:String,text:String){
 			scene.mainFenetre.iRC.addT(user +" : "+ text);
+		}
+		
+		public static function clearedD(){
+			scene.mainFenetre.dessin.deleteStageE();
 		}
 
 	}

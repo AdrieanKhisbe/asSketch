@@ -49,10 +49,10 @@
 		
 		public function instanceFenetre():void{
 			this.afficherThis();
+			this.instanceDessin();
 			this.instanceDialBoxs();
 			this.instanceLesCo();
 			this.instanceInfoP();
-			this.instanceDessin();
 			this.instanceOptions();
 		}
 		
@@ -76,7 +76,7 @@
 		
 		//Instanciation et affichage de la fenetre des pptions
 		public function instanceOptions(){
-			options = new Options(this,960,0);
+			options = new Options(this,980,0);
 			options.afficherThis();
 		}
 		

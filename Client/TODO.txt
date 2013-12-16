@@ -1,43 +1,9 @@
-Boite d'errreur:
--Guest
--Inscription
--Spectateur
--Inscrit
-(serveur offline , room complete , dÈja connectÈ , pseudo dÈja utilisÈ)
-
-AmÈliorer le parse du protocol( envoie et reception , '/' dans les message ou pseudo)
-
-AmÈliorer les else if en fonction de celui qui va etre appeler le plus de fois
-
-
-Fin de partie -> kick tout le monde de la room ne pas éteindre le serveur
-
-
-
-Ajout protocol :
-ERROR/x
-(S->C) Le serveur envois un erreur au client
-
-
-Ajout d'un protocol poru projain joueur ?
-
-
-//WORD_FOUND_TIMEOUT/timeout/
-Tu m'envois un timeout en seconde et je chnage l'affichage du temps restant
-
-DELETE/
-C->S efface le dessin en cours
-
-spamm serveur?
-Si el dessinateur ne dessine rien au boue de 30 sec -> new dessinateur
-
-
 
 
 ./client -port p -user name
 
 ligne carré cercle
-protocolClear
+
 scroll text
 
 position x y containeur , module

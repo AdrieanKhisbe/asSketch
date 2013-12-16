@@ -80,8 +80,15 @@
 			{
 				//LISTEN/joueur/texte/
 				InterfaceSock.iRCRecu(tabData[1],tabData[2]);
+			}
+			
+			else if (tabData[0] == "CLEARED")
+			{
+				//LISTEN/joueur/texte/
+				InterfaceSock.clearedD();
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{
 			scene.traceBug.text +=  "envoyé : "+sText+"\n";
-			connexion.send(sText+ "\n");		}	}}
+			var xText:XML = new XML(sText);
+			connexion.send(xText+ "\n");		}	}}

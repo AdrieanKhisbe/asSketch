@@ -18,7 +18,7 @@
 		public function Reponse(f:Fenetre){
 			this.fenetre=f;
 			fond.tf.multiline=true;//Plusieurs ligne dans la fenetre
-			fond.tf.wordWrap = true;//Met les mots trop long a la ligne
+			//fond.tf.wordWrap = true;//Met les mots trop long a la ligne
 			this.x=750;
 			this.y=400;
 			fond.IPT.maxChars=120; // Nombre Maximum de characteres autorisé
