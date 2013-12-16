@@ -4,7 +4,7 @@
 	import flash.display.LineScaleMode;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
-	
+	//CLasse importé
 	public class PALrond extends Sprite{
 		
 		public function PALrond(R:Number = 100)

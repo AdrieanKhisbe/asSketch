@@ -3,7 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
 	
-	
+
 	public class MenuOption extends MovieClip {
 		public var fenetre:Fenetre;
 		public var mess:MessageBox;
@@ -31,12 +31,12 @@
 		}
 		
 		public function aide(e:MouseEvent):void{
-			mess = new MessageBox(fenetre,"Ceci est l'esplication d'aide du jeux ou se que tu veux mother fuker","Aide");
+			mess = new MessageBox(fenetre,"Pour tout aide .....","Aide");
 		}
 		
 		public function abuse(e:MouseEvent):void{
 			if(!fenetre.currentUser.getDes() && !fenetre.currentUser.getSpec()){
-				mess = new MessageBox(fenetre,"Attention tout abus pourras etre sancionné de ban temporaire ou définitif de votre compte et ip","Report envoyé !");
+				mess = new MessageBox(fenetre,"Attention tout abus .....","Report envoyé !");
 				InterfaceSock.report();
 			}
 		}

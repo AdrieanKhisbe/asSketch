@@ -1,4 +1,6 @@
-﻿/*
+﻿//Classe importéw
+
+/*
 VERSION: 6.24
 DATE: 6/25/2008
 ACTIONSCRIPT VERSION: 3.0 (AS2 version is also available)

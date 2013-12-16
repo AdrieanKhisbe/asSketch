@@ -4,7 +4,7 @@
 	import flash.display.LineScaleMode;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
-
+	//Classe importé palette carré
 	public class PALcarre extends Sprite{
 		public function PALcarre(W:Number = 100, H:Number = 100)
 		{

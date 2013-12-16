@@ -1,6 +1,10 @@
-﻿package  {	import flash.display.MovieClip;	/*Class User	*/	public class User extends MovieClip{		private var pseudo:String;
+﻿package  {	import flash.display.MovieClip;	/*Class User	*/	public class User extends MovieClip{
+		//Pseudo du joueur		private var pseudo:String;
+		//Points du joueur
 		private var points:int = 0;
+		//Es ce que user est un dessinateur ?
 		private var dessinateur:Boolean = false;
+		//Es ce que user est un spectateur ?
 		private var isSpec:Boolean = false;				public function User(pseudo:String) {			this.pseudo=pseudo;		}
 		
 		public function getPseudo():String {

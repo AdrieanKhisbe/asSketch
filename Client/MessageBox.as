@@ -3,7 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.events.MouseEvent;
 	
-	
+	//Classe de message pop up
 	public class MessageBox extends MovieClip {
 		var containeur:MovieClip;
 		
