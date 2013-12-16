@@ -19,9 +19,12 @@
 		public function getCo():XMLSocket		{			return connexion;		}
 		
 				//Affcihe sur le client lorsque la conexion est établie		public function connexionR(Evt:Event):void		{			scene.bug.text="connexion Reussi";		}		//Affiche sur le client lorsque la conexion est perdu		public function connexionC(Evt:Event):void		{
-				scene.bug.text="connexion couper";				scene.gotoAndStop(1);				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{
-				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN2(e:SecurityErrorEvent):void		{
-				scene.bug.text="impossible de se connecter";				scene.gotoAndStop(1);				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
+				//scene.bug.text="connexion couper";				scene.gotoAndStop(1);
+				new MessageBox(scene,"Le serveur a été coupé","=(");				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{
+								scene.gotoAndStop(1);
+				new MessageBox(scene,"Impossbile de se connecter au serveur","=(");				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN2(e:SecurityErrorEvent):void		{
+								scene.gotoAndStop(1);
+				new MessageBox(scene,"Impossbile de se connecter au serveur","=(");				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
 			var s:String = Evt.data;
 			s = s.replace("\n","");
 			scene.traceBug.text +=  "reçus : "+s+"\n";			var tabData:Array = s.split("/");			if (tabData[0] == "CONNECTED")			{
@@ -72,10 +75,6 @@
 				//LINE/x1/y1/x2/y2/r/g/b/s/
 				InterfaceSock.drawL(tabData[1],tabData[2],tabData[3],tabData[4],tabData[5],tabData[6],tabData[7],tabData[8]);
 			}
-			else if (tabData[0] == "ACCESSDENIED")
-			{
-				InterfaceSock.erreurCo();
-			}
 			else if (tabData[0] == "LISTEN")
 			{
 				//LISTEN/joueur/texte/
@@ -84,8 +83,18 @@
 			
 			else if (tabData[0] == "CLEARED")
 			{
-				//LISTEN/joueur/texte/
+				
 				InterfaceSock.clearedD();
+			}
+			else if (tabData[0] == "ACCESSDENIED")
+			{
+				
+				InterfaceSock.coImp();
+			}
+			else if (tabData[0] == "GAME_FULL")
+			{
+				
+				InterfaceSock.full();
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{

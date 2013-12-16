@@ -10,11 +10,23 @@
 	public class Fenetre extends MovieClip{
 		public var scene:MovieClip=InterfaceSock.scene;  
 		public var iRC:IRC; //Fenetre de Dialogues
+		public var xIRC:int = 0;
+		public var yIRC:int = 600;
 		public var reponse:Reponse; //Fenetre des Réponses
+		public var xRep:int = 750;
+		public var yRep:int = 400;
 		public var lesCo:LesCo; // Fenetre des connecté
+		public var xCo:int = 750;
+		public var yCo:int = 0;
 		public var info:InfoPartie; 
+		public var xInfo:int = 500;
+		public var yInfo:int = 600;
 		public var dessin:Dessin;
+		public var xDess:int = 0;
+		public var yDess:int = 0;
 		public var options:Options;
+		public var xOpt:int = 980;
+		public var yOpt:int = 0;
 		public var messBox:MessageBox;
 		public var currentUser:User;
 		public var buffClient:User;
@@ -58,34 +70,34 @@
 		
 		//Instanciation et affichage de la fenetre des connecté
 		public function instanceLesCo(){
-			lesCo = new LesCo(this);
+			lesCo = new LesCo(this,xCo,yCo);
 			lesCo.afficherThis();
 		}
 		
 		//Instanciation et affichage de la fenetre des connecté
 		public function instanceDessin(){
-			dessin = new Dessin(this);
+			dessin = new Dessin(this,xDess,yDess);
 			dessin.afficherThis();
 		}
 		
 		//Instanciation et affichage de la fenetre des connecté
 		public function instanceInfoP(){
-			info = new InfoPartie(this);
+			info = new InfoPartie(this,xInfo,yInfo);
 			info.afficherThis();
 		}
 		
 		//Instanciation et affichage de la fenetre des pptions
 		public function instanceOptions(){
-			options = new Options(this,980,0);
+			options = new Options(this,xOpt,yOpt);
 			options.afficherThis();
 		}
 		
 		//Instanciation et affichage de la fenetre de dialogue
 		public function instanceDialBoxs(){
-			iRC = new IRC(this);
+			iRC = new IRC(this,xIRC,yIRC);
 			iRC.afficherThis();
 			
-			reponse = new Reponse(this);
+			reponse = new Reponse(this,xRep,yRep);
 			reponse.afficherThis();
 		}
 		
