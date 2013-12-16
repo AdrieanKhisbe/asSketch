@@ -90,6 +90,11 @@
 			{
 				
 				InterfaceSock.coImp();
+			}
+			else if (tabData[0] == "GAME_FULL")
+			{
+				
+				InterfaceSock.full();
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{
