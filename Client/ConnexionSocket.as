@@ -18,7 +18,7 @@
 		
 		public function getCo():XMLSocket		{			return connexion;		}
 		
-				//Affcihe sur le client lorsque la conexion est établie		public function connexionR(Evt:Event):void		{			scene.bug.text="connexion Reussi";		}		//Affiche sur le client lorsque la conexion est perdu		public function connexionC(Evt:Event):void		{
+				//Affcihe sur le client lorsque la conexion est établie		public function connexionR(Evt:Event):void		{			//scene.bug.text="connexion Reussi";		}		//Affiche sur le client lorsque la conexion est perdu		public function connexionC(Evt:Event):void		{
 				//scene.bug.text="connexion couper";				scene.gotoAndStop(1);
 				new MessageBox(scene,"Le serveur a été coupé","=(");				//scene.accueil.setError("Le Serveur vien d'etre couper , veuillez pacienter quelques minute avant de vous reconnecté");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}				public function connexionN1(e:IOErrorEvent):void		{
 								scene.gotoAndStop(1);
@@ -27,7 +27,7 @@
 				new MessageBox(scene,"Impossbile de se connecter au serveur","=(");				//scene.accueil.setError("Serveur Off-Line");				scene.mainFenetre.effacerThis();				scene.accueil.afficherThis();		}		//Traitement de l'information lors de reçois d'un message du serveur		public function receiveData(Evt:DataEvent)		{
 			var s:String = Evt.data;
 			s = s.replace("\n","");
-			scene.traceBug.text +=  "reçus : "+s+"\n";			var tabData:Array = s.split("/");			if (tabData[0] == "CONNECTED")			{
+			//scene.traceBug.text +=  "reçus : "+s+"\n";			var tabData:Array = s.split("/");			if (tabData[0] == "CONNECTED")			{
 				//CONNECTED/user/
 				InterfaceSock.clientCo(tabData[1]);			}			else if (tabData[0] == "EXITED")			{
 				//EXITED/user/
@@ -98,6 +98,6 @@
 			}		}
 		
 				//converti le message a envoyer en XML et l'envois		public function sendText(sText:String)		{
-			scene.traceBug.text +=  "envoyé : "+sText+"\n";
+			//scene.traceBug.text +=  "envoyé : "+sText+"\n";
 			var xText:XML = new XML(sText);
 			connexion.send(xText+ "\n");		}	}}

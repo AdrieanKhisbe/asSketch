@@ -203,7 +203,7 @@
 			scene.gotoAndPlay(1);
 			new MessageBox(scene,"Impossible de se connecté au serveur pour l'instant","=(");
 		}
-		public static function coImp(){
+		public static function full(){
 			scene.gotoAndPlay(1);
 			new MessageBox(scene,"Le serveur est actuelement plein","=(");
 		}

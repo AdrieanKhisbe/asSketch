@@ -114,7 +114,7 @@
 				pseudo = mInscription.pseudo.text;
 				mdp = mInscription.mdp.text;
 				InterfaceSock.inscription(pseudo,mdp);
-				this.effacerThis();
+				//this.effacerThis();
 			}
 			/*
 			else if (mGuest.pseudo.text == "" )
@@ -133,7 +133,7 @@
 				pseudo = mInscription.pseudo.text;
 				mdp = mInscription.mdp.text;
 				InterfaceSock.inscription(pseudo,mdp);
-				this.effacerThis();
+				//this.effacerThis();
 			}
 			/*
 			else if (mGuest.pseudo.text == "" )
