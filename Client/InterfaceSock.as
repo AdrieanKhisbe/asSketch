@@ -192,16 +192,16 @@
 			}
 		}
 		
-		static function erreurCo():void{
-			var mess:MessageBox = new MessageBox(scene,"Erreur a définir plutard","erreur");
-		}
-		
 		public static function iRCRecu(user:String,text:String){
 			scene.mainFenetre.iRC.addT(user +" : "+ text);
 		}
 		
 		public static function clearedD(){
 			scene.mainFenetre.dessin.deleteStageE();
+		}
+		public static function coImp(){
+			scene.gotoAndPlay(1);
+			new MessageBox(scene,"Impossible de se connecté au serveur pour l'instant","=(");
 		}
 
 	}
