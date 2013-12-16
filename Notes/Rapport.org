@@ -9,10 +9,17 @@
 #+LaTeX_HEADER: \usepackage[margin=0.75in]{geometry}
 #+LATEX_HEADER: \usepackage[utf8x]{inputenc}
 
+
+\vspace*{20mm}
+
+*Introduction:*
+Ce présent rapport viens décrire le projet de Client Serveur iSketch, réalisé au cours de ce semestre du cours de Programmation Concurrente Réactive et Répartie.
+
+# §TODO: IMgdu jeu?
+
 \newpage
 
-* Intro
-Ce présent rapport viens décrire le projet de Client Serveur iSketch, réalisé au cours de ce semestre du cours de Programmation Concurrente Réactive et Répartie.
+
 * Guide utilisation
 
 ** Lancement serveur
@@ -33,10 +40,14 @@ Le joueur se laissera ensuite naturelle guider par l'interface au design standar
 /par Adrien/
 ** Intro
 
-Choix langage.
-
+Le serveur a été écrit en Java, et ceci pour plusieurs raisons, parmi lesquelles le fait qu'on ne compter pas l'utiliser pour réaliser le client et son interface graphique
 
 Une des raisons principales était aussi de pratiquer le Java sur projet conséquent, vu que j'avais qu'une expérience assez limitée avec celui-ci.
+
+§MORE.
+
+
+Voici quelques..... §HERE
 
 ** Architecture
 Rien ne vaut un petit diagramme des classes pour décrire.
@@ -88,16 +99,17 @@ L'état du joueur,
 
 ** Problèmes rencontrés
 
-Le plus dur a été de bien organiser le programme, d'affecter les responsabilité, et de sépar.
+Le plus dur a été de bien organiser le programme, d'affecter les responsabilité, et de sépar. §HERE!!
 
 Le débugage en isolation a été bien plus facile que pour le client, avec l'utilisation de telnet, bien qu'en pratique assez fastidieux et répétitif.
-L'idéal aurait été d'utiliser le framework de test.
+L'idéal aurait été bien sur d'utiliser le framework de test, mais le temps était limité pour apprendre à utiliser JUnit.
+
 
 Choisir le bon niveau de synchronisation sur les objets.
 
 * Conception Client
 /par Stéphane/
-# TODO Stéééééééphaaaaaannne
+§TODO Stéééééééphaaaaaannne
 
 * Extensions & Modif protocole.
 
